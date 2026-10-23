@@ -1,375 +1,252 @@
 <div align="center">
 
-# Gboard_Pro
+# ⌨️ Gboard_Pro
 
-**Supercharged Gboard Mod featuring Google Pixel 11 series's Rambler Voice Typing, AI Writing Assistant & Writing Tools V2 [No Root].**
+**An Advanced, Privacy-Conscious Google Keyboard Mod Engineered with Next-Gen Voice Dictation, On-Device AI Writing Capabilities & Material 3 Expressive Design — Zero Root Required.**
 
 <p>
   <a href="https://github.com/smartworldarafath/Gboard_Pro/releases/tag/v18.4.1-Stable-V7">
-    <img src="https://img.shields.io/badge/Release-v18.4.1--V7-8A2BE2?style=flat-square&logo=github&logoColor=white" alt="Latest Release"/>
+    <img src="https://img.shields.io/badge/Version-v18.4.1--V7-6C5CE7?style=flat-square&logo=github&logoColor=white" alt="Latest Build"/>
   </a>
-  <img src="https://img.shields.io/badge/Android-10%20to%2016-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Android Support"/>
-  <img src="https://img.shields.io/badge/Architecture-arm64--v8a-blue?style=flat-square" alt="Arch Support"/>
-  <img src="https://img.shields.io/badge/Base%20App-Gboard%20v18.4.1-orange?style=flat-square&logo=google" alt="Base Gboard"/>
-  <img src="https://img.shields.io/badge/Root-Not%20Required-success?style=flat-square" alt="No Root"/>
-  <img src="https://img.shields.io/badge/License-GPL--3.0-lightgrey?style=flat-square" alt="License"/>
+  <img src="https://img.shields.io/badge/Platform-Android%2010%E2%80%9316-00B894?style=flat-square&logo=android&logoColor=white" alt="Android Compatibility"/>
+  <img src="https://img.shields.io/badge/ABI-arm64--v8a-0984E3?style=flat-square" alt="CPU Architecture"/>
+  <img src="https://img.shields.io/badge/Upstream-Gboard%2018.4.1-E17055?style=flat-square&logo=google" alt="Gboard Base"/>
+  <img src="https://img.shields.io/badge/Root%20Access-Not%20Needed-2ECC71?style=flat-square" alt="Non-Root"/>
+  <img src="https://img.shields.io/badge/License-GPLv3-636E72?style=flat-square" alt="Open Source License"/>
 </p>
 
-<!-- Primary Action: Clear download choices with zero confusion -->
 <p>
   <a href="https://github.com/smartworldarafath/Gboard_Pro/releases/download/1.2.0/Gboard_Pro-18.4.1-V7.apk">
-    <img src="https://img.shields.io/badge/📥_Direct_Download_(APK)-v18.4.1_V7_(127_MB)-00C853?style=for-the-badge&logo=android&logoColor=white" height="42" alt="Download Ready-to-Install APK"/>
+    <img src="https://img.shields.io/badge/⬇️_Get_Signed_APK-v18.4.1_V7_(127_MB)-00C853?style=for-the-badge&logo=android&logoColor=white" height="42" alt="Download Gboard_Pro APK"/>
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/smartworldarafath/Gboard_Pro/releases/download/1.2.0/patches-1.2.0.mpp">
-    <img src="https://img.shields.io/badge/📦_Morphe_Patch_(.mpp)-v1.2.0_(1.6_MB)-2979FF?style=for-the-badge&logo=android&logoColor=white" height="42" alt="Download Morphe Patch Bundle"/>
+    <img src="https://img.shields.io/badge/🧩_Patch_Bundle_(.mpp)-v1.2.0_(1.6_MB)-2979FF?style=for-the-badge&logo=android&logoColor=white" height="42" alt="Download Morphe Patch Bundle"/>
   </a>
 </p>
 
 <p>
-  <sub><b>First time?</b> Download the ready-to-install <b>APK</b> (no root needed, installs side-by-side). Use the <b>Morphe Patch</b> if patching manually.</sub>
+  <sub><b>Quick Start:</b> Grab the pre-signed <b>APK</b> to install alongside your default keyboard without root, or pick the <b>.mpp bundle</b> to patch a clean base APK yourself.</sub>
 </p>
 
 <p>
-  <a href="https://github.com/smartworldarafath/Gboard_Pro/releases/tag/v18.4.1-Stable-V7"> <b>Release Notes</b></a> &nbsp;&bull;&nbsp;
-  <a href="#installation-guide"> <b>Installation Guide</b></a> &nbsp;&bull;&nbsp;
-  <a href="#visual-tour--screenshots"> <b>Screenshots</b></a> &nbsp;&bull;&nbsp;
-  <a href="https://github.com/smartworldarafath/Gboard_Pro/releases"> <b>All Releases</b></a>
+  <a href="https://github.com/smartworldarafath/Gboard_Pro/releases/tag/v18.4.1-Stable-V7"><b>Changelog</b></a> &nbsp;&bull;&nbsp;
+  <a href="#setup--installation"><b>Setup Instructions</b></a> &nbsp;&bull;&nbsp;
+  <a href="#interface-preview"><b>UI Preview</b></a> &nbsp;&bull;&nbsp;
+  <a href="https://github.com/smartworldarafath/Gboard_Pro/releases"><b>All Builds</b></a>
 </p>
 
 </div>
 
 ---
 
-<a id="release-assets"></a>
-## 📥 Release Assets (v18.4.1-V7 / Patch v1.2.0)
+## 📦 Available Downloads (`v18.4.1-V7` • Patch `v1.2.0`)
 
-| Package | Type | Description |
+| Artifact | Format | Summary |
 | :--- | :--- | :--- |
-| [**Gboard_Pro-18.4.1-V7.apk**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) | **Signed APK** *(Recommended)* | **Ready to install.** Installs side-by-side with stock Gboard without root (`com.akshaykadam.pixelboard`). |
-| [**patches-1.2.0.mpp**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/patches-1.2.0.mpp) | **Morphe Patch Bundle** | Standalone patch file for [Morphe Manager](#option-c-patch-via-morphe-manager-on-device-patcher) to patch your own base APK. |
-| [**Stock Gboard v18.4.1**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/) | **Base APK** |  Official unmodified base APK from APKMirror *(only required if patching manually with Morphe)*. |
+| [**Gboard_Pro-18.4.1-V7.apk**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) | **Pre-built APK** *(Recommended)* | **Plug-and-play installation.** Runs independently alongside stock Gboard with zero conflicts (`com.akshaykadam.pixelboard`). |
+| [**patches-1.2.0.mpp**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/patches-1.2.0.mpp) | **Morphe Patch Pack** | Modular patch archive for [Morphe Manager](#method-3-patch-on-device-with-morphe-manager) if you prefer compiling your own APK. |
+| [**Official Gboard v18.4.1**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/) | **Unmodified Base** | Clean upstream package from APKMirror *(needed only when patching manually)*. |
 
 ---
 
-## Visual Tour & Screenshots
+## 🖼️ Interface Preview
 
 <div align="center">
-  <img src="docs/images/showcase.png" alt="Gboard_Pro Feature Showcase - Rambler Voice Typing, AI Writing Tools & Advanced Settings" width="100%" />
+  <img src="docs/images/showcase.png" alt="Gboard_Pro Interface Overview - Rambler Dictation, AI Writing Suite & Custom Settings" width="100%" />
 </div>
 
 ---
 
-## Overview
+## 🚀 Why Gboard_Pro?
 
-**Gboard_Pro** is a sleek, ultra-clean enhancement of Google's flagship keyboard. Tailored for pure productivity, Gboard_Pro strips away unnecessary bloatware and focuses strictly on powerhouse capabilities: **Gemini Rambler Natural Voice Dictation**, **AI Writing Assistant**, **Modern Spell Checker Suggestion Chips & Grammar Checking**, **Scan Text Camera OCR**, **Screenshot Floating Suggestions**, **Material 3 Expressive Rounded Keys**, **Emoji Palette V2**, **Super Insert Quick Hub**, **Restored Emoji Size Slider & Vibrant Emojis**, **Samsung & Vivo Clipboard History Sync**, and **Automatic Zero-Restart Instant Activation**.
+**Gboard_Pro** refines Google's standard keyboard into a fast, feature-unlocked typing environment. Instead of cluttering the experience with telemetry prompts or locked regional flags, this project activates Google's flagship typing technologies out of the box: **Gemini Rambler Conversational Dictation**, **Integrated AI Proofreading & Tone Rewriting**, **Inline Android 12+ Spell Check Chips**, **Camera Text Scanner (OCR)**, **Instant Screenshot Paste Banners**, **Material 3 Belka Pill Keycaps**, **Redesigned Emoji Palette V2**, **Super Insert Media Hub**, and **One UI / Vivo Clipboard Persistence**.
 
-Gboard_Pro is engineered with an independent coexistence package ID (`com.akshaykadam.pixelboard`), allowing you to install and use it **side-by-side with your factory Gboard** without replacing, uninstalling, or risking system keyboard stability.
+Because **Gboard_Pro** uses a dedicated application namespace, it coexists peacefully with your phone's pre-installed Gboard—no root privileges, system partition edits, or uninstalls required.
 
 ---
 
-## Key Features
+## ✨ Highlighted Capabilities
 
-### 1. Gemini "Rambler" Natural Voice Typing
-Traditional voice-to-text transcribes every hesitation literally. Gboard_Pro unlocks Google's state-of-the-art **Rambler** model:
-- **Speech Cleanup**: Speak naturally — stutters, false starts, and filler words (*"um"*, *"ah"*, *"like"*, *"you know"*) are filtered out in real-time.
-- **Thought Completion**: Seamlessly fixes self-corrections on the fly (e.g., *"let's meet at two no, three PM"* &rarr; *"Let's meet at 3:00 PM"*).
-- **Auto-Punctuation & Capitalization**: Adds context-aware periods, commas, and proper noun capitalization without requiring voice commands.
-- **Multilingual Fluidity**: Mix and match languages seamlessly in a single sentence.
-- **Gboard 18.4.1 & Standalone Support**: Seamlessly hooked into Gboard 18.4.1's obfuscated `VoiceSettingsFragment` selector, with automatic preference initialization (`enable_jetson = true`) ensuring Rambler works out-of-the-box on the standalone package (`com.akshaykadam.pixelboard`) without relying on Google Play Services Phenotype flag sync.
-- **Battery-Friendly Lifecycle**: Cleanly releases speech recognition bindings (`GoogleAsrService`) as soon as the keyboard is hidden, eliminating screen-off battery drain ([#3](https://github.com/smartworldarafath/Gboard_Pro/issues/3)).
-- **Cold Boot & Direct Boot Readiness**: Powered by Device-Protected Storage (DE), ensuring Rambler voice typing is ready immediately after device reboots without needing manual Gboard restarts ([#4](https://github.com/smartworldarafath/Gboard_Pro/issues/4)).
+### 1. Conversational Voice Dictation ("Rambler" Engine)
+Standard speech recognition writes down every pause and slip of the tongue. **Gboard_Pro** enables Google's next-generation **Rambler** dictation pipeline:
+- **Automatic Filler Removal**: Speak at your normal pace—hesitations such as *"uh"*, *"um"*, and *"like"* are stripped out on the fly.
+- **Mid-Sentence Self-Correction**: Change your mind while speaking (e.g., *"send it on Monday wait Tuesday"*) and watch the transcript resolve cleanly to your final intent.
+- **Smart Punctuation & Casing**: Inserts periods, commas, question marks, and proper capitalization automatically from vocal context.
+- **Seamless Code-Switching**: Dictate across multiple languages within the same phrase without manually switching layouts.
+- **Pre-Configured for v18.4.1**: Directly wired into Gboard 18.4.1's `VoiceSettingsFragment` with `enable_jetson = true` initialized by default, removing any dependency on Google Play Phenotype server rollouts.
+- **Zero Idle Battery Drain**: Releases `GoogleAsrService` bindings the moment the keyboard closes so background speech services never drain battery while your screen is off.
+- **Direct Boot Ready**: Stores configuration in Device-Protected Storage so voice dictation works immediately after a reboot.
 
-### 2. In-Line AI Writing Assistant
-Access Google's Gemini-driven writing suite directly above your keys across any app:
-- **One-Tap Proofread**: Correct spelling, grammatical quirks, and punctuation in an instant.
-- **Tone & Style Switcher**: Rephrase sentences into *Professional*, *Casual*, *Concise*, or *Emotive* tones.
-- **Smart Edit**: Context-aware editing and quick rephrasing tailored to your conversation.
-- **Android 16 Quick Insert Safeguard**: Robust null-safety protection when expanding AI writing tool suggestions and quick-insert spans on Android 16.
-- **Universal Support**: Works across all keyboard languages and input modes.
+### 2. Built-In AI Writing Suite
+Bring Gemini-powered text refinement to any input field on your phone:
+- **Instant Proofreading**: Catch grammar mistakes, typos, and awkward phrasing with a single tap.
+- **Adaptive Tone Shifting**: Rewrite drafts into *Professional*, *Casual*, *Concise*, or *Expressive* styles.
+- **Android 16 Stability Guards**: Includes null-safe span handling to prevent crashes when expanding quick-insert suggestions on Android 16.
+- **Language-Agnostic**: Unlocked across all keyboard layouts rather than being restricted to English-only regions.
 
-### 3. Modern Spell Checker Suggestion Chips & Grammar Checking
-- **Android 12+ Inline Suggestion Chips (`GboardSpellCheckerChipsPatch`)**: Bytecode-level transformation hooking Gboard's spell checker utility class (`rcq.m` and `rcq.o`), forcing modern inline spellcheck suggestion chips and add-to-dictionary UI on all Android 12+ devices.
-- **Always-On Grammar & Suggestion Strip**: Automatically initializes `spellchecker_enable_chips_ui=true`, `enable_mark_misspelled_words=true`, `pref_key_enable_grammar_checker=true`, and `show_suggestion_strip=true` across standard SharedPreferences and Device Protected Storage.
-- **Spell Checker Phenotype Flags**: Enforces `spellchecker_enable_chips_ui`, `spellchecker_enable_chips_ui_web_view`, `enable_spell_checker_extension`, `writing_helper_chip_in_spellchecker`, `enable_spell_checker_highlight_on_web_input`, and `enable_spell_checker_training_cache`.
-- **System Rebranding**: Full system spell checker service rebrand to **Gboard_Pro Spell Checker** across all system locales.
+### 3. Inline Spell Checker Chips & Grammar Engine
+- **Modern Suggestion Chips (`GboardSpellCheckerChipsPatch`)**: Patches Gboard's internal spell-check renderer (`rcq.m` & `rcq.o`) to display modern Android 12+ inline replacement chips and quick dictionary actions on every device.
+- **Pre-Seeded Accuracy Flags**: Enables `spellchecker_enable_chips_ui`, `enable_mark_misspelled_words`, `pref_key_enable_grammar_checker`, and `show_suggestion_strip` automatically on first launch.
+- **Dedicated System Service Label**: Registers in Android system settings under **Gboard_Pro Spell Checker** so you can distinguish it from the stock service.
 
-### 4. Scan Text / Camera OCR & Screenshot Floating Suggestion Banner
-- **Scan Text / OCR (Camera Viewfinder)**: Unlocks the dedicated "Scan text" camera tool in the toolbar (`enable_ocr`, `config_ocr`, `ocr_password_allowlist`, `enabled_ocr_language_tags = *`). Enforces `android.permission.CAMERA` in `AndroidManifest.xml` and opens a CameraX text-recognition viewfinder to capture and extract physical text directly at the cursor.
-- **Screenshot & Clipboard Image Floating Banner**: Forces `enable_clipboard_image_suggestion`, `enable_screenshot_notification_flow`, `enable_screenshot_chip`, `enable_clipboard_recent_screenshot`, and `clipboard_screenshot_enabled_at_least_once`. Enforces `READ_MEDIA_IMAGES` and `READ_EXTERNAL_STORAGE` permissions. When enabled under **Gboard_Pro Settings > Clipboard**, screenshots appear instantly as a floating suggestion chip for 1-tap pasting.
+### 4. Camera OCR ("Scan Text") & Floating Screenshot Chips
+- **Live Camera Text Extraction**: Unlocks the native CameraX "Scan text" viewfinder (`enable_ocr`, `config_ocr`, `enabled_ocr_language_tags = *`) with required camera permissions to capture text from the real world straight into your cursor position.
+- **One-Tap Screenshot Paste**: Activates `enable_clipboard_image_suggestion`, `enable_screenshot_notification_flow`, and `enable_screenshot_chip`. Whenever you take a screenshot, a floating preview chip offers instant insertion.
 
-### 5. Material 3 Expressive Rounded Keys (Belka UI) ([#14](https://github.com/smartworldarafath/Gboard_Pro/issues/14))
-- **Modern Rounded Keycaps**: Toggle Google's expressive Material 3 Belka pill-shaped keycaps on/off under Advanced Settings.
-- **Dynamic Flag Management**: Automatically forces `belka_rounded_keyboard`, `belka_ui`, `belka_background`, `more_pill_keys`, and `enable_rounded_keys` flags at runtime.
+### 5. Material 3 Expressive Pill Keycaps (Belka UI)
+- **Belka Keycap Geometry**: Switch between classic rectangular keys and Google's Material 3 rounded pill keycaps from Advanced Settings.
+- **Runtime Flag Sync**: Manages `belka_rounded_keyboard`, `belka_ui`, `belka_background`, `more_pill_keys`, and `enable_rounded_keys` dynamically.
 
-### 6. Emoji Palette V2 & Dedicated Tabs
-- **Refined Emoji Drawer Layout**: Unlocks `emoji_palette_v2`, `enable_frequent_emoji_recent_tab`, and `enable_emoji_frequent_recent_switch_option`.
-- **Dynamic Density & Grid**: Enhances emoji grid responsiveness and provides a dedicated tab switch between recent emojis and frequent emojis.
+### 6. Emoji Palette V2 & Restored Emoji Scaling
+- **Separated Recent & Frequent Views**: Unlocks `emoji_palette_v2` along with dedicated tabs for recently used and frequently used emojis.
+- **Emoji Size Slider & Full Opacity**: Restores the hidden **Emoji size** slider under *Emojis, stickers & GIFs* and forces 100% alpha (`255`) on suggestion-strip emoji candidates so icons always look crisp and vibrant.
 
-### 7. Super Insert Quick Hub & Smart Compose Autocompletion
-- **Super Insert Drawer**: Material 3 unified hub (`super_insert`, `super_insert_vk`, `super_insert_enable_dynamic_multi_view`, `enable_si_shortcut_keys`), merging clipboard history, dynamic emojis, contacts, and saved phrases into a single quick-insert panel.
-- **Smart Compose Ghost Predictions**: Extends Gmail-style in-line ghost predictions across all Android apps (`enable_smart_compose`, `enable_inline_suggestions_on_all_fields`, `enable_inline_completion`, `enable_delight5_smart_compose`, `smart_compose_status = 1L`).
+### 7. Super Insert Hub & Cross-App Smart Compose
+- **Unified Super Insert Panel**: Combines clipboard entries, emojis, contacts, and quick phrases into a single Material 3 bottom sheet (`super_insert`, `super_insert_vk`, `super_insert_enable_dynamic_multi_view`).
+- **In-Line Ghost Autocomplete**: Brings Gmail-style predictive ghost text (`enable_smart_compose`, `enable_inline_suggestions_on_all_fields`) to standard text fields across third-party apps.
 
-### 8. Restored Emoji Size Slider & Vibrant Candidate Emojis ([#26](https://github.com/smartworldarafath/Gboard_Pro/issues/26))
-- **Restored Emoji Size Slider**: Unlocked the missing "Emoji size" slider preference and interactive preview row under **Emojis, stickers & GIFs** settings.
-- **Vibrant Suggestion Strip Emojis**: Hooked candidate text view rendering to enforce full 100% paint opacity (`alpha = 255`) for emoji glyphs, eliminating dull or washed-out emoji suggestions in the suggestion strip.
+### 8. OEM Clipboard Fix & Fast Vocabulary Learning
+- **Samsung One UI & Vivo Clipboard Sync**: Re-binds the clipboard observer on `onStartInputView` so copied text and screenshots always appear in your clipboard history, bypassing aggressive OEM background restrictions.
+- **Rapid Personal Dictionary & Primary-Key Revert**: Tunes Delight5 N-gram scoring (`intended_oov_min_count = 2`, `enable_revert_auto_correct_on_pk = true`) for smarter word learning, 2-letter prefix completion, and effortless backspace undo on auto-corrected words.
+- **Sign-to-Text (ASL Camera Recognition)**: Enables Gboard's experimental Signboard flags (`enable_signboard`, `use_4c_in_signboard`) for American Sign Language gesture translation on supported hardware.
 
-### 9. Empty Clipboard History Fix for Samsung One UI & Vivo ([#17](https://github.com/smartworldarafath/Gboard_Pro/issues/17))
-- **Foreground Clipboard Sync**: Hooks `onStartInputView` to guarantee `ClipboardManager` listener initialization and sync copied text into clipboard drawer history when typing, overcoming OEM background clipboard suppression on Samsung One UI and Vivo devices.
-
-### 10. Instant Word Learning & Accurate Autocorrect ([#33](https://github.com/smartworldarafath/Gboard_Pro/issues/33))
-- **Instant Word Learning & 2-Letter Prefix Suggestions**: Lowered out-of-vocabulary learning threshold from 4 to 1 (`intended_oov_min_count = 1`) and activated Delight5 language model user history n-gram frequency, continuation scoring, and timestamp tracking (`enable_pc_user_history_ngram_count`, `populate_ngram_count_with_context`, `enable_dynamic_lm_unigram_continuation_scoring`). Frequently used words are learned instantly and suggested after typing just the first two letters.
-- **Automatic Emoji Suggestions**: Enabled the Delight5 concept prediction engine and emoji shortcut candidates (`enable_concept_prediction_engine`, `enable_rule_based_concept_prediction`, `enable_emoji_suggestion_from_top_candidate`, `enable_predictions_from_emoji_shortcuts`, `config_expression`). Matching emojis are automatically suggested directly in the suggestion strip when typing relevant words.
-- **Streaming Gesture Touch Tagging & Beam Decoder**: Smooth glide typing with `update_streaming_touch_data_set_is_gesture`, two-stage beam decoder (`enable_two_stage_decoder`), and spatial rescoring (`enable_space_transposition_post_correction`, `enable_pk_spatial_model_features`, `enable_pk_auto_correction_trigger_predictor`).
-
-### 11. Multilingual UI (20+ Locales) & Bloat-Free Settings
-- **Native Localization in 20+ Languages**: Fully translated Advanced Settings across English, Spanish, French, German, Italian, Portuguese, Russian, Hindi, Japanese, Korean, Chinese, Arabic, Indonesian, Turkish, Vietnamese, Polish, Dutch, Thai, and Ukrainian (`@string/pixelboard_patches_settings_title`).
-- **Cleaned Settings Tree**: Removed unwanted promotional bloatware ("Rate Gboard" / "Help & feedback") for a clean, distraction-free Material You preferences experience.
-
-### 12. Writing Tools V2 Support (Experimental)
-- **Suggested Style Chips & Prompt Bar**: Pre-configured architecture for Google's modern "Suggested" style chips and the freeform "Describe your edit" prompt bar.
-- **Intelligent Hardware Gating**: Integrated with hardware/model eligibility checks to prevent unexpected errors or crashes on unsupported devices.
-
-### 13. Device-Gated AI Inference Backend Selector (New in v18.4)
-On supported devices (such as Google Pixel 8 Pro / 9 series), choose your preferred inference pipeline directly under Advanced Settings:
-- `GBOARD_SERVER` (Google Cloud Server Inference)
-- `PRIVATE_INFERENCE_AICORE` (On-Device Private Android AICore)
-- `PRIVATE_INFERENCE_ASTREA` (On-Device Astrea Framework)
-- Dynamically hidden on unsupported hardware to maintain a clutter-free, native experience.
-
-### 14. Automatic Live Activation — Zero Restarts Required
-- **Instant Hot-Reload**: Toggling Rambler Voice Typing, switching AI Writing Tools preferences, or changing inference backend options applies automatically in real time without restarting Gboard, force-closing the app, or rebooting your phone.
-- **Zero-Friction Workflow**: Features are synchronized across the keyboard process dynamically — simply configure your desired options and start typing or dictating right away.
-- **Optional Manual Reload**: Advanced Settings retains an optional Restart (`↻`) button solely as a convenience tool, but manual restarts are no longer mandatory.
-
-### 15. Safe Coexistence & Instant Bypass
-- **Side-by-Side Installation**: Installs with app label `Gboard_Pro` alongside stock Google Keyboard.
-- **Custom Adaptive Icon**: Bundles Gboard_Pro's custom high-resolution Material You adaptive app icon for home launcher and settings.
-- **Signature Whitelist Bypass**: Pre-patched bytecode ensures Google Play signature checks and integrity verifications pass cleanly without root.
-- **Inline Autofill & Password Manager Suggestions**: Enables Android's `DeviceIntelligence` inline autofill chips for password managers (Bitwarden, 1Password, KeePass, etc.) in the renamed package ([#24](https://github.com/smartworldarafath/Gboard_Pro/pull/24)).
+### 9. Real-Time Toggles & Clean Material You Preferences
+- **Live Configuration (No Force-Stop Needed)**: Switching voice engines, toggling AI tools, or changing keycap styles takes effect immediately without killing the keyboard process.
+- **Localized in 20+ Languages**: Built-in translations for English, Arabic, Spanish, French, German, Hindi, Japanese, Korean, Chinese, Russian, Portuguese, Italian, Turkish, Indonesian, Vietnamese, Polish, Dutch, Thai, and Ukrainian.
+- **Zero Clutter**: Strips out "Rate Gboard" and promotional feedback entries while supporting inline password-manager autofill chips (Bitwarden, 1Password, KeePass, etc.).
 
 > [!NOTE]
-> **Google Pixel Device Requirement**: New advanced features (such as **Writing Tools V2** and the **On-Device AI Inference Backend Selector**) are available **only on Google Pixel devices** (e.g., Pixel 8 Pro / Pixel 9 series) due to system AICore and hardware model requirements. On non-Pixel Android devices, these specific options are automatically hidden or gated to ensure complete stability, while core features like **Gemini Rambler Natural Voice Typing**, **AI Proofread**, and **Tone Rewriting** work across all supported devices.
+> **Hardware Note for On-Device AI**: Features that rely on local Gemini Nano weights—specifically **Writing Tools V2** and the **On-Device AICore / Astrea Backend Selector**—require compatible **Google Pixel hardware** (Pixel 8 Pro, Pixel 9 series, or newer). On non-Pixel phones, those hardware-specific menus stay out of your way while **Rambler Voice Dictation**, **Cloud AI Proofreading/Rewriting**, **Spell Check Chips**, and **OCR** work across all Android 10–16 devices.
 
 ---
 
-## How to Enable Rambler Voice Typing
-
-Follow these quick steps to activate Google's Gemini-powered **Rambler** natural voice typing:
+## 🎙️ Enabling Rambler Voice Dictation
 
 1. **Open Gboard_Pro Settings**:
-   - Tap the **Gear (`⚙️`)** icon in the keyboard suggestion strip, or go to Android **Settings > System > Languages & input > On-screen keyboard > Gboard_Pro**.
-2. **Select Rambler Dictation**:
-   - Tap **Voice typing**.
-   - Under **Dictation type**, choose **Rambler** (switch selection from *Standard* to *Rambler*).
-3. **Instant Automatic Activation (No Restart Needed)**:
-   - Your selection activates automatically in real-time — **no app restart or device reboot required**!
-   - *(Optional)*: You can verify that **Enable Advanced Voice Typing** is toggled **ON** under **★ Advanced settings** (enabled by default). The toolbar **Restart (`↻`)** button remains available as an optional manual fallback if ever needed.
-   > [!TIP]
-   > Thanks to recent runtime enhancements, Rambler dictation initializes dynamically on the fly. You can immediately tap the microphone icon without needing to restart Gboard or kill the app process!
-4. **Start Speaking Naturally**:
-   - Tap any text box and hit the **Microphone** icon on Gboard_Pro.
-   - You will see the **"Just speak naturally"** setup screen.
-   - Tap **Get started** and speak freely — Gboard_Pro handles the cleanup automatically!
+   - Tap the **Settings (`⚙️`)** icon on the keyboard toolbar, or navigate to **Settings > System > Languages & input > On-screen keyboard > Gboard_Pro**.
+2. **Choose the Rambler Engine**:
+   - Open **Voice typing**.
+   - Tap **Dictation type** and switch from *Standard* to **Rambler**.
+3. **Start Dictating Immediately**:
+   - Changes apply live—no app restart required.
+   - Tap the **Microphone** button in any text field, accept the **"Just speak naturally"** prompt once, and dictate hands-free.
 
 ---
 
-## Where to Find & Use AI Writing Tools
+## ✍️ Using the AI Writing Assistant
 
-Google's **AI Writing Tools** allow you to proofread, rephrase, and adjust the tone of any text on the fly.
-
-### 1. Where to Configure
-- **In Advanced Settings**:
-   - Open **★ Advanced settings** from the bottom of Gboard_Pro Settings.
-   - Make sure **Enable AI Writing Tools** and **Support All Keyboards** are toggled **ON** (both ON by default).
-- **In Corrections & Suggestions**:
-   - In Gboard_Pro Settings, go to **Corrections & suggestions > Writing tools**.
-   - Ensure **Show writing tools icon in suggestion strip while typing** is enabled.
-
-### 2. Where to Access While Typing
-- **Suggestion Strip (Quick Bar)**:
-   - When typing in any text box across any app, the **Writing tools icon** (pen sparkle ✨) appears in the keyboard suggestion strip above your keys.
-- **Keyboard Tools Menu**:
-   - If the icon is hidden, tap the **4-squares / arrow icon** on the left of the suggestion strip to open the tools drawer and tap **Writing tools**.
-- **Actions Available**:
-   - **Proofread**: One-tap fix for grammar and spelling.
-   - **Rewrite / Rephrase**: Adjust tone between *Professional*, *Casual*, *Concise*, and *Emotive*.
+1. **Verify Toggles**:
+   - In **Gboard_Pro Settings**, open **★ Advanced settings** at the bottom.
+   - Confirm **Enable AI Writing Tools** and **Support All Keyboards** are switched **ON** (enabled by default).
+   - Under **Corrections & suggestions > Writing tools**, make sure the suggestion-strip shortcut is active.
+2. **Proofread or Rewrite**:
+   - Type a sentence in any app and tap the **Sparkle Pen (`✨`)** icon on the suggestion strip.
+   - Pick **Proofread** to fix errors or choose a tone preset (*Professional*, *Casual*, *Concise*, *Emotive*) to rewrite your text.
 
 ---
 
-## ⚙️ Advanced Settings Screen
+## 📲 Setup & Installation
 
-Gboard_Pro features a clean, minimal preference screen modeled directly after the native Material You Gboard UI:
+### Method 1: Direct APK Install (Fastest)
+1. Download [**Gboard_Pro-18.4.1-V7.apk**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk).
+2. Open the file on your Android device and confirm installation.
+3. Activate **Gboard_Pro** under **Settings > System > Languages & input > On-screen keyboard**.
 
-- **Enable AI Writing Tools**: Force-shows the Writing tools icon in the suggestion strip across all apps and text views.
-- **Support All Keyboards**: Extends AI writing assistance beyond English to all keyboard layouts.
-- **Inference Backend Type**: On supported hardware, select between `GBOARD_SERVER`, `PRIVATE_INFERENCE_AICORE`, and `PRIVATE_INFERENCE_ASTREA`.
-- **Enable Advanced Voice Typing**: Unlocks the *Rambler* dictation engine in Voice typing settings.
-- **Rounded Keys**: Enable Google's Material 3 Expressive Belka pill-shaped keycaps.
-- **Multilingual Support**: Fully localized in 20+ languages matching your device's system locale.
-- **Toolbar Restart Button (`↻`)**: Optional one-tap process reload utility in the toolbar if you ever want to force a refresh, though all settings and toggles apply automatically in real time without restarts.
-- **Cleaned Preferences**: Promotional bloatware ("Rate Gboard" and "Help & feedback") has been completely removed.
-- **Custom Attribution**: Dedicated credit footer (*Arafath*).
-
----
-
-## Installation Guide
-
-### Option A: Direct Download on Your Phone (Easiest)
-1. Download [**Gboard_Pro Stable APK (v18.4.1 V7, 127 MB)**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) (or view the [**v18.4.1-V7 Release Page**](https://github.com/smartworldarafath/Gboard_Pro/releases/tag/v18.4.1-Stable-V7)).
-2. Tap the downloaded `.apk` in your notification drawer or Downloads folder.
-3. If prompted, toggle **"Allow from this source"** and tap **Install**.
-4. Enable Gboard_Pro in **Settings > System > Languages & input > On-screen keyboard**.
-
-### Option B: Sideload via ADB (For Developers)
-Connect your Android phone via USB with USB Debugging enabled:
+### Method 2: Install via ADB
 ```bash
 adb install -r Gboard_Pro-18.4.1-V7.apk
 adb shell am force-stop com.akshaykadam.pixelboard
 ```
-*(If building from source locally, use `adb install -r output/Gboard_Pro-18.4.1-V7.apk`)*
 
-### Option C: Patch via Morphe Manager (On-Device Patcher)
-You can patch your stock Gboard APK directly on your phone using **Morphe Manager**:
-1. Install **Morphe Manager** on your Android device.
-2. Get the two required files:
-   - **Patch Bundle**: [**Gboard_Pro.mpp**](https://github.com/smartworldarafath/Gboard_Pro/raw/main/patches/Gboard_Pro.mpp) (or versioned [**patches-1.2.0.mpp**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/1.2.0/patches-1.2.0.mpp))
-   - **Stock Base APK**: Download the official base bundle from [**APKMirror (Gboard v18.4.1 Release)**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/).
-3. In Morphe Manager, select **Storage**, choose the stock Gboard APK, and load `Gboard_Pro.mpp` as the patch source.
-4. Tap **Patch** and then **Install**!
+### Method 3: Patch On-Device with Morphe Manager
+1. Open **Morphe Manager** on your phone.
+2. Download the patch bundle [**Gboard_Pro.mpp**](https://github.com/smartworldarafath/Gboard_Pro/raw/main/patches/Gboard_Pro.mpp) and the unmodified [**Gboard v18.4.1 APK**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/).
+3. Select the base APK from storage, load `Gboard_Pro.mpp`, and run the patcher.
 
 > [!TIP]
-> You can also add Gboard_Pro as a custom auto-updating patch source in Morphe Manager by adding:
+> To receive automatic patch updates inside Morphe Manager, register this custom bundle URL:
 > ```text
 > https://raw.githubusercontent.com/smartworldarafath/Gboard_Pro/main/patches-bundle.json
 > ```
 
 ---
 
-## First-Time Setup on Device
-
-1. On your phone, go to **Settings > System > Languages & input > On-screen keyboard** (or **Manage Keyboards**).
-2. Toggle on **Gboard_Pro**.
-3. Tap the keyboard switch icon (or spacebar selector) and pick **Gboard_Pro** as your active input method.
-4. Follow the [**Rambler Setup Guide**](#how-to-enable-rambler-voice-typing) to select Rambler dictation (activates automatically — no restart needed!).
-5. Access the [**AI Writing Tools**](#where-to-find--use-ai-writing-tools) right from your suggestion strip!
-
----
-
-## 📁 Project Structure
+## 🗂️ Repository Layout
 
 ```text
-GBoardMod/
-├── README.md                  # Project documentation & direct download links
-├── build.sh                   # 1-click automated build & patching script (100% offline)
-├── options.json               # Patch configuration profile
+Gboard_Pro/
+├── README.md                  # Documentation & setup instructions
+├── build.sh                   # Automated offline build & patching runner
+├── options.json               # Default patch options (app_display_name = Gboard_Pro)
 ├── patches/
-│   ├── Gboard_Pro.mpp         # Pre-bundled offline patch pack (~1.4 MB)
-│   └── patches-bundle.json    # Morphe Manager repository metadata
+│   ├── Gboard_Pro.mpp         # Pre-compiled Morphe patch bundle
+│   └── patches-bundle.json    # Remote update manifest for Morphe Manager
 ├── input/
-│   └── gboard.apk             # Base stock Gboard APK (v18.4.1 Release, ~122 MB)
+│   └── gboard.apk             # Clean upstream Gboard v18.4.1 APK
 ├── output/
-│   ├── Gboard_Pro.apk         # Compiled APK (local build output / hosted on GitHub Releases)
-│   └── patching-result.json   # Patch verification report
+│   ├── Gboard_Pro.apk         # Signed output APK
+│   └── patching-result.json   # Patch execution summary
 ├── tools/
-│   ├── patcher.jar            # Standalone patch compiler CLI (Java 21)
-│   └── patcher-data/          # Signing keystore & local storage
-├── LICENSE                    # GNU General Public License v3.0
-└── pixelboard-patches/        # Gboard_Pro patch source repository (Kotlin/Smali)
-    ├── gradle/
-    ├── patches/               # Patch definitions & Kotlin bytecode modifications
-    └── extensions/            # Extension APK bytecode & runtime hooks
+│   ├── patcher.jar            # CLI patcher (Java 21+)
+│   └── patcher-data/          # Local signing keystore & work dir
+└── pixelboard-patches/        # Kotlin bytecode patches & Android extension module
+    ├── patches/               # Morphe bytecode/resource patch definitions
+    └── extensions/            # Injected runtime classes & Material You settings UI
 ```
 
 ---
 
-## 🛠️ Building & Patching
+## 🛠️ Compiling from Source
 
-### 1. Instant 1-Click Build (100% Offline)
-Place your stock Gboard APK at `input/gboard.apk`, then run:
+### 1. Offline APK Patching
+Ensure `input/gboard.apk` is present, then execute:
 ```bash
 ./build.sh
 ```
-This runs completely offline using the pre-bundled `patches/Gboard_Pro.mpp` and `tools/patcher.jar`. It automatically patches, aligns, and signs `output/Gboard_Pro.apk`.
+This applies `patches/Gboard_Pro.mpp` using `tools/patcher.jar` and signs `output/Gboard_Pro.apk`.
 
-### 2. Rebuilding Patch Bundle from Source (Optional)
-If you modify any Smali or Kotlin patch code inside `pixelboard-patches/`:
+### 2. Recompiling the `.mpp` Patch Bundle
+After editing Kotlin or Java files inside `pixelboard-patches/`:
 ```bash
 ./build.sh --rebuild
 ```
-This recompiles the `.mpp` patch pack using Gradle and immediately applies it to the stock APK.
 
-### 3. Running Test Suite
-Verify patch bytecode transformations and contract integrity:
+### 3. Executing Contract & Unit Tests
 ```bash
 cd pixelboard-patches
-JAVA_HOME=/opt/homebrew/opt/openjdk@21 ./gradlew test
-```
-
-### 4. Manual CLI Usage (Requires Java 21)
-```bash
-java -jar tools/patcher.jar patch \
-  --patches=patches/Gboard_Pro.mpp \
-  --options-file=options.json \
-  --striplibs=arm64-v8a \
-  -o=output/Gboard_Pro.apk \
-  -r=output/patching-result.json \
-  input/gboard.apk
+./gradlew test
 ```
 
 ---
 
-## Compatibility Matrix
+## 📋 Technical Specifications
 
-| Property | Requirement |
+| Attribute | Value |
 | :--- | :--- |
-| **Target Package** | `com.google.android.inputmethod.latin` |
-| **Primary Base Version** | `18.4.1.985164140-release-arm64-v8a` (Recommended) |
-| **Compatible Versions** | `18.4.1.985164140-beta-arm64-v8a`<br>`18.3.1.977415014-release-arm64-v8a` |
-| **Architecture** | `arm64-v8a` |
-| **Android Version** | Android 10 (API 29) through Android 16 Preview |
-| **Root Required** | **No** (Standalone side-by-side coexistence) |
-
-> [!NOTE]
-> **Google Pixel Device Support**: The new v18.4 features (**Writing Tools V2** and **On-Device Private AICore / Astrea inference**) are available **only on Google Pixel devices**. Core **Rambler Natural Voice Typing**, **AI Writing Assistant**, proofreading, and tone rewrite work across all Android devices.
+| **Upstream Package** | `com.google.android.inputmethod.latin` |
+| **Coexistence Package** | `com.akshaykadam.pixelboard` (App Label: `Gboard_Pro`) |
+| **Primary Target** | `18.4.1.985164140-release-arm64-v8a` |
+| **Additional Targets** | `18.3.1.977415014-release-arm64-v8a` / `18.3.1-beta` |
+| **Supported ABI** | `arm64-v8a` |
+| **Android OS Range** | Android 10 (API 29) – Android 16 |
+| **Root Requirement** | None |
 
 ---
 
-## Developer & Maintainer
+## 👤 Maintainer
 
 **Arafath**
 - GitHub: [@smartworldarafath](https://github.com/smartworldarafath)
-- Project Repository: [Gboard_Pro](https://github.com/smartworldarafath/Gboard_Pro)
+- Project Link: [Gboard_Pro](https://github.com/smartworldarafath/Gboard_Pro)
 
 ---
 
-## Acknowledgements & Credits
-
-Special thanks and sincere appreciation to:
-- **JasonWu** — The pioneering author of the original Gboard patch project whose foundational reverse-engineering research and Smali patch framework made this mod possible.
-- **Mohamed Technology** ([@mohamedtechnology](https://github.com/mohamedtechnology)) — For reporting the TalkBack / screen reader dead zone in the features menu and providing the root cause analysis on window focus and `TYPE_WINDOW_STATE_CHANGED` ([#48](https://github.com/smartworldarafath/Gboard_Pro/issues/48)).
-- **Andrew Matten** ([@andrewmatten](https://github.com/andrewmatten)) — For pinpointing the Gboard 18.4.1 native dictation split readiness gate in `slc.a()` and contributing the verified bytecode patch for fused APKs on Pixel 8 Pro ([#50](https://github.com/smartworldarafath/Gboard_Pro/issues/50)).
-- **Benestin** ([@Benestinlinson](https://github.com/Benestinlinson)) — For extensive multi-hour testing across releases, diagnosing spacebar auto-correction behavior ([#52](https://github.com/smartworldarafath/Gboard_Pro/issues/52)), and reporting screenshot chip synchronization and toolbar access point flow ([#44](https://github.com/smartworldarafath/Gboard_Pro/issues/44), [#47](https://github.com/smartworldarafath/Gboard_Pro/issues/47)).
-- **Paolo Del Casale** ([@PaoloDelCasale](https://github.com/PaoloDelCasale)) — For deep BatteryStats investigations and candidate fixes resolving background `GoogleAsrService` persistence ([#3](https://github.com/smartworldarafath/Gboard_Pro/issues/3)) and the offline language pack download loop ([#5](https://github.com/smartworldarafath/Gboard_Pro/issues/5)).
-- **Alin Cornel** ([@alincornel](https://github.com/alincornel)) — For identifying the root cause and implementing the fix for inline autofill suggestions from password managers (Bitwarden, 1Password, etc.) in the renamed package ([#24](https://github.com/smartworldarafath/Gboard_Pro/pull/24)).
-- **The ReVanced & Morphe Open-Source Android Modding Communities** — For the open-source decompilation toolchains, patch compilers, and continuous ecosystem contributions.
-
----
-
-## Legal Disclaimer
+## ⚖️ Disclaimer
 
 > [!CAUTION]
-> **PLEASE READ THIS LEGAL DISCLAIMER CAREFULLY BEFORE DOWNLOADING, COMPILING, OR USING THIS SOFTWARE.**
+> **READ BEFORE INSTALLING OR COMPILING THIS PROJECT.**
 
-1. **Non-Affiliation & Endorsement**: **Gboard_Pro** is an independent, non-commercial open-source modification project developed for interoperability and accessibility research. It is **not** affiliated with, sponsored by, authorized by, maintained by, or in any way associated with **Google LLC**, **Alphabet Inc.**, or any of their subsidiaries.
-2. **Intellectual Property & Trademarks**: "Google", "Gboard", "Pixel", "Android", "Gemini", and all related logos, product names, and brand identifiers are trademarks or registered trademarks of Google LLC. All trademarks, service marks, and trade names referenced herein remain the property of their respective owners. Their mention in this repository is strictly for product identification and nominative fair-use purposes.
-3. **Personal & Educational Use Only**: This software, including all patch definitions and compiled binaries, is provided solely for **personal education, private study, and experimental research**. It is not intended for commercial distribution or monetization.
-4. **No Warranty ("AS IS")**: This software is distributed under an open-source license on an **"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND**, either express or implied, including, without limitation, any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or system stability.
-5. **Limitation of Liability**: Under no circumstances shall the author, contributors, maintainers, or distributors be held liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, data loss, device malfunction, service interruption, account penalties, or legal claims) resulting from the download, installation, execution, or misuse of this software.
-6. **User Responsibility**: Users assume all risks associated with sideloading or executing third-party modified software on their devices and are individually responsible for complying with applicable local laws, regulations, and third-party terms of service.
-
----
-
-<div align="center">
-  <sub>Built with ❤️ for Google Pixel & Android Community</sub>
-</div>
+1. **Independent Project**: **Gboard_Pro** is an independent open-source modification created for educational research and interoperability. It is not affiliated with, endorsed by, or connected to **Google LLC**.
+2. **Trademarks**: "Google", "Gboard", "Pixel", "Android", and "Gemini" are trademarks of Google LLC. Any references to these names are strictly for descriptive compatibility purposes.
+3. **No Warranty**: Provided **"AS IS"** under the GPLv3 license without warranties of any kind. Users assume full responsibility for installing modified packages on their devices.
