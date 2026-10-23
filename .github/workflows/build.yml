@@ -1,4 +1,4 @@
-name: Build & Test PixelBoard Patches
+name: Build & Test Gboard_Pro Patches
 
 on:
   push:
@@ -47,5 +47,5 @@ jobs:
       - name: Upload Compiled Patch Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: pixelboard-patches-bundle
+          name: gboard-pro-patches-bundle
           path: pixelboard-patches/patches/build/libs/*.mpp

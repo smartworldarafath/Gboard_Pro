@@ -1,8 +1,8 @@
 /**
- * PixelBoard - Gboard Enhancement Mod
+ * Gboard_Pro - Gboard Enhancement Mod
  *
- * Maintained and customized by Akshay Kadam (@Akshayykadam)
- * Repository: https://github.com/Akshayykadam/PixelBoard
+ * Maintained and customized by Arafath (@smartworldarafath)
+ * Repository: https://github.com/smartworldarafath/Gboard_Pro
  * Licensed under the GNU General Public License v3.0 (GPLv3)
  */
 package com.akshaykadam.pixelboard.patches.gboard.features.writingtools

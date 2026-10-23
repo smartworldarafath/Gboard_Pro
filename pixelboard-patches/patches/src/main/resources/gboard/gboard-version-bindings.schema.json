@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/Akshayykadam/PixelBoard/schemas/gboard-version-bindings.schema.json",
+  "$id": "https://github.com/smartworldarafath/Gboard_Pro/schemas/gboard-version-bindings.schema.json",
   "title": "Gboard LS version bindings export",
   "type": "object",
   "additionalProperties": false,

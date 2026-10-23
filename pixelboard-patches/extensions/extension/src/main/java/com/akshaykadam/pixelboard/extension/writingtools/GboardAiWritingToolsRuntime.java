@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * PixelBoard runtime engine for Gboard 18.0.3 AI Writing Tools and Proofread capabilities.
+ * Gboard_Pro runtime engine for Gboard 18.0.3 AI Writing Tools and Proofread capabilities.
  * Controls feature flags, model versions, and text stylization hooks dynamically.
  *
- * @author Akshay Kadam (@Akshayykadam) - PixelBoard Project
+ * @author Arafath (@smartworldarafath) - Gboard_Pro Project
  */
 public final class GboardAiWritingToolsRuntime {
     static final String FLAG_WRITING_HELPER = "writing_helper";

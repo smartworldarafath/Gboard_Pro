@@ -15,7 +15,7 @@ import java.util.zip.ZipFile;
 /**
  * Detects presence of native speech dictation payload libraries in installed target packages.
  *
- * @author Akshay Kadam (@Akshayykadam) - PixelBoard Project
+ * @author Arafath (@smartworldarafath) - Gboard_Pro Project
  */
 public final class GboardDictationPayloadDetector {
     private static final Pattern DICTATION_LIBRARY_ENTRY =

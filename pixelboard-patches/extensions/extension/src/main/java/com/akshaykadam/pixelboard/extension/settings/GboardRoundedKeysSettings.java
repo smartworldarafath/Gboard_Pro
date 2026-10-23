@@ -1,8 +1,8 @@
 /**
- * PixelBoard - Gboard Enhancement Mod
+ * Gboard_Pro - Gboard Enhancement Mod
  *
- * Maintained and customized by Akshay Kadam (@Akshayykadam)
- * Repository: https://github.com/Akshayykadam/PixelBoard
+ * Maintained and customized by Arafath (@smartworldarafath)
+ * Repository: https://github.com/smartworldarafath/Gboard_Pro
  * Licensed under the GNU General Public License v3.0 (GPLv3)
  */
 package com.akshaykadam.pixelboard.extension.settings;
@@ -14,7 +14,7 @@ import android.util.Log;
 /**
  * Settings helper for Material 3 Expressive rounded (Belka) key styling.
  *
- * <p>This manages the PixelBoard-side preference toggle. At runtime, the
+ * <p>This manages the Gboard_Pro-side preference toggle. At runtime, the
  * {@code GboardAiWritingToolsRuntime} flag override hook checks these
  * preferences and forces the Belka Phenotype flags ({@code belka_rounded_keyboard},
  * {@code more_pill_keys}, {@code enable_rounded_key_by_default}, etc.) to
@@ -24,7 +24,7 @@ import android.util.Log;
  * SharedPreferences so that the built-in {@code enable_rounded_keys}
  * preference key is respected at theme-application time.</p>
  *
- * @see <a href="https://github.com/Akshayykadam/PixelBoard/issues/14">Issue #14</a>
+ * @see <a href="https://github.com/smartworldarafath/Gboard_Pro/issues/14">Issue #14</a>
  */
 public final class GboardRoundedKeysSettings {
     private static final String TAG = "GboardPatches";
@@ -52,7 +52,7 @@ public final class GboardRoundedKeysSettings {
     }
 
     /**
-     * Returns PixelBoard's shared preferences (device-protected storage).
+     * Returns Gboard_Pro's shared preferences (device-protected storage).
      */
     public static SharedPreferences preferences(Context context) {
         return GboardPatchesSettings.preferences(context);
@@ -129,7 +129,7 @@ public final class GboardRoundedKeysSettings {
      * {@code enable_rounded_keys} preference that Gboard reads at
      * theme-application time.
      *
-     * <p>Since the PixelBoard extension runs inside the same Dalvik VM
+     * <p>Since the Gboard_Pro extension runs inside the same Dalvik VM
      * as Gboard, it has full access to the host app's SharedPreferences.</p>
      *
      * @param context Application context

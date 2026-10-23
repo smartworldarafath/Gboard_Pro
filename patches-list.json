@@ -66,9 +66,9 @@
           "description": "",
           "required": true,
           "type": "kotlin.String",
-          "default": "PixelBoard",
+          "default": "Gboard_Pro",
           "values": {
-            "PixelBoard": "PixelBoard",
+            "Gboard_Pro": "Gboard_Pro",
             "Gboard": "Gboard",
             "Gboard Dev": "Gboard Dev",
             "Gboard Patches": "Gboard Patches",

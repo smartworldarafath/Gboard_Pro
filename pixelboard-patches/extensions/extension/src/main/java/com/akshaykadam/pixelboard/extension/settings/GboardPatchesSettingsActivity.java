@@ -1,8 +1,8 @@
 /**
- * PixelBoard - Gboard Enhancement Mod
+ * Gboard_Pro - Gboard Enhancement Mod
  *
- * Maintained and customized by Akshay Kadam (@Akshayykadam)
- * Repository: https://github.com/Akshayykadam/PixelBoard
+ * Maintained and customized by Arafath (@smartworldarafath)
+ * Repository: https://github.com/smartworldarafath/Gboard_Pro
  * Licensed under the GNU General Public License v3.0 (GPLv3)
  */
 package com.akshaykadam.pixelboard.extension.settings;
@@ -146,9 +146,9 @@ public final class GboardPatchesSettingsActivity extends Activity
     private static final int TOOLBAR_HEIGHT_DP = 56;
     private static final int NO_SCROLL_POSITION_REQUESTED = -1;
     private static final String TOOLBAR_TITLE_PATCHES = "Patches";
-    private static final String ABOUT_AUTHOR_URL = "https://github.com/Akshayykadam";
+    private static final String ABOUT_AUTHOR_URL = "https://github.com/smartworldarafath";
     private static final String ABOUT_PATCH_REPOSITORY_URL =
-            "https://github.com/Akshayykadam/PixelBoard";
+            "https://github.com/smartworldarafath/Gboard_Pro";
     private static final String DOCUMENT_TYPE_FALLBACK = "text/plain";
     private static final String DOCUMENT_PICKER_FAILED = "Unable to open file picker.";
     private static final String DOCUMENT_WRITE_FAILED = "Failed to export file.";
@@ -1654,7 +1654,7 @@ public final class GboardPatchesSettingsActivity extends Activity
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
         footerVersionView = new TextView(this);
-        footerVersionView.setText("PixelBoard " + resolvePatchVersion());
+        footerVersionView.setText("Gboard_Pro " + resolvePatchVersion());
         footerVersionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
         footerVersionView.setTextColor(palette.textSecondary);
         footerVersionView.setGravity(Gravity.CENTER);

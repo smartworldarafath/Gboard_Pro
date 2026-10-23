@@ -1,8 +1,8 @@
 /**
- * PixelBoard - Gboard Enhancement Mod
+ * Gboard_Pro - Gboard Enhancement Mod
  *
- * Maintained and customized by Akshay Kadam (@Akshayykadam)
- * Repository: https://github.com/Akshayykadam/PixelBoard
+ * Maintained and customized by Arafath (@smartworldarafath)
+ * Repository: https://github.com/smartworldarafath/Gboard_Pro
  * Based on upstream Gboard patch framework by Jason Wu (@jasonwu1994)
  * Licensed under the GNU General Public License v3.0 (GPLv3)
  */
@@ -107,9 +107,9 @@ val gboardPackageRenamePatch = gboardPublicResourcePatch(
 
     val appDisplayName = stringOption(
         key = "app_display_name",
-        default = "PixelBoard",
+        default = "Gboard_Pro",
         values = linkedMapOf(
-            "PixelBoard" to "PixelBoard",
+            "Gboard_Pro" to "Gboard_Pro",
             "Gboard" to "Gboard",
             "Gboard Dev" to "Gboard Dev",
             "Gboard Patches" to "Gboard Patches",

@@ -154,12 +154,12 @@ val generateGboardVersionBindings = tasks.register<GenerateTargetBindingsTask>(
 
 patches {
     about {
-        name = "PixelBoard Patches"
-        description = "Patches for PixelBoard (Gboard)."
-        source = "https://github.com/Akshayykadam/PixelBoard"
-        author = "Akshay Kadam"
-        contact = "https://github.com/Akshayykadam/PixelBoard/issues"
-        website = "https://github.com/Akshayykadam/PixelBoard"
+        name = "Gboard_Pro Patches"
+        description = "Patches for Gboard_Pro (Gboard)."
+        source = "https://github.com/smartworldarafath/Gboard_Pro"
+        author = "Arafath"
+        contact = "https://github.com/smartworldarafath/Gboard_Pro/issues"
+        website = "https://github.com/smartworldarafath/Gboard_Pro"
         license = "GPLv3"
     }
 }

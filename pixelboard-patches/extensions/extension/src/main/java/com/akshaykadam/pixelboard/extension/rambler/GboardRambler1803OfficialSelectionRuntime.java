@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * Keeps Agentic capability exposure aligned with Gboard's official selector.
  *
- * @author Akshay Kadam (@Akshayykadam) - PixelBoard Project
+ * @author Arafath (@smartworldarafath) - Gboard_Pro Project
  */
 public final class GboardRambler1803OfficialSelectionRuntime {
     private static final ThreadLocal<Integer> VOICE_SETTINGS_SCOPE_DEPTH =

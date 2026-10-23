@@ -1,8 +1,8 @@
 /**
- * PixelBoard - Gboard Enhancement Mod
+ * Gboard_Pro - Gboard Enhancement Mod
  *
- * Maintained and customized by Akshay Kadam (@Akshayykadam)
- * Repository: https://github.com/Akshayykadam/PixelBoard
+ * Maintained and customized by Arafath (@smartworldarafath)
+ * Repository: https://github.com/smartworldarafath/Gboard_Pro
  * Licensed under the GNU General Public License v3.0 (GPLv3)
  */
 package com.akshaykadam.pixelboard.extension.writingtools;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * require Google Tensor hardware with sufficient RAM (Pixel 8 Pro, Pixel 9 series,
  * and Pixel 10+ series).
  *
- * @author Akshay Kadam (@Akshayykadam) - PixelBoard Project
+ * @author Arafath (@smartworldarafath) - Gboard_Pro Project
  */
 public final class GboardAiWritingToolsDeviceSupport {
     private static final Pattern PIXEL_NUMBER_PATTERN =

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# PixelBoard - Build & Patch Automation Script
-# Maintainer: Akshay Kadam (@Akshayykadam)
-# Repository: https://github.com/Akshayykadam/PixelBoard
+# Gboard_Pro - Build & Patch Automation Script
+# Maintainer: Arafath (@smartworldarafath)
+# Repository: https://github.com/smartworldarafath/Gboard_Pro
 # ==============================================================================
 
 set -euo pipefail
@@ -22,17 +22,17 @@ for arg in "$@"; do
             echo "  -r, --rebuild    Recompile patch bundle from pixelboard-patches/ using Gradle"
             echo "  -h, --help       Show this help message"
             echo ""
-            echo "By default, ./build.sh runs 100% offline using the pre-bundled patches/PixelBoard.mpp."
+            echo "By default, ./build.sh runs 100% offline using the pre-bundled patches/Gboard_Pro.mpp."
             exit 0
             ;;
     esac
 done
 
 PATCH_VERSION=$(grep -E "^version\s*=" pixelboard-patches/gradle.properties | cut -d'=' -f2 | tr -d ' ')
-MPP_PATH="patches/PixelBoard.mpp"
+MPP_PATH="patches/Gboard_Pro.mpp"
 
 if [[ "$REBUILD_PATCH" == true ]] || [[ ! -f "$MPP_PATH" ]]; then
-    echo "=== 🎹 Compiling PixelBoard Patch Bundle from Source ==="
+    echo "=== 🎹 Compiling Gboard_Pro Patch Bundle from Source ==="
     cd pixelboard-patches
     ./gradlew :patches:buildAndroid
     cd "$SCRIPT_DIR"
@@ -92,7 +92,7 @@ mkdir -p tools/patcher-data
 
 KEYSTORE_PATH="tools/patcher-data/pixelboard.keystore"
 if [[ ! -f "$KEYSTORE_PATH" ]]; then
-    echo "🔑 Generating PixelBoard release keystore..."
+    echo "🔑 Generating Gboard_Pro release keystore..."
     keytool -genkeypair \
         -keystore "$KEYSTORE_PATH" \
         -alias pixelboard \
@@ -101,7 +101,7 @@ if [[ ! -f "$KEYSTORE_PATH" ]]; then
         -validity 10000 \
         -storepass pixelboard \
         -keypass pixelboard \
-        -dname "CN=PixelBoard, OU=PixelBoard, O=PixelBoard, L=Unknown, ST=Unknown, C=US" \
+        -dname "CN=Gboard_Pro, OU=Gboard_Pro, O=Gboard_Pro, L=Unknown, ST=Unknown, C=US" \
         >/dev/null 2>&1
 fi
 
@@ -109,19 +109,19 @@ fi
     --patches="$MPP_PATH" \
     --options-file=options.json \
     --striplibs=arm64-v8a \
-    --signer="PixelBoard" \
+    --signer="Gboard_Pro" \
     --keystore="$KEYSTORE_PATH" \
     --keystore-password=pixelboard \
     --keystore-entry-alias=pixelboard \
     --keystore-entry-password=pixelboard \
     --temporary-files-path="tools/patcher-data/tmp" \
-    -o=output/PixelBoard.apk \
+    -o=output/Gboard_Pro.apk \
     -r=output/patching-result.json \
     input/gboard.apk
 
-cp output/PixelBoard.apk output/PixelBoard-18.4.1-V7.apk
+cp output/Gboard_Pro.apk output/Gboard_Pro-18.4.1-V7.apk
 if [[ -n "${PATCH_VERSION:-}" ]]; then
-    cp output/PixelBoard.apk "output/PixelBoard-${PATCH_VERSION}.apk"
+    cp output/Gboard_Pro.apk "output/Gboard_Pro-${PATCH_VERSION}.apk"
 fi
 
-echo "🎉 Successfully built output/PixelBoard.apk and output/PixelBoard-18.4.1-V7.apk!"
+echo "🎉 Successfully built output/Gboard_Pro.apk and output/Gboard_Pro-18.4.1-V7.apk!"

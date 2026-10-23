@@ -1,13 +1,13 @@
-# 🎹 PixelBoard Patch Source
+# 🎹 Gboard_Pro Patch Source
 
 <div align="center">
 
-[![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](https://github.com/Akshayykadam/PixelBoard)
-[![Version](https://img.shields.io/badge/Patch%20Version-1.2.0-blue?style=flat-square)](https://github.com/Akshayykadam/PixelBoard)
-[![Target](https://img.shields.io/badge/Gboard-v18.4.1_Release-orange?style=flat-square&logo=google)](https://github.com/Akshayykadam/PixelBoard)
-[![Author](https://img.shields.io/badge/Author-Akshay%20Kadam-9cf?style=flat-square&logo=github)](https://github.com/Akshayykadam)
+[![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)](https://github.com/smartworldarafath/Gboard_Pro)
+[![Version](https://img.shields.io/badge/Patch%20Version-1.2.0-blue?style=flat-square)](https://github.com/smartworldarafath/Gboard_Pro)
+[![Target](https://img.shields.io/badge/Gboard-v18.4.1_Release-orange?style=flat-square&logo=google)](https://github.com/smartworldarafath/Gboard_Pro)
+[![Author](https://img.shields.io/badge/Author-Arafath-9cf?style=flat-square&logo=github)](https://github.com/smartworldarafath)
 
-**PixelBoard Patch Source for Gboard**
+**Gboard_Pro Patch Source for Gboard**
 
 ---
 
@@ -16,20 +16,20 @@
 **You don't need to build from source unless you want to customize patches:**
 
 <p>
-  <a href="https://github.com/Akshayykadam/PixelBoard/releases/download/v18.4.1-Stable-V7/PixelBoard-18.4.1-V7.apk">
-    <img src="https://img.shields.io/badge/📥_Download_Stable_APK-v18.4.1_V7_(127_MB)-00C853?style=for-the-badge&logo=android&logoColor=white" height="40" alt="Download PixelBoard Stable APK"/>
+  <a href="https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk">
+    <img src="https://img.shields.io/badge/📥_Download_Stable_APK-v18.4.1_V7_(127_MB)-00C853?style=for-the-badge&logo=android&logoColor=white" height="40" alt="Download Gboard_Pro Stable APK"/>
   </a>
   &nbsp;&nbsp;
   <a href="https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/">
     <img src="https://img.shields.io/badge/🌐_Stock_Base_APK-APKMirror_(v18.4.1)-FF6F00?style=for-the-badge&logo=google&logoColor=white" height="40" alt="Download Stock Gboard Base APK from APKMirror"/>
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/Akshayykadam/PixelBoard/raw/main/patches/PixelBoard.mpp">
-    <img src="https://img.shields.io/badge/📦_Download_Patch_Bundle-PixelBoard.mpp_(1.6_MB)-2979FF?style=for-the-badge&logo=android&logoColor=white" height="40" alt="Download PixelBoard Patch Bundle"/>
+  <a href="https://github.com/smartworldarafath/Gboard_Pro/raw/main/patches/Gboard_Pro.mpp">
+    <img src="https://img.shields.io/badge/📦_Download_Patch_Bundle-Gboard_Pro.mpp_(1.6_MB)-2979FF?style=for-the-badge&logo=android&logoColor=white" height="40" alt="Download Gboard_Pro Patch Bundle"/>
   </a>
 </p>
 
-[**⬇️ Direct Download Stable APK (v18.4.1 V7)**](https://github.com/Akshayykadam/PixelBoard/releases/download/v18.4.1-Stable-V7/PixelBoard-18.4.1-V7.apk) • [**🌐 Stock Base APK (APKMirror)**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/) • [**📦 Patch Bundle (.mpp)**](https://github.com/Akshayykadam/PixelBoard/raw/main/patches/PixelBoard.mpp) • [**📦 GitHub Releases**](https://github.com/Akshayykadam/PixelBoard/releases)
+[**⬇️ Direct Download Stable APK (v18.4.1 V7)**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) • [**🌐 Stock Base APK (APKMirror)**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/) • [**📦 Patch Bundle (.mpp)**](https://github.com/smartworldarafath/Gboard_Pro/raw/main/patches/Gboard_Pro.mpp) • [**📦 GitHub Releases**](https://github.com/smartworldarafath/Gboard_Pro/releases)
 
 ---
 
@@ -37,7 +37,7 @@
 
 ## Overview
 
-This repository contains the patch definitions and extension bytecode for **PixelBoard**, specifically configured for:
+This repository contains the patch definitions and extension bytecode for **Gboard_Pro**, specifically configured for:
 - **Gemini Rambler Voice Dictation**: Speech cleanup, sentence restructuring, auto-punctuation, Gboard 18.4.1 obfuscated selector hooks, standalone out-of-the-box initialization (`enable_jetson = true`), and idle battery drain fix.
 - **In-Line AI Writing Assistant**: Proofread, rewrite with tone selection (Professional, Casual, Concise, Emotive), smart editing, and Android 16 Quick Insert crash safeguard.
 - **Modern Spell Checker Suggestion Chips & Grammar Checking**: Enforces Android 12+ inline spellcheck suggestion chips and add-to-dictionary UI on all devices (`GboardSpellCheckerChipsPatch`).
@@ -52,7 +52,7 @@ This repository contains the patch definitions and extension bytecode for **Pixe
 - **Multilingual UI & Bloatware Removal**: Fully translated Advanced Settings across 20+ locales with promotional clutter removed.
 - **Standalone Coexistence & Signature Bypass**: Safe side-by-side installation with stock Gboard and bypassed signature checks.
 
-- **App Label**: `PixelBoard`
+- **App Label**: `Gboard_Pro`
 - **Package ID**: `com.akshaykadam.pixelboard`
 - **Target App**: Google Keyboard (Gboard) `v18.4.1` (Release) & `v18.3.1` (Release / Beta)
 
@@ -82,9 +82,9 @@ Run tests to verify all patch contracts and bytecode transformations:
 
 ## Author & Maintainer
 
-**Akshay Kadam**
-- GitHub: [@Akshayykadam](https://github.com/Akshayykadam)
-- Repository: [PixelBoard](https://github.com/Akshayykadam/PixelBoard)
+**Arafath**
+- GitHub: [@smartworldarafath](https://github.com/smartworldarafath)
+- Repository: [Gboard_Pro](https://github.com/smartworldarafath/Gboard_Pro)
 
 ---
 
@@ -92,6 +92,6 @@ Run tests to verify all patch contracts and bytecode transformations:
 
 - **Original Gboard Patches**: Developed by Jason Wu ([@jasonwu1994](https://github.com/jasonwu1994)).
 - **Rambler ASR Lifecycle Optimization**: Discovered and benchmarked by Paolo Del Casale ([@PaoloDelCasale](https://github.com/PaoloDelCasale)).
-- **Inline Autofill & Password Manager Support**: Investigated and resolved by Alin Cornel ([@alincornel](https://github.com/alincornel)) for renamed package coexistence ([#24](https://github.com/Akshayykadam/PixelBoard/pull/24)).
-- **Patch Tooling & Runtime Framework**: PixelBoard Patch Engine / Open-Source Patcher Toolchain.
+- **Inline Autofill & Password Manager Support**: Investigated and resolved by Alin Cornel ([@alincornel](https://github.com/alincornel)) for renamed package coexistence ([#24](https://github.com/smartworldarafath/Gboard_Pro/pull/24)).
+- **Patch Tooling & Runtime Framework**: Gboard_Pro Patch Engine / Open-Source Patcher Toolchain.
 - **License**: GNU General Public License v3.0 ([LICENSE](../LICENSE)).

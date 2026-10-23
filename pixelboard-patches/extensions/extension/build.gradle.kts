@@ -72,12 +72,12 @@ android {
     }
 
     defaultConfig {
-        buildConfigField("String", "PATCH_AUTHOR", "\"Akshay Kadam\"")
-        buildConfigField("String", "PATCH_AUTHOR_URL", "\"https://github.com/Akshayykadam\"")
+        buildConfigField("String", "PATCH_AUTHOR", "\"Arafath\"")
+        buildConfigField("String", "PATCH_AUTHOR_URL", "\"https://github.com/smartworldarafath\"")
         buildConfigField(
             "String",
             "PATCH_REPOSITORY_URL",
-            "\"https://github.com/Akshayykadam/PixelBoard\""
+            "\"https://github.com/smartworldarafath/Gboard_Pro\""
         )
         buildConfigField("String", "PATCH_VERSION", "\"${project.version}\"")
     }

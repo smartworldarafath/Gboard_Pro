@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.akshaykadam.pixelboard.extension.rambler.GboardRambler1803StockPolicy;
 
 /**
- * PixelBoard runtime engine for Google Assistant / Gboard 18.0.3 Advanced Voice Typing.
+ * Gboard_Pro runtime engine for Google Assistant / Gboard 18.0.3 Advanced Voice Typing.
  * Manages voice input routing, language fallback, and runtime method invocation.
  *
- * @author Akshay Kadam (@Akshayykadam) - PixelBoard Project
+ * @author Arafath (@smartworldarafath) - Gboard_Pro Project
  */
 public final class GboardAdvancedVoice1803Runtime {
     private static final String TAG = "GboardPatches";
