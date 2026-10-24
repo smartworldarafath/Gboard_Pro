@@ -14,7 +14,7 @@
       <g transform="translate(-18, -18) scale(1.5)"><path fill="#042018"  d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></g>
     </g>
     <text x="114" y="47" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="32" font-weight="700" fill="#211824">Visual Showcase</text>
-    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#675466">Tactile Material 3 Belka keys, Rambler dictation & Advanced Settings</text>
+    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#675466">Tactile Material 3 Belka keys, Rambler dictation &amp; Advanced Settings</text>
     <g transform="translate(880, 36)">
         <rect width="90" height="32" rx="16" fill="#ddcedd"/>
         <text x="45" y="20.5" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="700" fill="#221824" text-anchor="middle">Settings</text>

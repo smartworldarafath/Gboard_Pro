@@ -14,8 +14,20 @@ for (const d of [darkDir, lightDir, pubDarkDir, pubLightDir]) {
 // 12-point scalloped Material 3 Expressive flower path (precisely centered at 0, 0)
 const CENTERED_FLOWER_PATH = "M24.6,5.0C24.2,5.5 23.8,5.9 23.4,6.4C23.1,6.9 22.7,7.3 22.5,7.8C22.2,8.3 22.0,8.7 21.8,9.2C21.7,9.8 21.6,10.3 21.5,10.9C21.4,11.4 21.4,12.0 21.4,12.6C21.3,13.2 21.3,13.9 21.2,14.5C21.1,15.1 20.9,15.7 20.7,16.3C20.4,16.8 20.1,17.3 19.7,17.8C19.3,18.2 18.9,18.6 18.4,18.9C17.8,19.2 17.2,19.4 16.7,19.6C16.1,19.8 15.4,19.9 14.8,20.0C14.2,20.2 13.6,20.3 13.1,20.4C12.5,20.5 12.0,20.7 11.5,20.9C11.0,21.1 10.6,21.4 10.2,21.7C9.7,22.0 9.3,22.4 8.9,22.9C8.5,23.3 8.1,23.7 7.6,24.2C7.2,24.6 6.7,25.0 6.2,25.4C5.7,25.8 5.2,26.1 4.7,26.3C4.1,26.5 3.5,26.6 2.9,26.7C2.3,26.7 1.7,26.6 1.1,26.4C0.6,26.3 -0.0,26.0 -0.6,25.8C-1.3,25.5 -1.8,25.2 -2.3,24.9C-2.8,24.6 -3.3,24.3 -3.8,24.1C-4.3,23.9 -4.8,23.7 -5.3,23.6C-5.8,23.5 -6.4,23.5 -6.9,23.5C-7.5,23.5 -8.0,23.5 -8.6,23.6C-9.2,23.6 -9.9,23.7 -10.5,23.8C-11.1,23.8 -11.7,23.8 -12.3,23.7C-12.9,23.6 -13.5,23.5 -14.1,23.2C-14.6,23.0 -15.1,22.6 -15.5,22.2C-15.9,21.8 -16.3,21.3 -16.6,20.8C-17.0,20.2 -17.2,19.6 -17.4,19.1C-17.7,18.5 -17.9,17.9 -18.1,17.4C-18.3,16.8 -18.5,16.3 -18.8,15.9C-19.1,15.4 -19.4,15.0 -19.8,14.6C-20.1,14.2 -20.5,13.8 -21.0,13.5C-21.5,13.1 -22.0,12.8 -22.5,12.5C-23.0,12.1 -23.5,11.8 -24.0,11.4C-24.4,11.0 -24.9,10.5 -25.3,10.1C-25.6,9.6 -25.9,9.0 -26.1,8.5C-26.3,7.9 -26.4,7.3 -26.4,6.7C-26.4,6.1 -26.3,5.5 -26.1,4.9C-26.0,4.3 -25.8,3.7 -25.6,3.1C-25.4,2.5 -25.2,2.0 -25.1,1.4C-24.9,0.9 -24.8,0.3 -24.7,-0.2C-24.7,-0.7 -24.7,-1.2 -24.7,-1.8C-24.8,-2.3 -24.9,-2.9 -25.1,-3.4C-25.2,-4.0 -25.4,-4.6 -25.6,-5.2C-25.7,-5.8 -25.9,-6.4 -26.0,-7.0C-26.0,-7.6 -26.0,-8.3 -25.9,-8.8C-25.8,-9.4 -25.7,-10.0 -25.4,-10.5C-25.1,-11.0 -24.7,-11.5 -24.3,-11.9C-23.9,-12.4 -23.4,-12.8 -22.9,-13.1C-22.4,-13.5 -21.8,-13.8 -21.3,-14.1C-20.8,-14.4 -20.3,-14.7 -19.8,-15.0C-19.4,-15.4 -19.0,-15.7 -18.6,-16.1C-18.3,-16.5 -18.0,-17.0 -17.7,-17.4C-17.4,-17.9 -17.2,-18.5 -17.0,-19.0C-16.7,-19.5 -16.5,-20.1 -16.2,-20.7C-15.9,-21.2 -15.6,-21.8 -15.2,-22.3C-14.8,-22.7 -14.4,-23.2 -13.9,-23.5C-13.4,-23.8 -12.9,-24.1 -12.3,-24.3C-11.7,-24.4 -11.1,-24.5 -10.5,-24.5C-9.9,-24.5 -9.2,-24.4 -8.6,-24.4C-8.0,-24.3 -7.4,-24.2 -6.8,-24.1C-6.3,-24.0 -5.8,-23.9 -5.3,-23.9C-4.6,-23.9 -4.1,-24.0 -3.6,-24.1C-3.1,-24.2 -2.5,-24.4 -2.0,-24.7C-1.5,-24.9 -1.0,-25.2 -0.4,-25.4C0.1,-25.7 0.7,-26.0 1.3,-26.2C1.9,-26.4 2.5,-26.6 3.1,-26.6C3.7,-26.7 4.3,-26.7 4.9,-26.6C5.4,-26.4 6.0,-26.2 6.5,-25.9C7.0,-25.6 7.5,-25.2 8.0,-24.8C8.4,-24.4 8.9,-23.9 9.3,-23.5C9.7,-23.0 10.1,-22.5 10.5,-22.1C10.9,-21.7 11.2,-21.3 11.7,-21.0C12.1,-20.7 12.6,-20.5 13.1,-20.2C13.6,-20.0 14.1,-19.9 14.7,-19.7C15.2,-19.6 15.9,-19.5 16.4,-19.3C17.0,-19.1 17.7,-18.9 18.2,-18.7C18.8,-18.4 19.3,-18.1 19.8,-17.8C20.2,-17.4 20.6,-16.9 21.0,-16.4C21.3,-15.9 21.5,-15.4 21.7,-14.8C21.8,-14.2 21.9,-13.6 21.9,-13.0C22.0,-12.3 22.0,-11.7 22.0,-11.1C22.0,-10.5 22.0,-9.9 22.1,-9.4C22.2,-8.8 22.3,-8.3 22.4,-7.8C22.6,-7.3 22.8,-6.8 23.1,-6.3C23.4,-5.9 23.7,-5.4 24.1,-4.9C24.4,-4.4 24.8,-3.9 25.2,-3.4C25.5,-2.9 25.8,-2.3 26.0,-1.7C26.3,-1.2 26.4,-0.6 26.5,0.0C26.5,0.6 26.5,1.2 26.3,1.8C26.2,2.3 25.9,2.9 25.5,3.4C25.3,4.0 24.9,4.5 24.6,5.0Z";
 
+// XML Escape helper to ensure valid SVG XML on all parsers and GitHub Camo
+function escapeXml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&(?!(amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 // Helper to write file to both assets/readme and public/assets/readme
 function saveSvg(subPath, content) {
+  if (/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/.test(content)) {
+    throw new Error(`Unescaped ampersand detected in ${subPath}`);
+  }
   fs.writeFileSync(path.join(__dirname, '..', 'assets', 'readme', subPath), content);
   fs.writeFileSync(path.join(__dirname, '..', 'public', 'assets', 'readme', subPath), content);
 }
@@ -63,6 +75,8 @@ function renderIcon(name, size, color) {
 // 1. ROTATING PIXEL BADGE (Height: 28, Flower Center: 14, 14)
 // -------------------------------------------------------------
 function generateBadge({ name, label, icon, flowerDark, flowerLight, iconDark, iconLight, width }) {
+  const safeLabel = escapeXml(label);
+
   // DARK with active 8s SMIL rotation + CSS fallback
   const darkSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="28" viewBox="0 0 ${width} 28">
     <defs>
@@ -79,7 +93,7 @@ function generateBadge({ name, label, icon, flowerDark, flowerLight, iconDark, i
       </g>
       ${renderIcon(icon, 11, iconDark)}
     </g>
-    <text x="27" y="18" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="11.5" font-weight="600" fill="#f0e2ee">${label}</text>
+    <text x="27" y="18" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="11.5" font-weight="600" fill="#f0e2ee">${safeLabel}</text>
   </svg>`;
   saveSvg(path.join('dark', `badge-${name}.svg`), darkSvg);
 
@@ -99,7 +113,7 @@ function generateBadge({ name, label, icon, flowerDark, flowerLight, iconDark, i
       </g>
       ${renderIcon(icon, 11, iconLight)}
     </g>
-    <text x="27" y="18" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="11.5" font-weight="600" fill="#261b28">${label}</text>
+    <text x="27" y="18" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="11.5" font-weight="600" fill="#261b28">${safeLabel}</text>
   </svg>`;
   saveSvg(path.join('light', `badge-${name}.svg`), lightSvg);
 }
@@ -108,6 +122,9 @@ function generateBadge({ name, label, icon, flowerDark, flowerLight, iconDark, i
 // 2. ROTATING ACTION BUTTON (Height: 68, Flower Center: 38, 34)
 // -------------------------------------------------------------
 function generateButton({ name, sublabel, label, icon, flowerDark, flowerLight, iconDark, iconLight, bgDark, bgLight, textDark, textLight, width = 216 }) {
+  const safeSublabel = escapeXml(sublabel.toUpperCase());
+  const safeLabel = escapeXml(label);
+
   // DARK with active 10s SMIL rotation + CSS fallback
   const darkSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="68" viewBox="0 0 ${width} 68">
     <defs>
@@ -124,8 +141,8 @@ function generateButton({ name, sublabel, label, icon, flowerDark, flowerLight, 
       </g>
       ${renderIcon(icon, 24, iconDark)}
     </g>
-    <text x="74" y="27" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="10" font-weight="700" fill="${textDark ? textDark + '99' : '#caa7cd'}" letter-spacing="0.08em">${sublabel.toUpperCase()}</text>
-    <text x="74" y="47" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="16" font-weight="700" fill="${textDark || '#ffffff'}">${label}</text>
+    <text x="74" y="27" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="10" font-weight="700" fill="${textDark ? textDark + '99' : '#caa7cd'}" letter-spacing="0.08em">${safeSublabel}</text>
+    <text x="74" y="47" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="16" font-weight="700" fill="${textDark || '#ffffff'}">${safeLabel}</text>
   </svg>`;
   saveSvg(path.join('dark', `btn-${name}.svg`), darkSvg);
 
@@ -145,8 +162,8 @@ function generateButton({ name, sublabel, label, icon, flowerDark, flowerLight, 
       </g>
       ${renderIcon(icon, 24, iconLight)}
     </g>
-    <text x="74" y="27" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="10" font-weight="700" fill="${textLight ? textLight + '99' : '#695168'}" letter-spacing="0.08em">${sublabel.toUpperCase()}</text>
-    <text x="74" y="47" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="16" font-weight="700" fill="${textLight || '#211824'}">${label}</text>
+    <text x="74" y="27" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="10" font-weight="700" fill="${textLight ? textLight + '99' : '#695168'}" letter-spacing="0.08em">${safeSublabel}</text>
+    <text x="74" y="47" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="16" font-weight="700" fill="${textLight || '#211824'}">${safeLabel}</text>
   </svg>`;
   saveSvg(path.join('light', `btn-${name}.svg`), lightSvg);
 }
@@ -155,6 +172,9 @@ function generateButton({ name, sublabel, label, icon, flowerDark, flowerLight, 
 // 3. ROTATING HEADER BANNER (1000 x 104, Flower Center: 56, 52)
 // -------------------------------------------------------------
 function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, flowerLight, iconDark, iconLight }) {
+  const safeTitle = escapeXml(title);
+  const safeSubtitle = escapeXml(subtitle);
+
   function renderTags(tagsList, isDark) {
     let x = 970;
     let out = '';
@@ -167,7 +187,7 @@ function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, fl
       x -= pillWidth;
       out += `<g transform="translate(${x}, 36)">
         <rect width="${pillWidth}" height="32" rx="16" fill="${pillBg}"/>
-        <text x="${pillWidth / 2}" y="20.5" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="700" fill="${textColor}" text-anchor="middle">${t}</text>
+        <text x="${pillWidth / 2}" y="20.5" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="700" fill="${textColor}" text-anchor="middle">${escapeXml(t)}</text>
       </g>`;
       x -= 10;
     }
@@ -190,8 +210,8 @@ function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, fl
       </g>
       ${renderIcon(icon, 36, iconDark)}
     </g>
-    <text x="114" y="47" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="32" font-weight="700" fill="#ffffff">${title}</text>
-    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#cbb4ca">${subtitle}</text>
+    <text x="114" y="47" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="32" font-weight="700" fill="#ffffff">${safeTitle}</text>
+    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#cbb4ca">${safeSubtitle}</text>
     ${renderTags(tags, true)}
   </svg>`;
   saveSvg(path.join('dark', `h-${name}.svg`), dDark);
@@ -212,8 +232,8 @@ function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, fl
       </g>
       ${renderIcon(icon, 36, iconLight)}
     </g>
-    <text x="114" y="47" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="32" font-weight="700" fill="#211824">${title}</text>
-    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#675466">${subtitle}</text>
+    <text x="114" y="47" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="32" font-weight="700" fill="#211824">${safeTitle}</text>
+    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#675466">${safeSubtitle}</text>
     ${renderTags(tags, false)}
   </svg>`;
   saveSvg(path.join('light', `h-${name}.svg`), dLight);
@@ -234,8 +254,8 @@ function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, fl
       </g>
       ${renderIcon(icon, 30, iconDark)}
     </g>
-    <text x="96" y="42" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="25" font-weight="700" fill="#ffffff">${title}</text>
-    <text x="96" y="66" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="400" fill="#cbb4ca">${subtitle}</text>
+    <text x="96" y="42" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="25" font-weight="700" fill="#ffffff">${safeTitle}</text>
+    <text x="96" y="66" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="400" fill="#cbb4ca">${safeSubtitle}</text>
   </svg>`;
   saveSvg(path.join('dark', `hm-${name}.svg`), mDark);
 
@@ -254,8 +274,8 @@ function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, fl
       </g>
       ${renderIcon(icon, 30, iconLight)}
     </g>
-    <text x="96" y="42" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="25" font-weight="700" fill="#211824">${title}</text>
-    <text x="96" y="66" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="400" fill="#675466">${subtitle}</text>
+    <text x="96" y="42" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="25" font-weight="700" fill="#211824">${safeTitle}</text>
+    <text x="96" y="66" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="400" fill="#675466">${safeSubtitle}</text>
   </svg>`;
   saveSvg(path.join('light', `hm-${name}.svg`), mLight);
 }
@@ -264,7 +284,8 @@ function generateHeader({ name, title, subtitle, icon, tags = [], flowerDark, fl
 // 4. ROTATING FEATURE CARD (430 x 218, Flower Center: 64, 60)
 // -------------------------------------------------------------
 function generateCard({ name, title, lines, icon, flowerDark, flowerLight, iconDark, iconLight }) {
-  const tLines = lines.map((l, i) => `<tspan x="36" dy="${i === 0 ? 0 : 20}">${l}</tspan>`).join('');
+  const safeTitle = escapeXml(title);
+  const tLines = lines.map((l, i) => `<tspan x="36" dy="${i === 0 ? 0 : 20}">${escapeXml(l)}</tspan>`).join('');
 
   // DARK
   const darkSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="430" height="218" viewBox="0 0 430 218">
@@ -286,7 +307,7 @@ function generateCard({ name, title, lines, icon, flowerDark, flowerLight, iconD
       </g>
       ${renderIcon(icon, 30, iconDark)}
     </g>
-    <text x="36" y="125" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="20" font-weight="700" fill="#ffffff">${title}</text>
+    <text x="36" y="125" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="20" font-weight="700" fill="#ffffff">${safeTitle}</text>
     <text x="36" y="152" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13.5" font-weight="400" fill="#beabbe">
       ${tLines}
     </text>
@@ -313,7 +334,7 @@ function generateCard({ name, title, lines, icon, flowerDark, flowerLight, iconD
       </g>
       ${renderIcon(icon, 30, iconLight)}
     </g>
-    <text x="36" y="125" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="20" font-weight="700" fill="#211824">${title}</text>
+    <text x="36" y="125" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="20" font-weight="700" fill="#211824">${safeTitle}</text>
     <text x="36" y="152" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13.5" font-weight="400" fill="#5f4e60">
       ${tLines}
     </text>
@@ -325,6 +346,8 @@ function generateCard({ name, title, lines, icon, flowerDark, flowerLight, iconD
 // 5. ROTATING TECH STACK PILL (Height: 42, Flower Center: 21, 21)
 // -------------------------------------------------------------
 function generateStackPill({ name, label, icon, flowerDark, flowerLight, iconDark, iconLight, width }) {
+  const safeLabel = escapeXml(label);
+
   // DARK with active 8s SMIL rotation + CSS fallback
   const darkSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="42" viewBox="0 0 ${width} 42">
     <defs>
@@ -341,7 +364,7 @@ function generateStackPill({ name, label, icon, flowerDark, flowerLight, iconDar
       </g>
       ${renderIcon(icon, 17, iconDark)}
     </g>
-    <text x="42" y="26" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#f0e2ee">${label}</text>
+    <text x="42" y="26" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#f0e2ee">${safeLabel}</text>
   </svg>`;
   saveSvg(path.join('dark', `pill-${name}.svg`), darkSvg);
 
@@ -361,7 +384,7 @@ function generateStackPill({ name, label, icon, flowerDark, flowerLight, iconDar
       </g>
       ${renderIcon(icon, 17, iconLight)}
     </g>
-    <text x="42" y="26" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#261b28">${label}</text>
+    <text x="42" y="26" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#261b28">${safeLabel}</text>
   </svg>`;
   saveSvg(path.join('light', `pill-${name}.svg`), lightSvg);
 }

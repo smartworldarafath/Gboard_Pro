@@ -13,5 +13,5 @@
       </g>
       <g transform="translate(-8.5, -8.5) scale(0.7083333333333334)"><path fill="#FFFFFF"  d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></g>
     </g>
-    <text x="42" y="26" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#f0e2ee">Smali & Bytecode</text>
+    <text x="42" y="26" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="14.5" font-weight="600" fill="#f0e2ee">Smali &amp; Bytecode</text>
   </svg>

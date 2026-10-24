@@ -13,6 +13,6 @@
       </g>
       <g transform="translate(-15, -15) scale(1.25)"><path fill="#FFFFFF"  d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></g>
     </g>
-    <text x="96" y="42" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="25" font-weight="700" fill="#ffffff">Downloads & Releases</text>
+    <text x="96" y="42" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="25" font-weight="700" fill="#ffffff">Downloads &amp; Releases</text>
     <text x="96" y="66" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="400" fill="#cbb4ca">Direct installable APKs, Morphe patch archives, and clean base APK</text>
   </svg>

@@ -17,7 +17,7 @@
       </g>
       <g transform="translate(-15, -15) scale(1.25)"><path fill="#FFFFFF"  d="M12 2.5s4 1.5 6 6.5c1.2 3-.5 6-1.5 7.5L18 20l-3.5-1.5c-1.5 1-4.5 2.7-7.5 1.5-5-2-6.5-6-6.5-6s3.5-1.5 6.5-1.5c.5-1 1.5-2.5 3-4 1.5-1.5 3-3.5 3-6z"/></g>
     </g>
-    <text x="36" y="125" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="20" font-weight="700" fill="#ffffff">Super Insert & Smart Compose</text>
+    <text x="36" y="125" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="20" font-weight="700" fill="#ffffff">Super Insert &amp; Smart Compose</text>
     <text x="36" y="152" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13.5" font-weight="400" fill="#beabbe">
       <tspan x="36" dy="0">Unified clipboard, emoji, and contact drawer with</tspan><tspan x="36" dy="20">Gmail-style in-line ghost predictions extending</tspan><tspan x="36" dy="20">across all third-party Android apps.</tspan>
     </text>

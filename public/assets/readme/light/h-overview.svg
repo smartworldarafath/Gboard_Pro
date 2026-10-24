@@ -14,7 +14,7 @@
       <g transform="translate(-18, -18) scale(1.5)"><path fill="#21005D"  d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></g>
     </g>
     <text x="114" y="47" font-family="system-ui, -apple-system, 'Google Sans', Roboto, sans-serif" font-size="32" font-weight="700" fill="#211824">Overview</text>
-    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#675466">Supercharged Gboard with Pixel Gemini Rambler & AI Writing Suite</text>
+    <text x="114" y="74" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="15" font-weight="400" fill="#675466">Supercharged Gboard with Pixel Gemini Rambler &amp; AI Writing Suite</text>
     <g transform="translate(880, 36)">
         <rect width="90" height="32" rx="16" fill="#ddcedd"/>
         <text x="45" y="20.5" font-family="system-ui, -apple-system, Roboto, sans-serif" font-size="13" font-weight="700" fill="#221824" text-anchor="middle">Non-Root</text>
