@@ -1,5 +1,11 @@
 <div align="center">
 
+# ⌨️ Gboard_Pro
+
+**An Advanced, Privacy-Conscious Google Keyboard Mod Engineered with Next-Gen Voice Dictation, On-Device AI Writing Capabilities & Material 3 Expressive Design — Zero Root Required.**
+
+<br>
+
 <img src="docs/images/showcase.png" alt="Gboard_Pro — Advanced Google Keyboard Mod Engineered with Gemini Rambler Voice Dictation, On-Device AI Writing Tools & Material 3 Expressive Belka UI" width="100%">
 
 <br><br>
@@ -44,6 +50,24 @@
 </p>
 
 </div>
+
+
+
+---
+
+<div align="center">
+
+## 📦 Available Downloads (`v18.4.1-V7` • Patch `v1.2.0`)
+
+| Artifact | Format | Summary |
+| :--- | :--- | :--- |
+| [**Gboard_Pro-18.4.1-V7.apk**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) | **Pre-built APK** *(Recommended)* | **Plug-and-play installation.** Runs independently alongside stock Gboard with zero conflicts (`com.akshaykadam.pixelboard`). |
+| [**patches-1.2.0.mpp**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/patches-1.2.0.mpp) | **Morphe Patch Pack** | Modular patch archive for Morphe Manager if you prefer compiling your own APK. |
+| [**Official Gboard v18.4.1**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/) | **Unmodified Base** | Clean upstream package from APKMirror *(needed only when patching manually)*. |
+
+</div>
+
+---
 
 <h3 id="overview">
   <picture>
