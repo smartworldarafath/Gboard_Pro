@@ -95,7 +95,7 @@ public class GboardAboutActivity extends Activity {
 
         itemsCard.addView(buildClickableItem(
                 "Current version",
-                "1.0.0 (18.4.1.985164140-release-arm64-v8a)",
+                "1.0.2 (18.4.1.985164140-release-arm64-v8a)",
                 "https://github.com/smartworldarafath/Gboard_Pro/releases",
                 false
         ));
@@ -156,7 +156,7 @@ public class GboardAboutActivity extends Activity {
 
         // Version Chip
         TextView versionChip = new TextView(this);
-        versionChip.setText("v1.0.0 Stable");
+        versionChip.setText("v1.0.2 Stable");
         versionChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
         versionChip.setTypeface(Typeface.DEFAULT_BOLD);
         versionChip.setTextColor(palette.onAccentContainer);

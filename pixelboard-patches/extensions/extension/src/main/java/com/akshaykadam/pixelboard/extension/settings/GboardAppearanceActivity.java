@@ -32,6 +32,7 @@ public class GboardAppearanceActivity extends Activity {
 
     private static final String PREF_NAME = "gboard_pro_appearance_prefs";
     private static final String KEY_ACTIVE_ICON = "selected_launcher_icon";
+    private static final String KEY_UI_THEME = "selected_gboard_ui_theme";
 
     public static final class IconOption {
         public final String id;
@@ -51,9 +52,25 @@ public class GboardAppearanceActivity extends Activity {
         }
     }
 
+    public static final class UiThemeOption {
+        public final String id;
+        public final String name;
+        public final String description;
+        public final int[] swatchColors;
+
+        public UiThemeOption(String id, String name, String description, int[] swatchColors) {
+            this.id = id;
+            this.name = name;
+            this.description = description;
+            this.swatchColors = swatchColors;
+        }
+    }
+
     private GboardM3Helper.Palette palette;
     private final List<IconOption> iconOptions = new ArrayList<IconOption>();
+    private final List<UiThemeOption> themeOptions = new ArrayList<UiThemeOption>();
     private LinearLayout listContainer;
+    private LinearLayout themeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +80,7 @@ public class GboardAppearanceActivity extends Activity {
         GboardM3Helper.applyActivityEnterTransition(this);
 
         initIconOptions();
+        initUiThemeOptions();
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -79,12 +97,12 @@ public class GboardAppearanceActivity extends Activity {
         LinearLayout content = new LinearLayout(this);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
-                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 24));
+                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 32));
 
         // Header Intro Card
         content.addView(buildHeaderCard());
 
-        // Category label
+        // Category 1: APP LAUNCHER ICONS
         TextView categoryLabel = new TextView(this);
         categoryLabel.setText("APP LAUNCHER ICONS");
         categoryLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
@@ -98,8 +116,43 @@ public class GboardAppearanceActivity extends Activity {
         listContainer = new LinearLayout(this);
         listContainer.setOrientation(LinearLayout.VERTICAL);
         content.addView(listContainer);
-
         renderIconList();
+
+        // Category 2: GBOARD UI with BETA badge
+        LinearLayout uiHeaderRow = new LinearLayout(this);
+        uiHeaderRow.setOrientation(LinearLayout.HORIZONTAL);
+        uiHeaderRow.setGravity(Gravity.CENTER_VERTICAL);
+        uiHeaderRow.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
+                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+
+        TextView uiLabel = new TextView(this);
+        uiLabel.setText("GBOARD UI");
+        uiLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
+        uiLabel.setTypeface(Typeface.DEFAULT_BOLD);
+        uiLabel.setTextColor(palette.accent);
+        uiHeaderRow.addView(uiLabel);
+
+        View badgeSpacer = new View(this);
+        uiHeaderRow.addView(badgeSpacer, new LinearLayout.LayoutParams(GboardM3Helper.dp(this, 8), 1));
+
+        TextView betaBadge = new TextView(this);
+        betaBadge.setText("beta");
+        betaBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
+        betaBadge.setTypeface(Typeface.DEFAULT_BOLD);
+        betaBadge.setTextColor(palette.onAccentContainer);
+        betaBadge.setBackground(GboardM3Helper.createCardDrawable(
+                palette.accentContainer, Color.TRANSPARENT, GboardM3Helper.dp(this, 6)));
+        betaBadge.setPadding(GboardM3Helper.dp(this, 7), GboardM3Helper.dp(this, 2),
+                GboardM3Helper.dp(this, 7), GboardM3Helper.dp(this, 2));
+        uiHeaderRow.addView(betaBadge);
+
+        content.addView(uiHeaderRow);
+
+        // Theme List
+        themeContainer = new LinearLayout(this);
+        themeContainer.setOrientation(LinearLayout.VERTICAL);
+        content.addView(themeContainer);
+        renderThemeList();
 
         scrollView.addView(content);
         root.addView(scrollView, new LinearLayout.LayoutParams(
@@ -152,6 +205,34 @@ public class GboardAppearanceActivity extends Activity {
         ));
     }
 
+    private void initUiThemeOptions() {
+        themeOptions.clear();
+        themeOptions.add(new UiThemeOption(
+                "default",
+                "Default Dynamic",
+                "Adaptive Material You dynamic tones matching your device wallpaper",
+                new int[]{0xFF0B57D0, 0xFF4285F4, 0xFFD3E3FD}
+        ));
+        themeOptions.add(new UiThemeOption(
+                "rainbow",
+                "Expressive Rainbow",
+                "Vivid sunset coral, golden amber, and warm peach expressive tones",
+                new int[]{0xFFE64A19, 0xFFFF7043, 0xFFFFCCBC}
+        ));
+        themeOptions.add(new UiThemeOption(
+                "botanical",
+                "Fresh Botanical",
+                "Spring mint, fresh eucalyptus sage, and pastel botanical clover vibe",
+                new int[]{0xFF00796B, 0xFF4DB6AC, 0xFFC8E6C9}
+        ));
+        themeOptions.add(new UiThemeOption(
+                "ocean",
+                "Ocean Lavender",
+                "Coastal azure indigo, radiant twilight lavender, and soft lilac vibe",
+                new int[]{0xFF3949AB, 0xFF7986CB, 0xFFD1C4E9}
+        ));
+    }
+
     private View buildHeaderCard() {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
@@ -168,7 +249,7 @@ public class GboardAppearanceActivity extends Activity {
         card.addView(title);
 
         TextView subtitle = new TextView(this);
-        subtitle.setText("Select your preferred launcher icon style. Changes take effect on your home screen and app drawer immediately.");
+        subtitle.setText("Select your preferred launcher icon style and expressive Material 3 UI vibe. Changes take effect across your interface immediately.");
         subtitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13.5f);
         subtitle.setTextColor(palette.textSecondary);
         subtitle.setLineSpacing(GboardM3Helper.dp(this, 2), 1.1f);
@@ -183,6 +264,11 @@ public class GboardAppearanceActivity extends Activity {
     private String getSelectedIconId() {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return prefs.getString(KEY_ACTIVE_ICON, "default");
+    }
+
+    private String getSelectedUiThemeId() {
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_UI_THEME, "default");
     }
 
     private void renderIconList() {
@@ -274,6 +360,104 @@ public class GboardAppearanceActivity extends Activity {
         }
     }
 
+    private void renderThemeList() {
+        themeContainer.removeAllViews();
+        String currentSelectedTheme = getSelectedUiThemeId();
+
+        for (final UiThemeOption option : themeOptions) {
+            final boolean isSelected = option.id.equals(currentSelectedTheme);
+
+            LinearLayout itemCard = new LinearLayout(this);
+            itemCard.setOrientation(LinearLayout.HORIZONTAL);
+            itemCard.setGravity(Gravity.CENTER_VERTICAL);
+
+            int bgColor = isSelected ? palette.accentContainer : palette.surface;
+            int strokeColor = isSelected ? palette.accent : palette.surfaceStroke;
+            itemCard.setBackground(GboardM3Helper.createClickableCardDrawable(
+                    bgColor, strokeColor, palette.ripple, GboardM3Helper.dp(this, 18)));
+            itemCard.setPadding(GboardM3Helper.dp(this, 14), GboardM3Helper.dp(this, 14),
+                    GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 14));
+
+            LinearLayout.LayoutParams cardLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            cardLp.bottomMargin = GboardM3Helper.dp(this, 10);
+            itemCard.setLayoutParams(cardLp);
+
+            // Swatch Preview Pill
+            LinearLayout swatchLayout = new LinearLayout(this);
+            swatchLayout.setOrientation(LinearLayout.HORIZONTAL);
+            swatchLayout.setGravity(Gravity.CENTER);
+            swatchLayout.setBackground(GboardM3Helper.createCardDrawable(
+                    palette.surfaceAlt, palette.surfaceStroke, GboardM3Helper.dp(this, 16)));
+            swatchLayout.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+
+            for (int color : option.swatchColors) {
+                View circle = new View(this);
+                GradientDrawable circleDrawable = new GradientDrawable();
+                circleDrawable.setShape(GradientDrawable.OVAL);
+                circleDrawable.setColor(color);
+                circle.setBackground(circleDrawable);
+
+                int dotSize = GboardM3Helper.dp(this, 14);
+                LinearLayout.LayoutParams dotLp = new LinearLayout.LayoutParams(dotSize, dotSize);
+                dotLp.setMargins(GboardM3Helper.dp(this, 2), 0, GboardM3Helper.dp(this, 2), 0);
+                swatchLayout.addView(circle, dotLp);
+            }
+
+            LinearLayout.LayoutParams swatchLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            swatchLp.rightMargin = GboardM3Helper.dp(this, 14);
+            itemCard.addView(swatchLayout, swatchLp);
+
+            // Text Info
+            LinearLayout textColumn = new LinearLayout(this);
+            textColumn.setOrientation(LinearLayout.VERTICAL);
+
+            TextView nameView = new TextView(this);
+            nameView.setText(option.name);
+            nameView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15.5f);
+            nameView.setTypeface(Typeface.DEFAULT_BOLD);
+            nameView.setTextColor(isSelected ? palette.onAccentContainer : palette.textPrimary);
+            textColumn.addView(nameView);
+
+            TextView descView = new TextView(this);
+            descView.setText(option.description);
+            descView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
+            descView.setTextColor(isSelected ? palette.onAccentContainer : palette.textSecondary);
+            LinearLayout.LayoutParams descLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            descLp.topMargin = GboardM3Helper.dp(this, 2);
+            textColumn.addView(descView, descLp);
+
+            itemCard.addView(textColumn, new LinearLayout.LayoutParams(
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+
+            // Selection indicator badge
+            if (isSelected) {
+                TextView activeBadge = new TextView(this);
+                activeBadge.setText("Active");
+                activeBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
+                activeBadge.setTypeface(Typeface.DEFAULT_BOLD);
+                activeBadge.setTextColor(palette.onAccentContainer);
+                activeBadge.setBackground(GboardM3Helper.createCardDrawable(
+                        GboardM3Helper.blendAlpha(palette.accent, 0.25f), Color.TRANSPARENT, GboardM3Helper.dp(this, 10)));
+                activeBadge.setPadding(GboardM3Helper.dp(this, 10), GboardM3Helper.dp(this, 4),
+                        GboardM3Helper.dp(this, 10), GboardM3Helper.dp(this, 4));
+                itemCard.addView(activeBadge);
+            }
+
+            itemCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    applyThemeSelection(option);
+                }
+            });
+
+            themeContainer.addView(itemCard);
+        }
+    }
+
     private Drawable loadIconDrawable(IconOption option) {
         try {
             InputStream is = getAssets().open(option.assetPath);
@@ -323,6 +507,22 @@ public class GboardAppearanceActivity extends Activity {
 
         Toast.makeText(this, "Launcher icon updated: " + selectedOption.name, Toast.LENGTH_SHORT).show();
         renderIconList();
+    }
+
+    private void applyThemeSelection(UiThemeOption selectedOption) {
+        String current = getSelectedUiThemeId();
+        if (current.equals(selectedOption.id)) {
+            Toast.makeText(this, selectedOption.name + " is already active", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_UI_THEME, selectedOption.id)
+                .apply();
+
+        Toast.makeText(this, "Gboard UI theme updated: " + selectedOption.name, Toast.LENGTH_SHORT).show();
+        recreate();
     }
 
     @Override

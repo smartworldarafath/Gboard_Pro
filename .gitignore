@@ -13,6 +13,7 @@ tools/APKEditor*.jar
 *.apk
 *.apk.idsig
 output/patching-result*.json
+output/*.mpp
 !output/.gitkeep
 
 # Local input files (do not commit stock APKs)

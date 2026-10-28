@@ -2,6 +2,7 @@ package com.akshaykadam.pixelboard.extension.settings;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -11,16 +12,21 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public final class GboardM3Helper {
+
+    public static final String PREF_APPEARANCE = "gboard_pro_appearance_prefs";
+    public static final String KEY_UI_THEME = "selected_gboard_ui_theme";
 
     public static final class Palette {
         public final int windowBackground;
@@ -55,6 +61,107 @@ public final class GboardM3Helper {
             Configuration config = context.getResources().getConfiguration();
             boolean night = (config.uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
 
+            String selectedTheme = "default";
+            try {
+                SharedPreferences prefs = context.getSharedPreferences(PREF_APPEARANCE, Context.MODE_PRIVATE);
+                selectedTheme = prefs.getString(KEY_UI_THEME, "default");
+            } catch (Throwable ignored) {
+            }
+
+            // Material 3 Expressive Multi-Color Theme Overrides
+            if ("rainbow".equals(selectedTheme)) {
+                if (night) {
+                    return new Palette(
+                            0xFF1C1310, // windowBackground (Warm dark espresso)
+                            0xFF281C17, // surface
+                            0xFF372720, // surfaceAlt
+                            0x44FF8A65, // surfaceStroke
+                            0xFFFBE9E7, // textPrimary
+                            0xFFFFCCBC, // textSecondary
+                            0xFFFF7043, // accent (Vivid Sunset Coral)
+                            0xFF5D2416, // accentContainer
+                            0xFFFFDBCF, // onAccentContainer
+                            0x33FF7043, // ripple
+                            true
+                    );
+                } else {
+                    return new Palette(
+                            0xFFFFF8F6, // windowBackground (Warm light peach)
+                            0xFFFDEEE9, // surface
+                            0xFFF8E2DB, // surfaceAlt
+                            0x26FF5722, // surfaceStroke
+                            0xFF2D1610, // textPrimary
+                            0xFF5F3E35, // textSecondary
+                            0xFFE64A19, // accent (Vivid Expressive Coral)
+                            0xFFFFCCBC, // accentContainer
+                            0xFF3E0F04, // onAccentContainer
+                            0x26E64A19, // ripple
+                            false
+                    );
+                }
+            } else if ("botanical".equals(selectedTheme)) {
+                if (night) {
+                    return new Palette(
+                            0xFF0E1815, // windowBackground (Deep Sage Night)
+                            0xFF162520, // surface
+                            0xFF20342E, // surfaceAlt
+                            0x4480CBC4, // surfaceStroke
+                            0xFFE0F2F1, // textPrimary
+                            0xFFB2DFDB, // textSecondary
+                            0xFF4DB6AC, // accent (Fresh Mint Teal)
+                            0xFF0E3E37, // accentContainer
+                            0xFFB2DFDB, // onAccentContainer
+                            0x334DB6AC, // ripple
+                            true
+                    );
+                } else {
+                    return new Palette(
+                            0xFFF4FBF7, // windowBackground (Fresh Spring Light)
+                            0xFFE8F5E9, // surface (Soft Botanical Sage)
+                            0xFFDCEDC8, // surfaceAlt (Pastel Peach/Sage)
+                            0x2600796B, // surfaceStroke
+                            0xFF0A261F, // textPrimary
+                            0xFF2E5349, // textSecondary
+                            0xFF00796B, // accent (Botanical Mint Green)
+                            0xFFC8E6C9, // accentContainer
+                            0xFF00382F, // onAccentContainer
+                            0x2600796B, // ripple
+                            false
+                    );
+                }
+            } else if ("ocean".equals(selectedTheme)) {
+                if (night) {
+                    return new Palette(
+                            0xFF101322, // windowBackground (Twilight Oceanic)
+                            0xFF191D32, // surface
+                            0xFF232845, // surfaceAlt
+                            0x449FA8DA, // surfaceStroke
+                            0xFFE8EAF6, // textPrimary
+                            0xFFC5CAE9, // textSecondary
+                            0xFF7986CB, // accent (Lavender Twilight)
+                            0xFF1E265C, // accentContainer
+                            0xFFE8EAF6, // onAccentContainer
+                            0x337986CB, // ripple
+                            true
+                    );
+                } else {
+                    return new Palette(
+                            0xFFF6F8FE, // windowBackground (Ocean Breeze)
+                            0xFFEEF2FC, // surface
+                            0xFFE0E7FA, // surfaceAlt
+                            0x263949AB, // surfaceStroke
+                            0xFF12182E, // textPrimary
+                            0xFF3F4A6A, // textSecondary
+                            0xFF3949AB, // accent (Coastal Azure Indigo)
+                            0xFFD1C4E9, // accentContainer (Soft Rose Lavender)
+                            0xFF101642, // onAccentContainer
+                            0x263949AB, // ripple
+                            false
+                    );
+                }
+            }
+
+            // Default Dynamic Palette (Monet on Android 12+)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 try {
                     int bg = context.getColor(night ? android.R.color.system_neutral1_900 : android.R.color.system_neutral1_50);
@@ -117,8 +224,68 @@ public final class GboardM3Helper {
         return Color.argb(a, Color.red(color), Color.green(color), Color.blue(color));
     }
 
+    public static void enforceHighRefreshRate(Window window) {
+        if (window == null) return;
+        try {
+            WindowManager.LayoutParams lp = window.getAttributes();
+            float highestRate = 60.0f;
+            int bestModeId = 0;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Display display = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    try {
+                        display = window.getContext().getDisplay();
+                    } catch (Throwable ignored) {
+                    }
+                }
+                if (display == null) {
+                    WindowManager wm = (WindowManager) window.getContext().getSystemService(Context.WINDOW_SERVICE);
+                    if (wm != null) {
+                        display = wm.getDefaultDisplay();
+                    }
+                }
+                if (display != null) {
+                    Display.Mode[] modes = display.getSupportedModes();
+                    if (modes != null) {
+                        for (Display.Mode mode : modes) {
+                            float rate = mode.getRefreshRate();
+                            if (rate > highestRate) {
+                                highestRate = rate;
+                                bestModeId = mode.getModeId();
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Enforce max refresh rate (144Hz for tablets like Redmi Pad 7 Pro, 120Hz, 90Hz)
+            if (highestRate >= 90.0f) {
+                lp.preferredRefreshRate = highestRate;
+                if (bestModeId != 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    lp.preferredDisplayModeId = bestModeId;
+                }
+            } else {
+                // If display API didn't report, request 144Hz maximum
+                lp.preferredRefreshRate = 144.0f;
+            }
+
+            if (Build.VERSION.SDK_INT >= 31) {
+                try {
+                    window.getClass().getMethod("setFrameRateSelectionPriority", int.class).invoke(window, 100);
+                } catch (Throwable ignored) {
+                }
+            }
+
+            window.setAttributes(lp);
+        } catch (Throwable ignored) {
+        }
+    }
+
     public static void setupSystemBars(Activity activity, Palette palette) {
         Window window = activity.getWindow();
+        enforceHighRefreshRate(window);
+
         window.setStatusBarColor(palette.windowBackground);
         window.setNavigationBarColor(palette.windowBackground);
 
@@ -138,112 +305,74 @@ public final class GboardM3Helper {
             int flags = decor.getSystemUiVisibility();
             if (!palette.isNight) {
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-                }
-            } else {
-                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !palette.isNight) {
+                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
             }
             decor.setSystemUiVisibility(flags);
         }
     }
 
-    public static View createToolbar(final Activity activity, String title, Palette palette) {
+    public static Drawable createCardDrawable(int fillColor, int strokeColor, int cornerRadiusPx) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.RECTANGLE);
+        shape.setCornerRadius(cornerRadiusPx);
+        shape.setColor(fillColor);
+        if (strokeColor != Color.TRANSPARENT) {
+            shape.setStroke(1, strokeColor);
+        }
+        return shape;
+    }
+
+    public static Drawable createClickableCardDrawable(int fillColor, int strokeColor, int rippleColor, int cornerRadiusPx) {
+        Drawable content = createCardDrawable(fillColor, strokeColor, cornerRadiusPx);
+        Drawable mask = createCardDrawable(Color.WHITE, Color.TRANSPARENT, cornerRadiusPx);
+        return new RippleDrawable(ColorStateList.valueOf(rippleColor), content, mask);
+    }
+
+    public static View createToolbar(final Activity activity, String titleText, final Palette palette) {
         LinearLayout toolbar = new LinearLayout(activity);
         toolbar.setOrientation(LinearLayout.HORIZONTAL);
         toolbar.setGravity(Gravity.CENTER_VERTICAL);
         toolbar.setPadding(dp(activity, 8), dp(activity, 12), dp(activity, 16), dp(activity, 12));
         toolbar.setBackgroundColor(palette.windowBackground);
 
-        // Back button
         ImageView backBtn = new ImageView(activity);
-        backBtn.setContentDescription("Navigate up");
-        GradientDrawable backBg = new GradientDrawable();
-        backBg.setShape(GradientDrawable.OVAL);
-        backBg.setColor(Color.TRANSPARENT);
-        backBtn.setBackground(new RippleDrawable(ColorStateList.valueOf(palette.ripple), backBg, null));
-        backBtn.setPadding(dp(activity, 10), dp(activity, 10), dp(activity, 10), dp(activity, 10));
-
-        // Draw back arrow
+        backBtn.setPadding(dp(activity, 12), dp(activity, 12), dp(activity, 12), dp(activity, 12));
         backBtn.setImageDrawable(createBackArrowDrawable(activity, palette.textPrimary));
-        LinearLayout.LayoutParams btnLp = new LinearLayout.LayoutParams(dp(activity, 44), dp(activity, 44));
-        btnLp.rightMargin = dp(activity, 8);
-        toolbar.addView(backBtn, btnLp);
-
+        backBtn.setBackground(createClickableCardDrawable(
+                Color.TRANSPARENT, Color.TRANSPARENT, palette.ripple, dp(activity, 24)));
+        backBtn.setClickable(true);
+        backBtn.setFocusable(true);
+        backBtn.setContentDescription("Back");
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.finish();
-                applyActivityExitTransition(activity);
+                activity.onBackPressed();
             }
         });
 
-        // Title
-        TextView titleView = new TextView(activity);
-        titleView.setText(title);
-        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
-        titleView.setTypeface(Typeface.DEFAULT_BOLD);
-        titleView.setTextColor(palette.textPrimary);
-        titleView.setSingleLine(true);
-        toolbar.addView(titleView, new LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f
-        ));
+        int btnSize = dp(activity, 48);
+        toolbar.addView(backBtn, new LinearLayout.LayoutParams(btnSize, btnSize));
+
+        TextView title = new TextView(activity);
+        title.setText(titleText);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setTextColor(palette.textPrimary);
+        title.setPadding(dp(activity, 12), 0, 0, 0);
+
+        toolbar.addView(title, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
 
         return toolbar;
     }
 
-    public static Drawable createBackArrowDrawable(Context context, final int color) {
-        final float density = context.getResources().getDisplayMetrics().density;
-        return new Drawable() {
-            @Override
-            public void draw(android.graphics.Canvas canvas) {
-                android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-                paint.setColor(color);
-                paint.setStyle(android.graphics.Paint.Style.STROKE);
-                paint.setStrokeWidth(2.2f * density);
-                paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
-                paint.setStrokeJoin(android.graphics.Paint.Join.ROUND);
-
-                android.graphics.Rect b = getBounds();
-                float cx = b.exactCenterX();
-                float cy = b.exactCenterY();
-                float r = 7f * density;
-
-                // arrow shaft
-                canvas.drawLine(cx - r, cy, cx + r, cy, paint);
-                // upper barb
-                canvas.drawLine(cx - r, cy, cx - r + (5f * density), cy - (5f * density), paint);
-                // lower barb
-                canvas.drawLine(cx - r, cy, cx - r + (5f * density), cy + (5f * density), paint);
-            }
-
-            @Override
-            public void setAlpha(int alpha) {}
-            @Override
-            public void setColorFilter(android.graphics.ColorFilter colorFilter) {}
-            @Override
-            public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
-        };
-    }
-
-    public static GradientDrawable createCardDrawable(int bgColor, int strokeColor, int cornerRadiusPx) {
-        GradientDrawable gd = new GradientDrawable();
-        gd.setShape(GradientDrawable.RECTANGLE);
-        gd.setColor(bgColor);
-        gd.setCornerRadius(cornerRadiusPx);
-        if (strokeColor != Color.TRANSPARENT) {
-            gd.setStroke(1, strokeColor);
-        }
-        return gd;
-    }
-
-    public static Drawable createClickableCardDrawable(int bgColor, int strokeColor, int rippleColor, int cornerRadiusPx) {
-        GradientDrawable content = createCardDrawable(bgColor, strokeColor, cornerRadiusPx);
-        GradientDrawable mask = createCardDrawable(Color.WHITE, Color.TRANSPARENT, cornerRadiusPx);
-        return new RippleDrawable(ColorStateList.valueOf(rippleColor), content, mask);
+    private static Drawable createBackArrowDrawable(Context context, int color) {
+        GradientDrawable d = new GradientDrawable();
+        d.setShape(GradientDrawable.OVAL);
+        d.setColor(color);
+        return d;
     }
 
     public static void applyActivityEnterTransition(Activity activity) {

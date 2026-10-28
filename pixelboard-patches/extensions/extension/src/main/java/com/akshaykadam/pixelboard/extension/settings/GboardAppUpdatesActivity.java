@@ -35,7 +35,7 @@ import java.net.URL;
 public class GboardAppUpdatesActivity extends Activity {
 
     private static final String GITHUB_API_URL = "https://api.github.com/repos/smartworldarafath/Gboard_Pro/releases/latest";
-    private static final String CURRENT_VERSION = "1.0.0";
+    private static final String CURRENT_VERSION = "1.0.2";
 
     private GboardM3Helper.Palette palette;
     private Handler mainHandler;
@@ -74,7 +74,7 @@ public class GboardAppUpdatesActivity extends Activity {
         root.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        root.addView(GboardM3Helper.createToolbar(this, "App Updates", palette));
+        root.addView(GboardM3Helper.createToolbar(this, "Gboard Pro Updates", palette));
 
         ScrollView scrollView = new ScrollView(this);
         scrollView.setFillViewport(true);
