@@ -74,7 +74,10 @@ public class GboardAppearanceActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(GboardM3Helper.resolveActivityTheme(this));
+        try {
+            setTheme(GboardM3Helper.resolveActivityTheme(this));
+        } catch (Throwable ignored) {
+        }
         super.onCreate(savedInstanceState);
 
         try {

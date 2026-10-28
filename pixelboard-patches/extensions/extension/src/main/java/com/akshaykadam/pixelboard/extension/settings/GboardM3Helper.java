@@ -271,13 +271,35 @@ public final class GboardM3Helper {
                     }
                 }
                 if (display != null) {
+                    Display.Mode currentMode = null;
+                    try {
+                        currentMode = display.getMode();
+                    } catch (Throwable ignored) {
+                    }
+                    int curW = currentMode != null ? currentMode.getPhysicalWidth() : 0;
+                    int curH = currentMode != null ? currentMode.getPhysicalHeight() : 0;
+
                     Display.Mode[] modes = display.getSupportedModes();
                     if (modes != null) {
+                        // First pass: look for highest refresh rate matching current screen resolution
                         for (Display.Mode mode : modes) {
+                            if (curW > 0 && curH > 0 && (mode.getPhysicalWidth() != curW || mode.getPhysicalHeight() != curH)) {
+                                continue;
+                            }
                             float rate = mode.getRefreshRate();
                             if (rate > highestRate) {
                                 highestRate = rate;
                                 bestModeId = mode.getModeId();
+                            }
+                        }
+                        // Second pass fallback if no match found
+                        if (highestRate <= 60.0f) {
+                            for (Display.Mode mode : modes) {
+                                float rate = mode.getRefreshRate();
+                                if (rate > highestRate) {
+                                    highestRate = rate;
+                                    bestModeId = mode.getModeId();
+                                }
                             }
                         }
                     }
@@ -291,7 +313,8 @@ public final class GboardM3Helper {
                     lp.preferredDisplayModeId = bestModeId;
                 }
             } else {
-                // If display API didn't report, request 144Hz maximum
+                // Default high refresh rate request to 144Hz
+                highestRate = 144.0f;
                 lp.preferredRefreshRate = 144.0f;
             }
 
@@ -303,6 +326,33 @@ public final class GboardM3Helper {
             }
 
             window.setAttributes(lp);
+
+            if (Build.VERSION.SDK_INT >= 30) {
+                try {
+                    View decor = window.getDecorView();
+                    if (decor != null) {
+                        try {
+                            decor.getClass().getMethod("setFrameRate", float.class, int.class).invoke(decor, highestRate, 0);
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+    }
+
+    public static void enforceHighRefreshRateIme(android.inputmethodservice.InputMethodService service) {
+        if (service == null) return;
+        try {
+            android.app.Dialog dialog = service.getWindow();
+            if (dialog != null) {
+                Window window = dialog.getWindow();
+                if (window != null) {
+                    enforceHighRefreshRate(window);
+                }
+            }
         } catch (Throwable ignored) {
         }
     }
@@ -477,19 +527,16 @@ public final class GboardM3Helper {
     public static void applyActivityEnterTransition(Activity activity) {
         if (activity == null) return;
         try {
-            int enterAnim = activity.getResources().getIdentifier("m3_slide_in_right", "anim", activity.getPackageName());
-            int exitAnim = activity.getResources().getIdentifier("m3_slide_out_left", "anim", activity.getPackageName());
-            if (enterAnim != 0 && exitAnim != 0) {
-                if (Build.VERSION.SDK_INT >= 34) {
-                    try {
-                        activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, enterAnim, exitAnim);
-                    } catch (Throwable t) {
-                        activity.overridePendingTransition(enterAnim, exitAnim);
-                    }
-                } else {
-                    activity.overridePendingTransition(enterAnim, exitAnim);
-                }
+            int enterAnim = 0x7f01004c;
+            int exitAnim = 0x7f01004d;
+            try {
+                int dynEnter = activity.getResources().getIdentifier("m3_slide_in_right", "anim", activity.getPackageName());
+                int dynExit = activity.getResources().getIdentifier("m3_slide_out_left", "anim", activity.getPackageName());
+                if (dynEnter != 0) enterAnim = dynEnter;
+                if (dynExit != 0) exitAnim = dynExit;
+            } catch (Throwable ignored) {
             }
+            activity.overridePendingTransition(enterAnim, exitAnim);
         } catch (Throwable ignored) {
         }
     }
@@ -497,19 +544,16 @@ public final class GboardM3Helper {
     public static void applyActivityExitTransition(Activity activity) {
         if (activity == null) return;
         try {
-            int enterAnim = activity.getResources().getIdentifier("m3_slide_in_left", "anim", activity.getPackageName());
-            int exitAnim = activity.getResources().getIdentifier("m3_slide_out_right", "anim", activity.getPackageName());
-            if (enterAnim != 0 && exitAnim != 0) {
-                if (Build.VERSION.SDK_INT >= 34) {
-                    try {
-                        activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, enterAnim, exitAnim);
-                    } catch (Throwable t) {
-                        activity.overridePendingTransition(enterAnim, exitAnim);
-                    }
-                } else {
-                    activity.overridePendingTransition(enterAnim, exitAnim);
-                }
+            int enterAnim = 0x7f01004e;
+            int exitAnim = 0x7f01004f;
+            try {
+                int dynEnter = activity.getResources().getIdentifier("m3_slide_in_left", "anim", activity.getPackageName());
+                int dynExit = activity.getResources().getIdentifier("m3_slide_out_right", "anim", activity.getPackageName());
+                if (dynEnter != 0) enterAnim = dynEnter;
+                if (dynExit != 0) exitAnim = dynExit;
+            } catch (Throwable ignored) {
             }
+            activity.overridePendingTransition(enterAnim, exitAnim);
         } catch (Throwable ignored) {
         }
     }
