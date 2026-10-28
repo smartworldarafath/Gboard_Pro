@@ -4,7 +4,7 @@ import com.akshaykadam.pixelboard.patches.gboard.shared.generated.GboardTargetAd
 
 internal object Constants {
     const val GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin"
-    const val GBOARD_PATCHED_PACKAGE_NAME = "com.akshaykadam.pixelboard"
+    const val GBOARD_PATCHED_PACKAGE_NAME = "com.gboardpro.app"
     const val GBOARD_PATCH_AUTHOR = "Arafath"
     const val GBOARD_PATCH_AUTHOR_URL = "https://github.com/smartworldarafath"
     const val GBOARD_PATCH_REPOSITORY_URL = "https://github.com/smartworldarafath/Gboard_Pro"

@@ -24,3 +24,8 @@ input/splits*/
 
 # Scratch directory
 scratch/
+
+temp_decompiled/
+build_classes/
+tools/*.jar
+tools/*.keystore

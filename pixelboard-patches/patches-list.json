@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.0.0",
   "patches": [
     {
       "name": "AI Writing Tools",
@@ -48,7 +48,7 @@
     },
     {
       "name": "Package Rename",
-      "description": "Rename the package to com.akshaykadam.pixelboard and allow a custom app name so it can be installed alongside the official Gboard.",
+      "description": "Rename the package to com.gboardpro.app and allow a custom app name so it can be installed alongside the official Gboard.",
       "use": true,
       "dependencies": [],
       "compatiblePackages": {
