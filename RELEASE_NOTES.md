@@ -1,50 +1,54 @@
-# 🚀 Gboard_Pro — Release Notes (`v18.4.1-V7` / Bundle `v1.2.0`)
-
 ## Overview
-**Gboard_Pro `v18.4.1-V7`** (powered by Patch Bundle `v1.2.0`) delivers improved TalkBack accessibility in the features panel, fused APK dictation library verification, automatic foreground screenshot & clipboard syncing, American Sign Language (Sign-to-Text) camera recognition, and smarter auto-correction behavior built on **Google Gboard `18.4.1.985164140-release-arm64-v8a`**.
 
----
+Gboard Pro v1.0.0 is the official initial release featuring an extensive Material 3 Expressive overhaul, custom launcher icon theming, native GitHub-integrated update mechanics, and comprehensive settings customization.
 
-## ✨ Key Changes in `v18.4.1-V7`
+## Key Changes and Enhancements
 
-### 1. Accessibility & TalkBack Focus Improvements
-- **Window State Notifications**: Opening the keyboard tools panel (`AccessPointsPanel`, `AccessPointsPanelV2`, `AccessPointsPanelViewPage`) now properly dispatches `AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED` with a resolved pane title.
-- **Automatic Focus Placement**: Screen readers immediately land on the first interactive tool button instead of losing focus.
+### 1. Rebranding and Settings Interface
+* Settings Header: Updated the main settings activity title to "Gboard Pro Settings".
+* Advanced Settings Badge: Updated the version descriptor and pill indicator to "Gboard Pro 1.0.0".
+* Spell Checker: Renamed all system spell-checker service labels and strings to "Gboard Pro Spell Checker".
+* About Section: Redesigned the About activity to feature the full-resolution Gboard Pro icon, current build metadata (v1.0.0), and direct links to repository documentation, privacy policy, and licenses.
+* Developer Integration: Integrated developer attribution for Arafath Rahman with dedicated navigation buttons to GitHub and Instagram.
 
-### 2. Fused APK Dictation Readiness & Offline Voice Packs
-- **Direct Native Library Check**: Uses `NativeLibHelper.c("dictation_jni", false)` so fused standalone APKs pass dictation readiness checks without requiring Play Store split-APK metadata.
-- **Offline Model Downloads**: Fixes URL resolution for on-device voice recognition language packs (including `zh-TW`).
+### 2. Appearance and Launcher Icon Theming
+* Added a dedicated "Appearance" section directly accessible from the root Settings menu.
+* Implemented dynamic launcher icon switching supporting five distinct visual profiles:
+  * Classic Gboard Pro (Default Material You dynamic theme)
+  * Expressive Purple (High-contrast violet keycaps with vibrant glow)
+  * Slate Charcoal (Minimalist neutral graphite finish)
+  * Forest Emerald (Deep sage and emerald keycaps)
+  * Midnight Navy (Cobalt blue and deep indigo typing accent)
+* Integrated seamless runtime switching via Android activity aliases without requiring device restarts.
 
-### 3. Instant Clipboard & Screenshot Synchronization
-- **Foreground Observer Sync**: Invokes `ensureScreenshotObserver(handler)` during `onStartInputView` so recent screenshots and copied text appear right away.
-- **Default XML Preferences**: Pre-enables `enable_screenshot_in_clipboard`, `pref_key_enable_clipboard`, and `pref_key_enable_emoji_suggestion`.
+### 3. Vibration Strength Calibration
+* Resolved the keypress vibration intensity defect where slider adjustments failed to modulate haptic motor voltage.
+* Implemented dynamic amplitude scaling (1 to 255) and proportional duration mapping (5ms to 35ms), ensuring distinct sensory feedback across subtle, medium, and firm keystrokes.
 
-### 4. Sign-to-Text (ASL Camera Translation)
-- **Signboard Integration**: Activates `enable_signboard`, `signboard_prompt_manual_trigger`, `on_demand_feature_split`, and `use_4c_in_signboard` for real-time American Sign Language translation on supported devices.
+### 4. Seamless Material 3 Window Transitions
+* Implemented butter-smooth enter and exit transitions utilizing the FastOutSlowIn interpolator across all Settings and extension activities.
+* Integrated system window animation styles to maintain visual fluidness throughout sub-screen navigation.
 
-### 5. Refined Auto-Correction & Undo Behavior
-- **Backspace / Primary-Key Revert**: Enables `auto_correct_with_replace_text = true` and `enable_revert_auto_correct_on_pk = true` to quickly undo unwanted auto-corrections.
-- **Smarter Word Learning**: Sets `intended_oov_min_count = 2L` so single-occurrence typos aren't saved into your personal dictionary prematurely.
+### 5. In-App Updates Engine
+* Introduced the "App Updates" control center positioned directly above Advanced Settings.
+* Automated release checking against the official GitHub Releases API.
+* Direct in-app APK downloading with progress visualization.
+* Automatic installation prompt upon package completion with a persistent installation fallback button.
 
----
+### 6. Board UI Roadmap
+* Introduced the "Board UI" preference section outlining upcoming visual personalization features currently in active development (keycap border tuning, custom font selection, and expressive key shapes).
 
-## 📦 Downloads
+### 7. Issue Reporting and Community Feedback
+* Unified all "Help & feedback" preference touchpoints to navigate directly to the GitHub Issues portal for fast bug triage and feature requests.
 
-| File | Type | Size | Notes |
-| :--- | :--- | :--- | :--- |
-| [**Gboard_Pro-18.4.1-V7.apk**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) | **Signed APK** *(Recommended)* | ~127 MB | Ready to install alongside stock Gboard without root. |
-| [**patches-1.2.0.mpp**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/patches-1.2.0.mpp) | **Morphe Patch Bundle** | ~1.6 MB | Use with Morphe Manager to patch a clean Gboard APK. |
-| [**Stock Gboard v18.4.1**](https://www.apkmirror.com/apk/google-inc/gboard/gboard-the-google-keyboard-18-4-1-985164140-release/) | **Base APK** | ~67 MB | Clean upstream APK from APKMirror (for manual patching). |
+## Package Information
+* Package Name: com.gboardpro.app
+* Target Version: 1.0.0 (18.4.1.985164140-release-arm64-v8a)
+* Architecture: arm64-v8a
+* Minimum Android Version: Android 12 (API level 32)
+* Target Android Version: Android 15 / Developer Preview (API level 37)
+* Signature Scheme: v3 signed with release keystore
 
----
-
-## 📲 Quick Setup
-
-### Direct APK Install
-1. Download [**Gboard_Pro-18.4.1-V7.apk**](https://github.com/smartworldarafath/Gboard_Pro/releases/download/v18.4.1-Stable-V7/Gboard_Pro-18.4.1-V7.apk) and install it on your device.
-2. Enable **Gboard_Pro** in **Settings > System > Languages & input > On-screen keyboard**.
-
-### Morphe Manager Repository URL
-```text
-https://raw.githubusercontent.com/smartworldarafath/Gboard_Pro/main/patches-bundle.json
-```
+## Assets
+* Gboard_Pro-1.0.0.apk: Version-tagged release package
+* Gboard_Pro.apk: Standalone release package
