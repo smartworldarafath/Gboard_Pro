@@ -1,10 +1,3 @@
-/**
- * Gboard_Pro - Gboard Enhancement Mod
- *
- * Maintained and customized by Arafath (@smartworldarafath)
- * Repository: https://github.com/smartworldarafath/Gboard_Pro
- * Licensed under the GNU General Public License v3.0 (GPLv3)
- */
 package com.akshaykadam.pixelboard.extension.settings;
 
 import android.content.Context;
@@ -15,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.akshaykadam.pixelboard.extension.keyboard.GboardAiVoiceSettingsGroupFeature;
-import com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateFeature;
 
 public final class GboardPatchesSettingsFeatureRegistry {
     private static final String TAG = "GboardPro";
@@ -26,11 +18,7 @@ public final class GboardPatchesSettingsFeatureRegistry {
     public static List<GboardPatchesSettingsContract.Feature> features(Context context) {
         List<GboardPatchesSettingsContract.Feature> features =
                 new ArrayList<GboardPatchesSettingsContract.Feature>();
-        addIfAvailable(context, features, new GboardAppearanceFeature(context));
-        addIfAvailable(context, features, new GboardBoardUiFeature(context));
         addIfAvailable(context, features, new GboardAiVoiceSettingsGroupFeature(context));
-        addIfAvailable(context, features, new PixelBoardUpdateFeature(context));
-        addIfAvailable(context, features, new GboardAboutFeature(context));
         return Collections.unmodifiableList(features);
     }
 

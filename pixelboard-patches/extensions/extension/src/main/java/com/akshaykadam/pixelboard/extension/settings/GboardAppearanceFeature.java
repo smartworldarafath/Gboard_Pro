@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
 
         List<GboardPatchesSettingsContract.Section> sections = new ArrayList<>();
 
-        // 1. App Launcher Icons Section
+        // 1. App Launcher Icons Section with previews
         List<GboardPatchesSettingsContract.Row> iconRows = new ArrayList<>();
         String[] iconAliases = {
                 "launcher.Default",
@@ -58,6 +60,13 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                 "launcher.Slate",
                 "launcher.ForestGreen",
                 "launcher.NavyBlue"
+        };
+        String[] iconResNames = {
+                "ic_app",
+                "icon_purple",
+                "icon_slate",
+                "icon_forest_green",
+                "icon_navy_blue"
         };
         String[] iconTitles = {
                 "Classic Gboard Pro (Default)",
@@ -77,6 +86,8 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
         for (int i = 0; i < iconAliases.length; i++) {
             final String alias = iconAliases[i];
             boolean selected = alias.equals(currentIcon);
+            Drawable iconDrawable = loadMipmapDrawable(ctx, iconResNames[i]);
+
             iconRows.add(new GboardPatchesSettingsContract.RadioRow(
                     iconTitles[i],
                     iconSummaries[i],
@@ -87,7 +98,8 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                         if (host != null) {
                             host.submit(h -> h.refresh());
                         }
-                    }
+                    },
+                    iconDrawable
             ));
         }
         sections.add(new GboardPatchesSettingsContract.Section(
@@ -95,7 +107,7 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                 iconRows
         ));
 
-        // 2. Gboard UI Themes Section with "beta" badge
+        // 2. Gboard UI Themes Section with multi-tone color demo swatches and "beta" badge
         List<GboardPatchesSettingsContract.Row> themeRows = new ArrayList<>();
         String[] themeKeys = {"default", "rainbow", "botanical", "ocean"};
         String[] themeTitles = {
@@ -111,9 +123,12 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                 "Midnight azure and ethereal twilight lavender multi-color"
         };
 
+        int swatchSize = GboardM3Helper.dp(ctx, 42);
         for (int i = 0; i < themeKeys.length; i++) {
             final String key = themeKeys[i];
             boolean selected = key.equals(currentTheme);
+            Drawable swatch = GboardM3Helper.createThemeSwatchDrawable(ctx, key, swatchSize);
+
             themeRows.add(new GboardPatchesSettingsContract.RadioRow(
                     themeTitles[i],
                     themeSummaries[i],
@@ -121,11 +136,17 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                     selected,
                     () -> {
                         prefs.edit().putString(KEY_UI_THEME, key).apply();
+                        try {
+                            PreferenceManager.getDefaultSharedPreferences(ctx)
+                                    .edit().putString(KEY_UI_THEME, key).apply();
+                        } catch (Throwable ignored) {
+                        }
                         Toast.makeText(ctx, "Applied " + key + " UI theme", Toast.LENGTH_SHORT).show();
                         if (host != null) {
                             host.submit(h -> h.refresh());
                         }
-                    }
+                    },
+                    swatch
             ));
         }
         sections.add(new GboardPatchesSettingsContract.Section(
@@ -148,6 +169,17 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                 statusBlocks,
                 sections
         );
+    }
+
+    private Drawable loadMipmapDrawable(Context ctx, String resName) {
+        try {
+            int id = ctx.getResources().getIdentifier(resName, "mipmap", ctx.getPackageName());
+            if (id != 0) {
+                return ctx.getDrawable(id);
+            }
+        } catch (Throwable ignored) {
+        }
+        return null;
     }
 
     private void applyAppIcon(Context ctx, String targetAlias) {

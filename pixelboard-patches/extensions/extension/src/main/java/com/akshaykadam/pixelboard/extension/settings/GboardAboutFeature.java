@@ -49,7 +49,7 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
         ));
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
                 "Version",
-                "v1.0.4 (Release)",
+                "v1.0.5 (Beta)",
                 false
         ));
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
@@ -94,14 +94,14 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
 
         List<GboardPatchesSettingsContract.StatusBlock> statusBlocks = new ArrayList<>();
         statusBlocks.add(new GboardPatchesSettingsContract.StatusBlock(
-                "Gboard Pro by Arafath Rahman",
-                "A modern, high-performance Gboard enhancement with Material 3 Expressive styling, 144Hz/120Hz high refresh rate support, Gemini Voice, and in-app updates.",
+                "Gboard Pro",
+                "A modern, high-performance Gboard enhancement with Material 3 Expressive styling, 144Hz refresh rate, Gemini Voice, and in-app updates.",
                 GboardPatchesSettingsContract.StatusTone.INFO
         ));
 
         return new GboardPatchesSettingsContract.Screen(
                 "About",
-                null,
+                "v1.0.5",
                 "About",
                 "Developer & project details",
                 statusBlocks,

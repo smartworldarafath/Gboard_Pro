@@ -132,12 +132,31 @@ public final class PixelBoardUpdateFeature implements GboardPatchesSettingsContr
                         GboardPatchesSettingsContract.StatusTone.WARNING));
                 break;
             case DOWNLOADING:
+                float speedMbps = updateManager.getCurrentSpeedMbps();
+                int percent = updateManager.getDownloadProgressPercent();
+                long dl = updateManager.getDownloadedBytes();
+                long tot = updateManager.getTotalBytes();
+                String speedStr = speedMbps > 0.05f
+                        ? String.format(java.util.Locale.US, "%.1f Mbps", speedMbps)
+                        : "Calculating speed...";
+                String progressStr = tot > 0L
+                        ? (formatBytes(dl) + " / " + formatBytes(tot) + " (" + percent + "%)")
+                        : "Downloading package...";
+                statusBlocks.add(new GboardPatchesSettingsContract.StatusBlock(
+                        "Downloading Update • " + speedStr,
+                        progressStr + "\nLive real-time transfer directly from GitHub Releases.",
+                        GboardPatchesSettingsContract.StatusTone.INFO));
+                break;
             case DOWNLOAD_COMPLETED:
+                statusBlocks.add(new GboardPatchesSettingsContract.StatusBlock(
+                        "Download Complete",
+                        "Update package is ready to install. Tap 'Install Update' below to proceed.",
+                        GboardPatchesSettingsContract.StatusTone.INFO));
+                break;
             case UP_TO_DATE:
             case CHECKING:
             case IDLE:
             default:
-                // No top status box when downloading, downloaded, up to date, or idle to keep UI clean and uncluttered
                 break;
         }
 
@@ -169,9 +188,20 @@ public final class PixelBoardUpdateFeature implements GboardPatchesSettingsContr
                     true,
                     () -> PixelBoardUpdateManager.openReleasePage(context, targetRelease.getHtmlUrl())));
         } else if (status == PixelBoardUpdateManager.Status.DOWNLOADING) {
+            float speedMbps = updateManager.getCurrentSpeedMbps();
+            int percent = updateManager.getDownloadProgressPercent();
+            long dl = updateManager.getDownloadedBytes();
+            long tot = updateManager.getTotalBytes();
+            String speedStr = speedMbps > 0.05f
+                    ? String.format(java.util.Locale.US, "%.1f Mbps", speedMbps)
+                    : "Connecting...";
+            String dlText = tot > 0L
+                    ? (formatBytes(dl) + " of " + formatBytes(tot) + " (" + percent + "%)")
+                    : "In progress...";
+
             actionRows.add(new GboardPatchesSettingsContract.CommandRow(
-                    "Downloading Update…",
-                    "Download is in progress. Check notification panel for status.",
+                    "Speed: " + speedStr,
+                    dlText,
                     false,
                     null));
 
@@ -368,6 +398,12 @@ public final class PixelBoardUpdateFeature implements GboardPatchesSettingsContr
             }
         }
         return "1.3.3";
+    }
+
+    private static String formatBytes(long bytes) {
+        if (bytes <= 0) return "0 MB";
+        double mb = bytes / (1024.0 * 1024.0);
+        return String.format(java.util.Locale.US, "%.1f MB", mb);
     }
 
     public static String formatRelativeTime(long timestamp) {

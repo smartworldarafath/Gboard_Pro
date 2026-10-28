@@ -1,8 +1,8 @@
 /**
- * PixelBoard - Gboard Enhancement Mod
+ * Gboard Pro - Next-Generation Gboard Enhancement Mod
  *
- * Maintained and customized by Akshay Kadam (@Akshayykadam)
- * Repository: https://github.com/Akshayykadam/PixelBoard
+ * Maintained and customized by Arafath Rahman (@smartworldarafath)
+ * Repository: https://github.com/smartworldarafath/Gboard_Pro
  * Licensed under the GNU General Public License v3.0 (GPLv3)
  */
 package com.akshaykadam.pixelboard.extension.updater;
@@ -21,7 +21,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -42,14 +41,14 @@ import java.util.concurrent.Executors;
  * Manages GitHub release update checking, release notes parsing, and APK download/install flows.
  */
 public final class PixelBoardUpdateManager {
-    private static final String TAG = "PixelBoardUpdate";
+    private static final String TAG = "GboardProUpdate";
 
     public static final String GITHUB_REPO_API =
             "https://api.github.com/repos/smartworldarafath/Gboard_Pro/releases/latest";
     public static final String GITHUB_REPO_RELEASES_WEB =
             "https://github.com/smartworldarafath/Gboard_Pro/releases";
 
-    private static final String PREF_NAME = "pixelboard_updates";
+    private static final String PREF_NAME = "gboard_pro_updates";
     private static final String PREF_KEY_AUTO_CHECK = "auto_check_updates";
     private static final String PREF_KEY_LAST_CHECK_TIME = "last_check_timestamp";
     private static final String PREF_KEY_CACHED_VERSION = "cached_version";
@@ -77,7 +76,7 @@ public final class PixelBoardUpdateManager {
     }
 
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r, "PixelBoardUpdateChecker");
+        Thread thread = new Thread(r, "GboardProUpdateChecker");
         thread.setDaemon(true);
         return thread;
     });
@@ -103,6 +102,16 @@ public final class PixelBoardUpdateManager {
     private ReleaseInfo currentReleaseInfo;
     private String lastErrorMessage = "";
     private BroadcastReceiver downloadReceiver;
+
+    // Real-time download speed and progress state
+    private float currentSpeedMbps = 0.0f;
+    private long downloadedBytes = 0L;
+    private long totalBytes = 0L;
+    private int downloadProgressPercent = 0;
+    private Handler progressHandler;
+    private Runnable progressRunnable;
+    private long lastSpeedCheckTime = 0L;
+    private long lastSpeedBytes = 0L;
 
     private PixelBoardUpdateManager() {
     }
@@ -132,6 +141,22 @@ public final class PixelBoardUpdateManager {
 
     public String getLastErrorMessage() {
         return lastErrorMessage;
+    }
+
+    public float getCurrentSpeedMbps() {
+        return currentSpeedMbps;
+    }
+
+    public long getDownloadedBytes() {
+        return downloadedBytes;
+    }
+
+    public long getTotalBytes() {
+        return totalBytes;
+    }
+
+    public int getDownloadProgressPercent() {
+        return downloadProgressPercent;
     }
 
     private Uri lastDownloadedApkUri;
@@ -168,9 +193,6 @@ public final class PixelBoardUpdateManager {
         return prefs != null ? prefs.getLong(PREF_KEY_LAST_CHECK_TIME, 0L) : 0L;
     }
 
-    /**
-     * Loads the last cached release info from disk so the UI displays instantly without waiting.
-     */
     public ReleaseInfo getCachedReleaseInfo(Context context) {
         if (currentReleaseInfo != null) {
             return currentReleaseInfo;
@@ -196,9 +218,6 @@ public final class PixelBoardUpdateManager {
         return cached;
     }
 
-    /**
-     * Checks GitHub for the latest release asynchronously.
-     */
     public void checkForUpdates(Context context, String installedVersion, UpdateCallback callback) {
         currentStatus = Status.CHECKING;
         lastErrorMessage = "";
@@ -213,7 +232,7 @@ public final class PixelBoardUpdateManager {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
-                connection.setRequestProperty("User-Agent", "PixelBoard-Android-App");
+                connection.setRequestProperty("User-Agent", "Gboard-Pro-Android-App");
                 connection.setConnectTimeout(10000);
                 connection.setReadTimeout(15000);
 
@@ -319,9 +338,6 @@ public final class PixelBoardUpdateManager {
                 .apply();
     }
 
-    /**
-     * Downloads the release APK using Android DownloadManager and initiates package installation on completion.
-     */
     public void downloadAndInstall(Activity activity, ReleaseInfo releaseInfo, Runnable onStateChanged) {
         if (activity == null || releaseInfo == null) {
             return;
@@ -340,8 +356,8 @@ public final class PixelBoardUpdateManager {
         try {
             Uri downloadUri = Uri.parse(releaseInfo.getApkDownloadUrl());
             DownloadManager.Request request = new DownloadManager.Request(downloadUri);
-            request.setTitle("PixelBoard " + releaseInfo.getVersion());
-            request.setDescription("Downloading PixelBoard update...");
+            request.setTitle("Gboard Pro " + releaseInfo.getVersion());
+            request.setDescription("Downloading Gboard Pro update...");
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, releaseInfo.getApkFileName());
             request.setMimeType("application/vnd.android.package-archive");
@@ -354,17 +370,97 @@ public final class PixelBoardUpdateManager {
             }
 
             currentStatus = Status.DOWNLOADING;
-            Toast.makeText(activity, "Downloading PixelBoard v" + releaseInfo.getVersion() + "...", Toast.LENGTH_SHORT).show();
+            currentSpeedMbps = 0.0f;
+            downloadedBytes = 0L;
+            totalBytes = releaseInfo.getApkSizeBytes();
+            downloadProgressPercent = 0;
+
+            Toast.makeText(activity, "Downloading Gboard Pro v" + releaseInfo.getVersion() + "...", Toast.LENGTH_SHORT).show();
             if (onStateChanged != null) {
                 onStateChanged.run();
             }
 
+            startProgressTracking(activity.getApplicationContext(), downloadId, onStateChanged);
             registerDownloadReceiver(activity.getApplicationContext(), downloadId, onStateChanged);
 
         } catch (Throwable throwable) {
             Log.w(TAG, "Failed to enqueue APK download", throwable);
             Toast.makeText(activity, "Failed to start download: " + throwable.getMessage(), Toast.LENGTH_LONG).show();
             openReleasePage(activity, releaseInfo.getApkDownloadUrl());
+        }
+    }
+
+    private void startProgressTracking(Context context, long downloadId, Runnable onStateChanged) {
+        stopProgressTracking();
+        lastSpeedCheckTime = System.currentTimeMillis();
+        lastSpeedBytes = 0L;
+        currentSpeedMbps = 0.0f;
+
+        if (progressHandler == null) {
+            progressHandler = new Handler(Looper.getMainLooper());
+        }
+
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (currentStatus != Status.DOWNLOADING) {
+                    return;
+                }
+                DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                if (dm != null) {
+                    DownloadManager.Query q = new DownloadManager.Query();
+                    q.setFilterById(downloadId);
+                    try (Cursor c = dm.query(q)) {
+                        if (c != null && c.moveToFirst()) {
+                            int downloadedIdx = c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                            int totalIdx = c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES);
+                            if (downloadedIdx >= 0 && totalIdx >= 0) {
+                                long curBytes = c.getLong(downloadedIdx);
+                                long totBytes = c.getLong(totalIdx);
+                                downloadedBytes = curBytes;
+                                if (totBytes > 0) {
+                                    totalBytes = totBytes;
+                                    downloadProgressPercent = (int) Math.min(100L, (curBytes * 100L) / totBytes);
+                                }
+
+                                long now = System.currentTimeMillis();
+                                long timeDeltaMs = now - lastSpeedCheckTime;
+                                if (timeDeltaMs >= 300) {
+                                    long bytesDelta = curBytes - lastSpeedBytes;
+                                    if (bytesDelta >= 0) {
+                                        double seconds = timeDeltaMs / 1000.0;
+                                        double bits = bytesDelta * 8.0;
+                                        float instantMbps = (float) (bits / (seconds * 1_000_000.0));
+                                        if (currentSpeedMbps <= 0.05f) {
+                                            currentSpeedMbps = instantMbps;
+                                        } else {
+                                            currentSpeedMbps = currentSpeedMbps * 0.65f + instantMbps * 0.35f;
+                                        }
+                                    }
+                                    lastSpeedBytes = curBytes;
+                                    lastSpeedCheckTime = now;
+                                }
+
+                                if (onStateChanged != null) {
+                                    onStateChanged.run();
+                                }
+                            }
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                }
+                if (currentStatus == Status.DOWNLOADING && progressHandler != null) {
+                    progressHandler.postDelayed(this, 350);
+                }
+            }
+        };
+        progressHandler.post(progressRunnable);
+    }
+
+    private void stopProgressTracking() {
+        if (progressHandler != null && progressRunnable != null) {
+            progressHandler.removeCallbacks(progressRunnable);
+            progressRunnable = null;
         }
     }
 
@@ -388,6 +484,7 @@ public final class PixelBoardUpdateManager {
                     return;
                 }
 
+                stopProgressTracking();
                 DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                 if (downloadManager == null) {
                     return;
@@ -403,6 +500,7 @@ public final class PixelBoardUpdateManager {
                         if (status == DownloadManager.STATUS_SUCCESSFUL) {
                             Uri apkUri = downloadManager.getUriForDownloadedFile(targetDownloadId);
                             currentStatus = Status.DOWNLOAD_COMPLETED;
+                            downloadProgressPercent = 100;
                             lastDownloadedApkUri = apkUri;
                             if (onStateChanged != null) {
                                 postToMain(onStateChanged);
@@ -442,9 +540,6 @@ public final class PixelBoardUpdateManager {
         }
     }
 
-    /**
-     * Launches package installer intent for the downloaded APK file URI.
-     */
     public static void promptInstallApk(Context context, Uri apkUri) {
         if (context == null || apkUri == null) {
             return;
@@ -455,7 +550,7 @@ public final class PixelBoardUpdateManager {
                 if (context instanceof Activity activity && !activity.isFinishing()) {
                     new AlertDialog.Builder(activity)
                             .setTitle("Install Permission Required")
-                            .setMessage("To install downloaded updates directly, PixelBoard needs permission to install unknown apps. Please allow it in the next screen.")
+                            .setMessage("To install downloaded updates directly, Gboard Pro needs permission to install unknown apps. Please allow it in the next screen.")
                             .setPositiveButton("Settings", (dialog, which) -> {
                                 Intent settingsIntent = new Intent(
                                         Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
