@@ -30,3 +30,7 @@ temp_decompiled/
 build_classes/
 tools/*.jar
 tools/*.keystore
+
+artifacts_debug/
+temp_smali/
+verify_apk/
