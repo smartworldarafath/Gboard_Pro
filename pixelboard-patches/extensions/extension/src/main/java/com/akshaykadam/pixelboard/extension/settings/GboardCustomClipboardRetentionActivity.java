@@ -50,66 +50,85 @@ public class GboardCustomClipboardRetentionActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(GboardM3Helper.resolveActivityTheme(this));
         super.onCreate(savedInstanceState);
-        palette = GboardM3Helper.Palette.forContext(this);
-        GboardM3Helper.setupSystemBars(this, palette);
-        GboardM3Helper.applyActivityEnterTransition(this);
 
-        initPresets();
+        try {
+            palette = GboardM3Helper.Palette.forContext(this);
+            GboardM3Helper.initActivity(this, palette);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(palette.windowBackground);
-        root.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            initPresets();
 
-        root.addView(GboardM3Helper.createToolbar(this, "Clipboard Retention", palette));
+            LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setBackgroundColor(palette.windowBackground);
+            root.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setFillViewport(true);
-        scrollView.setVerticalScrollBarEnabled(false);
+            root.addView(GboardM3Helper.createToolbar(this, "Clipboard Retention", palette));
 
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
-                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 28));
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setFillViewport(true);
+            scrollView.setVerticalScrollBarEnabled(false);
 
-        // 1. Hero Card
-        content.addView(buildHeroCard());
+            LinearLayout content = new LinearLayout(this);
+            content.setOrientation(LinearLayout.VERTICAL);
+            content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
+                    GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 28));
 
-        // 2. Preset List Section
-        TextView presetLabel = new TextView(this);
-        presetLabel.setText("PRESET RETENTION TIMES");
-        presetLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        presetLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        presetLabel.setTextColor(palette.accent);
-        presetLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 20),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
-        content.addView(presetLabel);
+            // 1. Hero Card
+            content.addView(buildHeroCard());
 
-        presetsContainer = new LinearLayout(this);
-        presetsContainer.setOrientation(LinearLayout.VERTICAL);
-        content.addView(presetsContainer);
+            // 2. Preset List Section
+            TextView presetLabel = new TextView(this);
+            presetLabel.setText("PRESET RETENTION TIMES");
+            presetLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            presetLabel.setTypeface(Typeface.DEFAULT_BOLD);
+            presetLabel.setTextColor(palette.accent);
+            presetLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 20),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+            content.addView(presetLabel);
 
-        // 3. Custom Input Section
-        TextView customSectionLabel = new TextView(this);
-        customSectionLabel.setText("CUSTOM TIME IN HOURS");
-        customSectionLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        customSectionLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        customSectionLabel.setTextColor(palette.accent);
-        customSectionLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
-        content.addView(customSectionLabel);
+            presetsContainer = new LinearLayout(this);
+            presetsContainer.setOrientation(LinearLayout.VERTICAL);
+            content.addView(presetsContainer);
 
-        content.addView(buildCustomInputCard());
+            // 3. Custom Input Section
+            TextView customSectionLabel = new TextView(this);
+            customSectionLabel.setText("CUSTOM TIME IN HOURS");
+            customSectionLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            customSectionLabel.setTypeface(Typeface.DEFAULT_BOLD);
+            customSectionLabel.setTextColor(palette.accent);
+            customSectionLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+            content.addView(customSectionLabel);
 
-        renderPresets();
+            content.addView(buildCustomInputCard());
 
-        scrollView.addView(content);
-        root.addView(scrollView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            renderPresets();
 
-        setContentView(root);
+            scrollView.addView(content);
+            root.addView(scrollView, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            setContentView(root);
+        } catch (Throwable t) {
+            fallbackView(t);
+        }
+    }
+
+    private void fallbackView(Throwable t) {
+        try {
+            LinearLayout fallback = new LinearLayout(this);
+            fallback.setOrientation(LinearLayout.VERTICAL);
+            fallback.setPadding(32, 64, 32, 32);
+            TextView tv = new TextView(this);
+            tv.setText("Clipboard Retention Settings\n\nConfigure clipboard history retention limits.");
+            tv.setTextSize(16f);
+            fallback.addView(tv);
+            setContentView(fallback);
+        } catch (Throwable ignored) {
+        }
     }
 
     private void initPresets() {

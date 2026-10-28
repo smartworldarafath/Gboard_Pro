@@ -3,7 +3,6 @@ package com.akshaykadam.pixelboard.extension.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -11,10 +10,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -26,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -35,7 +38,7 @@ import java.net.URL;
 public class GboardAppUpdatesActivity extends Activity {
 
     private static final String GITHUB_API_URL = "https://api.github.com/repos/smartworldarafath/Gboard_Pro/releases/latest";
-    private static final String CURRENT_VERSION = "1.0.2";
+    private static final String CURRENT_VERSION = "1.0.4";
 
     private GboardM3Helper.Palette palette;
     private Handler mainHandler;
@@ -62,55 +65,74 @@ public class GboardAppUpdatesActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(GboardM3Helper.resolveActivityTheme(this));
         super.onCreate(savedInstanceState);
-        palette = GboardM3Helper.Palette.forContext(this);
-        mainHandler = new Handler(Looper.getMainLooper());
-        GboardM3Helper.setupSystemBars(this, palette);
-        GboardM3Helper.applyActivityEnterTransition(this);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(palette.windowBackground);
-        root.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        try {
+            palette = GboardM3Helper.Palette.forContext(this);
+            mainHandler = new Handler(Looper.getMainLooper());
+            GboardM3Helper.initActivity(this, palette);
 
-        root.addView(GboardM3Helper.createToolbar(this, "Gboard Pro Updates", palette));
+            LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setBackgroundColor(palette.windowBackground);
+            root.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setFillViewport(true);
-        scrollView.setVerticalScrollBarEnabled(false);
+            root.addView(GboardM3Helper.createToolbar(this, "Gboard Pro Updates", palette));
 
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
-                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 28));
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setFillViewport(true);
+            scrollView.setVerticalScrollBarEnabled(false);
 
-        // Version Info Card
-        content.addView(buildCurrentVersionCard());
+            LinearLayout content = new LinearLayout(this);
+            content.setOrientation(LinearLayout.VERTICAL);
+            content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
+                    GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 28));
 
-        // Status Card
-        content.addView(buildStatusCard());
+            // Version Info Card
+            content.addView(buildCurrentVersionCard());
 
-        // Release Notes Card (hidden initially)
-        releaseNotesCard = (LinearLayout) buildReleaseNotesCard();
-        content.addView(releaseNotesCard);
+            // Status Card
+            content.addView(buildStatusCard());
 
-        // Progress Card (hidden initially)
-        progressContainer = (LinearLayout) buildProgressCard();
-        content.addView(progressContainer);
+            // Release Notes Card (hidden initially)
+            releaseNotesCard = (LinearLayout) buildReleaseNotesCard();
+            content.addView(releaseNotesCard);
 
-        // Action Button
-        actionButton = (LinearLayout) buildActionButton();
-        content.addView(actionButton);
+            // Progress Card (hidden initially)
+            progressContainer = (LinearLayout) buildProgressCard();
+            content.addView(progressContainer);
 
-        scrollView.addView(content);
-        root.addView(scrollView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            // Action Button (Check for updates / Download / Install)
+            content.addView(buildActionButton());
 
-        setContentView(root);
+            scrollView.addView(content);
+            root.addView(scrollView, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        // Automatically check for updates on open
-        checkForUpdates();
+            setContentView(root);
+
+            // Auto-check for update on launch
+            checkForUpdates(false);
+        } catch (Throwable t) {
+            Log.e("GboardAppUpdates", "Error in onCreate", t);
+            fallbackView(t);
+        }
+    }
+
+    private void fallbackView(Throwable t) {
+        try {
+            LinearLayout fallback = new LinearLayout(this);
+            fallback.setOrientation(LinearLayout.VERTICAL);
+            fallback.setPadding(32, 64, 32, 32);
+            TextView tv = new TextView(this);
+            tv.setText("Gboard Pro Updates\nVersion: 1.0.4\n\nCheck for the latest APK releases at:\nhttps://github.com/smartworldarafath/Gboard_Pro/releases");
+            tv.setTextSize(16f);
+            fallback.addView(tv);
+            setContentView(fallback);
+        } catch (Throwable ignored) {
+        }
     }
 
     private View buildCurrentVersionCard() {
@@ -122,41 +144,38 @@ public class GboardAppUpdatesActivity extends Activity {
         card.setPadding(GboardM3Helper.dp(this, 18), GboardM3Helper.dp(this, 16),
                 GboardM3Helper.dp(this, 18), GboardM3Helper.dp(this, 16));
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.bottomMargin = GboardM3Helper.dp(this, 12);
-        card.setLayoutParams(lp);
-
         LinearLayout textCol = new LinearLayout(this);
         textCol.setOrientation(LinearLayout.VERTICAL);
 
-        TextView title = new TextView(this);
-        title.setText("Gboard Pro");
-        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
-        title.setTypeface(Typeface.DEFAULT_BOLD);
-        title.setTextColor(palette.textPrimary);
-        textCol.addView(title);
+        TextView label = new TextView(this);
+        label.setText("INSTALLED VERSION");
+        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
+        label.setTypeface(Typeface.DEFAULT_BOLD);
+        label.setTextColor(palette.accent);
+        textCol.addView(label);
 
-        TextView versionLabel = new TextView(this);
-        versionLabel.setText("Installed Version: v" + CURRENT_VERSION);
-        versionLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
-        versionLabel.setTextColor(palette.textSecondary);
-        LinearLayout.LayoutParams vLp = new LinearLayout.LayoutParams(
+        TextView verText = new TextView(this);
+        verText.setText("Gboard Pro v" + CURRENT_VERSION);
+        verText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
+        verText.setTypeface(Typeface.DEFAULT_BOLD);
+        verText.setTextColor(palette.textPrimary);
+        LinearLayout.LayoutParams verLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        vLp.topMargin = GboardM3Helper.dp(this, 2);
-        textCol.addView(versionLabel, vLp);
+        verLp.topMargin = GboardM3Helper.dp(this, 2);
+        textCol.addView(verText, verLp);
 
-        card.addView(textCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        card.addView(textCol, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
 
         versionBadge = new TextView(this);
-        versionBadge.setText("v" + CURRENT_VERSION);
-        versionBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        versionBadge.setText("Latest");
+        versionBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f);
         versionBadge.setTypeface(Typeface.DEFAULT_BOLD);
         versionBadge.setTextColor(palette.onAccentContainer);
         versionBadge.setBackground(GboardM3Helper.createCardDrawable(
-                palette.accentContainer, Color.TRANSPARENT, GboardM3Helper.dp(this, 12)));
-        versionBadge.setPadding(GboardM3Helper.dp(this, 12), GboardM3Helper.dp(this, 6),
-                GboardM3Helper.dp(this, 12), GboardM3Helper.dp(this, 6));
+                palette.accentContainer, Color.TRANSPARENT, GboardM3Helper.dp(this, 10)));
+        versionBadge.setPadding(GboardM3Helper.dp(this, 10), GboardM3Helper.dp(this, 4),
+                GboardM3Helper.dp(this, 10), GboardM3Helper.dp(this, 4));
         card.addView(versionBadge);
 
         return card;
@@ -167,8 +186,13 @@ public class GboardAppUpdatesActivity extends Activity {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setBackground(GboardM3Helper.createCardDrawable(
                 palette.surface, palette.surfaceStroke, GboardM3Helper.dp(this, 20)));
-        card.setPadding(GboardM3Helper.dp(this, 20), GboardM3Helper.dp(this, 20),
-                GboardM3Helper.dp(this, 20), GboardM3Helper.dp(this, 20));
+        card.setPadding(GboardM3Helper.dp(this, 18), GboardM3Helper.dp(this, 18),
+                GboardM3Helper.dp(this, 18), GboardM3Helper.dp(this, 18));
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = GboardM3Helper.dp(this, 12);
+        card.setLayoutParams(lp);
 
         statusTitle = new TextView(this);
         statusTitle.setText("Checking for updates...");
@@ -178,14 +202,14 @@ public class GboardAppUpdatesActivity extends Activity {
         card.addView(statusTitle);
 
         statusDescription = new TextView(this);
-        statusDescription.setText("Connecting to official GitHub release channel...");
+        statusDescription.setText("Connecting to official repository releases...");
         statusDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
         statusDescription.setTextColor(palette.textSecondary);
         statusDescription.setLineSpacing(GboardM3Helper.dp(this, 2), 1.15f);
-        LinearLayout.LayoutParams dLp = new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams descLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dLp.topMargin = GboardM3Helper.dp(this, 6);
-        card.addView(statusDescription, dLp);
+        descLp.topMargin = GboardM3Helper.dp(this, 6);
+        card.addView(statusDescription, descLp);
 
         return card;
     }
@@ -194,9 +218,9 @@ public class GboardAppUpdatesActivity extends Activity {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setBackground(GboardM3Helper.createCardDrawable(
-                palette.surface, palette.surfaceStroke, GboardM3Helper.dp(this, 18)));
-        card.setPadding(GboardM3Helper.dp(this, 18), GboardM3Helper.dp(this, 16),
-                GboardM3Helper.dp(this, 18), GboardM3Helper.dp(this, 16));
+                palette.surfaceAlt, palette.surfaceStroke, GboardM3Helper.dp(this, 18)));
+        card.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 14),
+                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 16));
         card.setVisibility(View.GONE);
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -204,21 +228,21 @@ public class GboardAppUpdatesActivity extends Activity {
         lp.topMargin = GboardM3Helper.dp(this, 12);
         card.setLayoutParams(lp);
 
-        TextView label = new TextView(this);
-        label.setText("WHAT'S NEW IN THIS RELEASE");
-        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f);
-        label.setTypeface(Typeface.DEFAULT_BOLD);
-        label.setTextColor(palette.accent);
-        card.addView(label);
+        TextView header = new TextView(this);
+        header.setText("WHAT'S NEW IN THIS RELEASE");
+        header.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f);
+        header.setTypeface(Typeface.DEFAULT_BOLD);
+        header.setTextColor(palette.accent);
+        card.addView(header);
 
         releaseNotesText = new TextView(this);
         releaseNotesText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
-        releaseNotesText.setTextColor(palette.textSecondary);
+        releaseNotesText.setTextColor(palette.textPrimary);
         releaseNotesText.setLineSpacing(GboardM3Helper.dp(this, 2), 1.15f);
-        LinearLayout.LayoutParams tLp = new LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams textLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        tLp.topMargin = GboardM3Helper.dp(this, 6);
-        card.addView(releaseNotesText, tLp);
+        textLp.topMargin = GboardM3Helper.dp(this, 8);
+        card.addView(releaseNotesText, textLp);
 
         return card;
     }
@@ -227,7 +251,7 @@ public class GboardAppUpdatesActivity extends Activity {
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setBackground(GboardM3Helper.createCardDrawable(
-                palette.surfaceAlt, palette.surfaceStroke, GboardM3Helper.dp(this, 16)));
+                palette.surface, palette.surfaceStroke, GboardM3Helper.dp(this, 18)));
         card.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 14),
                 GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 14));
         card.setVisibility(View.GONE);
@@ -238,15 +262,16 @@ public class GboardAppUpdatesActivity extends Activity {
         card.setLayoutParams(lp);
 
         progressText = new TextView(this);
-        progressText.setText("Downloading update package...");
-        progressText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
+        progressText.setText("Downloading update: 0%");
+        progressText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13.5f);
+        progressText.setTypeface(Typeface.DEFAULT_BOLD);
         progressText.setTextColor(palette.textPrimary);
         card.addView(progressText);
 
         downloadProgressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        downloadProgressBar.setIndeterminate(false);
         downloadProgressBar.setMax(100);
         downloadProgressBar.setProgress(0);
+        downloadProgressBar.setIndeterminate(false);
         LinearLayout.LayoutParams pbLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, GboardM3Helper.dp(this, 8));
         pbLp.topMargin = GboardM3Helper.dp(this, 8);
@@ -256,65 +281,56 @@ public class GboardAppUpdatesActivity extends Activity {
     }
 
     private View buildActionButton() {
-        LinearLayout button = new LinearLayout(this);
-        button.setOrientation(LinearLayout.HORIZONTAL);
-        button.setGravity(Gravity.CENTER);
-        button.setBackground(GboardM3Helper.createClickableCardDrawable(
+        actionButton = new LinearLayout(this);
+        actionButton.setOrientation(LinearLayout.HORIZONTAL);
+        actionButton.setGravity(Gravity.CENTER);
+        actionButton.setBackground(GboardM3Helper.createClickableCardDrawable(
                 palette.accent, Color.TRANSPARENT, palette.ripple, GboardM3Helper.dp(this, 22)));
-        button.setPadding(GboardM3Helper.dp(this, 20), GboardM3Helper.dp(this, 14),
-                GboardM3Helper.dp(this, 20), GboardM3Helper.dp(this, 14));
+        actionButton.setPadding(GboardM3Helper.dp(this, 20), GboardM3Helper.dp(this, 15),
+                GboardM3Helper.dp(this, 20), GboardM3Helper.dp(this, 15));
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = GboardM3Helper.dp(this, 18);
-        button.setLayoutParams(lp);
+        actionButton.setLayoutParams(lp);
 
         actionButtonLabel = new TextView(this);
-        actionButtonLabel.setText("Check Again");
-        actionButtonLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14.5f);
+        actionButtonLabel.setText("Check for updates");
+        actionButtonLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
         actionButtonLabel.setTypeface(Typeface.DEFAULT_BOLD);
         actionButtonLabel.setTextColor(palette.isNight ? 0xFF00325B : 0xFFFFFFFF);
-        button.addView(actionButtonLabel);
+        actionButton.addView(actionButtonLabel);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onActionButtonClicked();
+                handleActionButtonClick();
             }
         });
 
-        return button;
+        return actionButton;
     }
 
-    private void onActionButtonClicked() {
-        if (isDownloading) {
-            return;
-        }
-
-        // If APK already downloaded, trigger install
-        if (downloadedApkFile != null && downloadedApkFile.exists()) {
-            promptApkInstallation(downloadedApkFile);
-            return;
-        }
-
-        // If new version available and we have download URL, download it
-        if (!downloadApkUrl.isEmpty()) {
-            startApkDownload(downloadApkUrl);
-            return;
-        }
-
-        // Default: re-check
-        checkForUpdates();
-    }
-
-    private void checkForUpdates() {
+    private void handleActionButtonClick() {
         if (isChecking || isDownloading) return;
+
+        if (downloadedApkFile != null && downloadedApkFile.exists()) {
+            installApk(downloadedApkFile);
+        } else if (!downloadApkUrl.isEmpty()) {
+            downloadUpdate(downloadApkUrl);
+        } else {
+            checkForUpdates(true);
+        }
+    }
+
+    private void checkForUpdates(final boolean userInitiated) {
+        if (isChecking) return;
         isChecking = true;
+        actionButton.setEnabled(false);
+        actionButtonLabel.setText("Checking...");
 
         statusTitle.setText("Checking for updates...");
-        statusDescription.setText("Connecting to https://github.com/smartworldarafath/Gboard_Pro/releases...");
-        actionButtonLabel.setText("Checking...");
-        actionButton.setEnabled(false);
+        statusDescription.setText("Connecting to official repository releases...");
 
         new Thread(new Runnable() {
             @Override
@@ -323,205 +339,199 @@ public class GboardAppUpdatesActivity extends Activity {
                     URL url = new URL(GITHUB_API_URL);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
-                    conn.setRequestProperty("User-Agent", "GboardPro-Android");
-                    conn.setRequestProperty("Accept", "application/vnd.github.v3+json");
-                    conn.setConnectTimeout(10000);
-                    conn.setReadTimeout(15000);
+                    conn.setRequestProperty("User-Agent", "Gboard-Pro-Android-App");
+                    conn.setConnectTimeout(8000);
+                    conn.setReadTimeout(8000);
 
                     int responseCode = conn.getResponseCode();
                     if (responseCode == 200) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        StringBuilder sb = new StringBuilder();
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        StringBuilder response = new StringBuilder();
                         String line;
-                        while ((line = reader.readLine()) != null) {
-                            sb.append(line).append("\n");
+                        while ((line = in.readLine()) != null) {
+                            response.append(line);
                         }
-                        reader.close();
+                        in.close();
 
-                        JSONObject json = new JSONObject(sb.toString());
-                        final String tag = json.optString("tag_name", "").replace("v", "").trim();
-                        final String name = json.optString("name", "Gboard Pro Release");
-                        final String body = json.optString("body", "");
-
-                        String apkUrl = "";
-                        JSONArray assets = json.optJSONArray("assets");
-                        if (assets != null) {
-                            for (int i = 0; i < assets.length(); i++) {
-                                JSONObject asset = assets.getJSONObject(i);
-                                String assetName = asset.optString("name", "");
-                                if (assetName.endsWith(".apk")) {
-                                    apkUrl = asset.optString("browser_download_url", "");
-                                    break;
-                                }
-                            }
-                        }
-                        final String finalApkUrl = apkUrl;
-
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                onUpdateCheckSuccess(tag, name, body, finalApkUrl);
-                            }
-                        });
+                        parseReleaseResponse(response.toString(), userInitiated);
                     } else {
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                onUpdateCheckError("Server responded with code " + responseCode);
-                            }
-                        });
+                        onCheckFailed("Server response code: " + responseCode, userInitiated);
                     }
-                    conn.disconnect();
-                } catch (final Throwable t) {
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            onUpdateCheckError(t.getMessage());
-                        }
-                    });
+                } catch (final Throwable e) {
+                    onCheckFailed(e.getMessage() != null ? e.getMessage() : "Network connection failed", userInitiated);
                 }
             }
         }).start();
     }
 
-    private void onUpdateCheckSuccess(String tag, String name, String body, String apkUrl) {
-        isChecking = false;
-        actionButton.setEnabled(true);
-        latestVersionTag = tag;
-        latestReleaseName = name;
-        latestReleaseBody = body;
-        downloadApkUrl = apkUrl;
+    private void parseReleaseResponse(String jsonString, final boolean userInitiated) {
+        try {
+            JSONObject obj = new JSONObject(jsonString);
+            latestVersionTag = obj.optString("tag_name", "").replace("v", "").trim();
+            latestReleaseName = obj.optString("name", "Gboard Pro v" + latestVersionTag);
+            latestReleaseBody = obj.optString("body", "");
 
-        boolean isNewer = compareVersions(latestVersionTag, CURRENT_VERSION) > 0;
-
-        if (isNewer) {
-            statusTitle.setText("New Update Available: v" + latestVersionTag);
-            statusDescription.setText(name + "\nA newer release is ready for installation.");
-            versionBadge.setText("v" + latestVersionTag);
-            versionBadge.setTextColor(palette.accent);
-
-            if (!body.trim().isEmpty()) {
-                releaseNotesText.setText(body.trim());
-                releaseNotesCard.setVisibility(View.VISIBLE);
+            downloadApkUrl = "";
+            JSONArray assets = obj.optJSONArray("assets");
+            if (assets != null) {
+                for (int i = 0; i < assets.length(); i++) {
+                    JSONObject asset = assets.getJSONObject(i);
+                    String name = asset.optString("name", "");
+                    if (name.endsWith(".apk")) {
+                        if (name.contains("arm64-v8a") || downloadApkUrl.isEmpty()) {
+                            downloadApkUrl = asset.optString("browser_download_url", "");
+                        }
+                    }
+                }
             }
 
-            actionButtonLabel.setText("Download & Install Update");
-        } else {
-            statusTitle.setText("Gboard Pro is Up to Date");
-            statusDescription.setText("You are currently running the latest stable release (v" + CURRENT_VERSION + ").");
-            versionBadge.setText("v" + CURRENT_VERSION + " (Latest)");
-            releaseNotesCard.setVisibility(View.GONE);
-            actionButtonLabel.setText("Check for Updates");
+            final boolean hasUpdate = isVersionNewer(latestVersionTag, CURRENT_VERSION);
+
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    isChecking = false;
+                    actionButton.setEnabled(true);
+
+                    if (hasUpdate) {
+                        statusTitle.setText("New Update Available: v" + latestVersionTag);
+                        statusDescription.setText("A newer stable version of Gboard Pro is ready for installation. Tap below to download and install.");
+                        versionBadge.setText("Update Available");
+                        versionBadge.setTextColor(0xFFFFFFFF);
+                        versionBadge.setBackground(GboardM3Helper.createCardDrawable(0xFFE64A19, Color.TRANSPARENT, GboardM3Helper.dp(GboardAppUpdatesActivity.this, 10)));
+
+                        if (!latestReleaseBody.isEmpty()) {
+                            releaseNotesText.setText(latestReleaseBody.trim());
+                            releaseNotesCard.setVisibility(View.VISIBLE);
+                        }
+
+                        actionButtonLabel.setText("Download & Install Update");
+                    } else {
+                        statusTitle.setText("Gboard Pro is up to date");
+                        statusDescription.setText("You are currently running the latest official version (v" + CURRENT_VERSION + "). Check back later for upcoming releases!");
+                        versionBadge.setText("Latest Version");
+                        releaseNotesCard.setVisibility(View.GONE);
+                        actionButtonLabel.setText("Check Again");
+                        if (userInitiated) {
+                            Toast.makeText(GboardAppUpdatesActivity.this, "Gboard Pro is up to date!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+        } catch (Throwable t) {
+            onCheckFailed("Failed to parse release information", userInitiated);
         }
     }
 
-    private void onUpdateCheckError(String errorMsg) {
-        isChecking = false;
-        actionButton.setEnabled(true);
-        statusTitle.setText("Update Check Completed");
-        statusDescription.setText("Currently running v" + CURRENT_VERSION + ".\n" + (errorMsg != null ? errorMsg : "Check GitHub releases manually."));
-        actionButtonLabel.setText("Check Again");
-    }
-
-    private int compareVersions(String v1, String v2) {
+    private boolean isVersionNewer(String latest, String current) {
         try {
-            String[] parts1 = v1.split("\\.");
-            String[] parts2 = v2.split("\\.");
-            int maxLen = Math.max(parts1.length, parts2.length);
-            for (int i = 0; i < maxLen; i++) {
-                int p1 = i < parts1.length ? Integer.parseInt(parts1[i].replaceAll("[^0-9]", "")) : 0;
-                int p2 = i < parts2.length ? Integer.parseInt(parts2[i].replaceAll("[^0-9]", "")) : 0;
-                if (p1 != p2) {
-                    return Integer.compare(p1, p2);
-                }
+            String[] lParts = latest.split("\\.");
+            String[] cParts = current.split("\\.");
+            int len = Math.max(lParts.length, cParts.length);
+            for (int i = 0; i < len; i++) {
+                int l = i < lParts.length ? Integer.parseInt(lParts[i].replaceAll("[^0-9]", "")) : 0;
+                int c = i < cParts.length ? Integer.parseInt(cParts[i].replaceAll("[^0-9]", "")) : 0;
+                if (l > c) return true;
+                if (l < c) return false;
             }
         } catch (Throwable ignored) {
         }
-        return 0;
+        return false;
     }
 
-    private void startApkDownload(final String apkUrl) {
+    private void onCheckFailed(final String errorMsg, final boolean userInitiated) {
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                isChecking = false;
+                actionButton.setEnabled(true);
+                actionButtonLabel.setText("Check Again");
+                statusTitle.setText("Unable to check for updates");
+                statusDescription.setText("Could not reach GitHub repository: " + errorMsg);
+                if (userInitiated) {
+                    Toast.makeText(GboardAppUpdatesActivity.this, "Update check failed: " + errorMsg, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void downloadUpdate(final String downloadUrl) {
         if (isDownloading) return;
         isDownloading = true;
 
         progressContainer.setVisibility(View.VISIBLE);
         downloadProgressBar.setProgress(0);
         progressText.setText("Connecting to download server...");
-        actionButtonLabel.setText("Downloading...");
+
         actionButton.setEnabled(false);
+        actionButtonLabel.setText("Downloading...");
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    URL url = new URL(apkUrl);
+                    URL url = new URL(downloadUrl);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setInstanceFollowRedirects(true);
-                    conn.setRequestProperty("User-Agent", "GboardPro-Android");
+                    conn.setRequestProperty("User-Agent", "Gboard-Pro-Android-App");
+                    conn.setConnectTimeout(10000);
+                    conn.setReadTimeout(15000);
                     conn.connect();
 
-                    int responseCode = conn.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
-                            responseCode == HttpURLConnection.HTTP_MOVED_TEMP ||
-                            responseCode == 307 || responseCode == 308) {
-                        String newUrl = conn.getHeaderField("Location");
-                        conn.disconnect();
-                        url = new URL(newUrl);
-                        conn = (HttpURLConnection) url.openConnection();
-                        conn.setRequestProperty("User-Agent", "GboardPro-Android");
-                        conn.connect();
-                    }
+                    int fileLength = conn.getContentLength();
+                    InputStream input = conn.getInputStream();
 
-                    final int totalBytes = conn.getContentLength();
-                    File destDir = getExternalFilesDir(null);
-                    if (destDir == null) {
-                        destDir = getCacheDir();
+                    File cacheDir = getExternalCacheDir();
+                    if (cacheDir == null) {
+                        cacheDir = getCacheDir();
                     }
-                    final File targetApk = new File(destDir, "Gboard_Pro_Update.apk");
-                    if (targetApk.exists()) {
-                        targetApk.delete();
-                    }
+                    downloadedApkFile = new File(cacheDir, "Gboard_Pro-" + latestVersionTag + ".apk");
+                    FileOutputStream output = new FileOutputStream(downloadedApkFile);
 
-                    InputStream in = conn.getInputStream();
-                    FileOutputStream out = new FileOutputStream(targetApk);
-                    byte[] buffer = new byte[8192];
-                    int read;
-                    int downloaded = 0;
-
-                    while ((read = in.read(buffer)) != -1) {
-                        out.write(buffer, 0, read);
-                        downloaded += read;
-                        if (totalBytes > 0) {
-                            final int percent = Math.round((downloaded * 100f) / totalBytes);
-                            final int mbCurrent = downloaded / (1024 * 1024);
-                            final int mbTotal = totalBytes / (1024 * 1024);
+                    byte[] data = new byte[4096];
+                    long total = 0;
+                    int count;
+                    while ((count = input.read(data)) != -1) {
+                        total += count;
+                        if (fileLength > 0) {
+                            final int progress = (int) (total * 100 / fileLength);
                             mainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    downloadProgressBar.setProgress(percent);
-                                    progressText.setText("Downloading: " + percent + "% (" + mbCurrent + " MB / " + mbTotal + " MB)");
+                                    downloadProgressBar.setProgress(progress);
+                                    progressText.setText("Downloading update: " + progress + "%");
                                 }
                             });
                         }
+                        output.write(data, 0, count);
                     }
 
-                    out.flush();
-                    out.close();
-                    in.close();
-                    conn.disconnect();
+                    output.flush();
+                    output.close();
+                    input.close();
 
-                    downloadedApkFile = targetApk;
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            onDownloadComplete(targetApk);
+                            isDownloading = false;
+                            actionButton.setEnabled(true);
+                            actionButtonLabel.setText("Install Update");
+                            progressText.setText("Download complete (100%)");
+                            statusTitle.setText("Download Finished");
+                            statusDescription.setText("The new update has been downloaded successfully. Tap Install Update to proceed.");
+
+                            installApk(downloadedApkFile);
                         }
                     });
-                } catch (final Throwable t) {
+
+                } catch (final Throwable e) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            onDownloadFailed(t.getMessage());
+                            isDownloading = false;
+                            actionButton.setEnabled(true);
+                            actionButtonLabel.setText("Retry Download");
+                            progressText.setText("Download failed");
+                            Toast.makeText(GboardAppUpdatesActivity.this, "Download error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -529,46 +539,34 @@ public class GboardAppUpdatesActivity extends Activity {
         }).start();
     }
 
-    private void onDownloadComplete(File apkFile) {
-        isDownloading = false;
-        progressContainer.setVisibility(View.GONE);
-        actionButton.setEnabled(true);
-        actionButtonLabel.setText("Install Update");
-        statusTitle.setText("Update Downloaded Successfully");
-        statusDescription.setText("The installation package is ready. Tap 'Install Update' to complete setup.");
+    private void installApk(File apkFile) {
+        if (apkFile == null || !apkFile.exists()) {
+            Toast.makeText(this, "APK file not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Automatically launch installation
-        promptApkInstallation(apkFile);
-    }
-
-    private void onDownloadFailed(String error) {
-        isDownloading = false;
-        progressContainer.setVisibility(View.GONE);
-        actionButton.setEnabled(true);
-        actionButtonLabel.setText("Retry Download");
-        statusTitle.setText("Download Interrupted");
-        statusDescription.setText("Failed to download update: " + (error != null ? error : "Network error."));
-    }
-
-    private void promptApkInstallation(File apkFile) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            Uri uri;
-            String authority = getPackageName() + ".fileprovider";
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
+            Uri uri;
             try {
                 Class<?> fpClass = Class.forName("androidx.core.content.FileProvider");
-                java.lang.reflect.Method getUriMethod = fpClass.getMethod("getUriForFile", Context.class, String.class, File.class);
-                uri = (Uri) getUriMethod.invoke(null, this, authority, apkFile);
-            } catch (Throwable ignored) {
+                Method getUriMethod = fpClass.getMethod("getUriForFile", Context.class, String.class, File.class);
+                uri = (Uri) getUriMethod.invoke(null, this, getPackageName() + ".fileprovider", apkFile);
+            } catch (Throwable t) {
                 uri = Uri.fromFile(apkFile);
             }
 
             intent.setDataAndType(uri, "application/vnd.android.package-archive");
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        } catch (Throwable t) {
-            Toast.makeText(this, "Could not open installer: " + t.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (Throwable e) {
+            Toast.makeText(this, "Cannot prompt install: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            try {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/smartworldarafath/Gboard_Pro/releases"));
+                startActivity(browserIntent);
+            } catch (Throwable ignored) {
+            }
         }
     }
 

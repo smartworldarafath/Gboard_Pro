@@ -74,91 +74,110 @@ public class GboardAppearanceActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(GboardM3Helper.resolveActivityTheme(this));
         super.onCreate(savedInstanceState);
-        palette = GboardM3Helper.Palette.forContext(this);
-        GboardM3Helper.setupSystemBars(this, palette);
-        GboardM3Helper.applyActivityEnterTransition(this);
 
-        initIconOptions();
-        initUiThemeOptions();
+        try {
+            palette = GboardM3Helper.Palette.forContext(this);
+            GboardM3Helper.initActivity(this, palette);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(palette.windowBackground);
-        root.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            initIconOptions();
+            initUiThemeOptions();
 
-        root.addView(GboardM3Helper.createToolbar(this, "Appearance", palette));
+            LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setBackgroundColor(palette.windowBackground);
+            root.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setFillViewport(true);
-        scrollView.setVerticalScrollBarEnabled(false);
+            root.addView(GboardM3Helper.createToolbar(this, "Appearance", palette));
 
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
-                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 32));
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setFillViewport(true);
+            scrollView.setVerticalScrollBarEnabled(false);
 
-        // Header Intro Card
-        content.addView(buildHeaderCard());
+            LinearLayout content = new LinearLayout(this);
+            content.setOrientation(LinearLayout.VERTICAL);
+            content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
+                    GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 32));
 
-        // Category 1: APP LAUNCHER ICONS
-        TextView categoryLabel = new TextView(this);
-        categoryLabel.setText("APP LAUNCHER ICONS");
-        categoryLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        categoryLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        categoryLabel.setTextColor(palette.accent);
-        categoryLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 16),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
-        content.addView(categoryLabel);
+            // Header Intro Card
+            content.addView(buildHeaderCard());
 
-        // Icons List
-        listContainer = new LinearLayout(this);
-        listContainer.setOrientation(LinearLayout.VERTICAL);
-        content.addView(listContainer);
-        renderIconList();
+            // Category 1: APP LAUNCHER ICONS
+            TextView categoryLabel = new TextView(this);
+            categoryLabel.setText("APP LAUNCHER ICONS");
+            categoryLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            categoryLabel.setTypeface(Typeface.DEFAULT_BOLD);
+            categoryLabel.setTextColor(palette.accent);
+            categoryLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 16),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+            content.addView(categoryLabel);
 
-        // Category 2: GBOARD UI with BETA badge
-        LinearLayout uiHeaderRow = new LinearLayout(this);
-        uiHeaderRow.setOrientation(LinearLayout.HORIZONTAL);
-        uiHeaderRow.setGravity(Gravity.CENTER_VERTICAL);
-        uiHeaderRow.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+            // Icons List
+            listContainer = new LinearLayout(this);
+            listContainer.setOrientation(LinearLayout.VERTICAL);
+            content.addView(listContainer);
+            renderIconList();
 
-        TextView uiLabel = new TextView(this);
-        uiLabel.setText("GBOARD UI");
-        uiLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
-        uiLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        uiLabel.setTextColor(palette.accent);
-        uiHeaderRow.addView(uiLabel);
+            // Category 2: GBOARD UI with BETA badge
+            LinearLayout uiHeaderRow = new LinearLayout(this);
+            uiHeaderRow.setOrientation(LinearLayout.HORIZONTAL);
+            uiHeaderRow.setGravity(Gravity.CENTER_VERTICAL);
+            uiHeaderRow.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
 
-        View badgeSpacer = new View(this);
-        uiHeaderRow.addView(badgeSpacer, new LinearLayout.LayoutParams(GboardM3Helper.dp(this, 8), 1));
+            TextView uiLabel = new TextView(this);
+            uiLabel.setText("GBOARD UI");
+            uiLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
+            uiLabel.setTypeface(Typeface.DEFAULT_BOLD);
+            uiLabel.setTextColor(palette.accent);
+            uiHeaderRow.addView(uiLabel);
 
-        TextView betaBadge = new TextView(this);
-        betaBadge.setText("beta");
-        betaBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
-        betaBadge.setTypeface(Typeface.DEFAULT_BOLD);
-        betaBadge.setTextColor(palette.onAccentContainer);
-        betaBadge.setBackground(GboardM3Helper.createCardDrawable(
-                palette.accentContainer, Color.TRANSPARENT, GboardM3Helper.dp(this, 6)));
-        betaBadge.setPadding(GboardM3Helper.dp(this, 7), GboardM3Helper.dp(this, 2),
-                GboardM3Helper.dp(this, 7), GboardM3Helper.dp(this, 2));
-        uiHeaderRow.addView(betaBadge);
+            View badgeSpacer = new View(this);
+            uiHeaderRow.addView(badgeSpacer, new LinearLayout.LayoutParams(GboardM3Helper.dp(this, 8), 1));
 
-        content.addView(uiHeaderRow);
+            TextView betaBadge = new TextView(this);
+            betaBadge.setText("beta");
+            betaBadge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
+            betaBadge.setTypeface(Typeface.DEFAULT_BOLD);
+            betaBadge.setTextColor(palette.onAccentContainer);
+            betaBadge.setBackground(GboardM3Helper.createCardDrawable(
+                    palette.accentContainer, Color.TRANSPARENT, GboardM3Helper.dp(this, 6)));
+            betaBadge.setPadding(GboardM3Helper.dp(this, 7), GboardM3Helper.dp(this, 2),
+                    GboardM3Helper.dp(this, 7), GboardM3Helper.dp(this, 2));
+            uiHeaderRow.addView(betaBadge);
 
-        // Theme List
-        themeContainer = new LinearLayout(this);
-        themeContainer.setOrientation(LinearLayout.VERTICAL);
-        content.addView(themeContainer);
-        renderThemeList();
+            content.addView(uiHeaderRow);
 
-        scrollView.addView(content);
-        root.addView(scrollView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            // Theme List
+            themeContainer = new LinearLayout(this);
+            themeContainer.setOrientation(LinearLayout.VERTICAL);
+            content.addView(themeContainer);
+            renderThemeList();
 
-        setContentView(root);
+            scrollView.addView(content);
+            root.addView(scrollView, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            setContentView(root);
+        } catch (Throwable t) {
+            fallbackView(t);
+        }
+    }
+
+    private void fallbackView(Throwable t) {
+        try {
+            LinearLayout fallback = new LinearLayout(this);
+            fallback.setOrientation(LinearLayout.VERTICAL);
+            fallback.setPadding(32, 64, 32, 32);
+            TextView tv = new TextView(this);
+            tv.setText("Appearance Settings\n\nCustomization options active.");
+            tv.setTextSize(16f);
+            fallback.addView(tv);
+            setContentView(fallback);
+        } catch (Throwable ignored) {
+        }
     }
 
     private void initIconOptions() {

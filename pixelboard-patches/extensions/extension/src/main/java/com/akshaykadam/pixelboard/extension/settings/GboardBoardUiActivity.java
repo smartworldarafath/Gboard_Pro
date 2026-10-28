@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -20,67 +21,87 @@ public class GboardBoardUiActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(GboardM3Helper.resolveActivityTheme(this));
         super.onCreate(savedInstanceState);
-        palette = GboardM3Helper.Palette.forContext(this);
-        GboardM3Helper.setupSystemBars(this, palette);
-        GboardM3Helper.applyActivityEnterTransition(this);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(palette.windowBackground);
-        root.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        try {
+            palette = GboardM3Helper.Palette.forContext(this);
+            GboardM3Helper.initActivity(this, palette);
 
-        root.addView(GboardM3Helper.createToolbar(this, "Board UI", palette));
+            LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setBackgroundColor(palette.windowBackground);
+            root.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setFillViewport(true);
-        scrollView.setVerticalScrollBarEnabled(false);
+            root.addView(GboardM3Helper.createToolbar(this, "Board UI", palette));
 
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
-                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 28));
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setFillViewport(true);
+            scrollView.setVerticalScrollBarEnabled(false);
 
-        // Hero Card
-        content.addView(buildHeroCard());
+            LinearLayout content = new LinearLayout(this);
+            content.setOrientation(LinearLayout.VERTICAL);
+            content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 8),
+                    GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 28));
 
-        // Upcoming features header
-        TextView sectionTitle = new TextView(this);
-        sectionTitle.setText("PLANNED BOARD UI CAPABILITIES");
-        sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        sectionTitle.setTypeface(Typeface.DEFAULT_BOLD);
-        sectionTitle.setTextColor(palette.accent);
-        sectionTitle.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 20),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 10));
-        content.addView(sectionTitle);
+            // Hero Card
+            content.addView(buildHeroCard());
 
-        // Roadmap feature items
-        content.addView(buildFeatureCard(
-                "Dynamic Keycap Borders",
-                "Customizable stroke thickness and high-contrast outlines for individual alphabet and symbol keys."
-        ));
-        content.addView(buildFeatureCard(
-                "Typography & Font Selector",
-                "Seamlessly choose between Google Sans, Roboto, Product Sans, and custom monospaced fonts."
-        ));
-        content.addView(buildFeatureCard(
-                "Accent Contrast & Tone Tuning",
-                "Fine-tune surface luminance, spacebar tinting, and keycap highlight saturation independently."
-        ));
-        content.addView(buildFeatureCard(
-                "Material 3 Expressive Shapes",
-                "Interactive scalloped flower, squircle, and capsule keycap geometry presets for modern Android devices."
-        ));
+            // Upcoming features header
+            TextView sectionTitle = new TextView(this);
+            sectionTitle.setText("PLANNED BOARD UI CAPABILITIES");
+            sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            sectionTitle.setTypeface(Typeface.DEFAULT_BOLD);
+            sectionTitle.setTextColor(palette.accent);
+            sectionTitle.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 20),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 10));
+            content.addView(sectionTitle);
 
-        // GitHub Action Button
-        content.addView(buildGitHubButton());
+            // Roadmap feature items
+            content.addView(buildFeatureCard(
+                    "Dynamic Keycap Borders",
+                    "Customizable stroke thickness and high-contrast outlines for individual alphabet and symbol keys."
+            ));
+            content.addView(buildFeatureCard(
+                    "Typography & Font Selector",
+                    "Seamlessly choose between Google Sans, Roboto, Product Sans, and custom monospaced fonts."
+            ));
+            content.addView(buildFeatureCard(
+                    "Accent Contrast & Tone Tuning",
+                    "Fine-tune surface luminance, spacebar tinting, and keycap highlight saturation independently."
+            ));
+            content.addView(buildFeatureCard(
+                    "Material 3 Expressive Shapes",
+                    "Interactive scalloped flower, squircle, and capsule keycap geometry presets for modern Android devices."
+            ));
 
-        scrollView.addView(content);
-        root.addView(scrollView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            // GitHub Action Button
+            content.addView(buildGitHubButton());
 
-        setContentView(root);
+            scrollView.addView(content);
+            root.addView(scrollView, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            setContentView(root);
+        } catch (Throwable t) {
+            Log.e("GboardBoardUiActivity", "Error in onCreate", t);
+            fallbackView(t);
+        }
+    }
+
+    private void fallbackView(Throwable t) {
+        try {
+            LinearLayout fallback = new LinearLayout(this);
+            fallback.setOrientation(LinearLayout.VERTICAL);
+            fallback.setPadding(32, 64, 32, 32);
+            TextView tv = new TextView(this);
+            tv.setText("Board UI Personalization\n\nThis section is currently in active development. Advanced keycap borders, font selection, and expressive key shapes are coming soon!");
+            tv.setTextSize(16f);
+            fallback.addView(tv);
+            setContentView(fallback);
+        } catch (Throwable ignored) {
+        }
     }
 
     private View buildHeroCard() {
@@ -184,8 +205,11 @@ public class GboardBoardUiActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/smartworldarafath/Gboard_Pro"));
-                startActivity(intent);
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/smartworldarafath/Gboard_Pro"));
+                    startActivity(intent);
+                } catch (Throwable ignored) {
+                }
             }
         });
 

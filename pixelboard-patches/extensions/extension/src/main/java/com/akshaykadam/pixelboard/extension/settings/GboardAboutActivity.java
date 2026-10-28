@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -29,96 +30,116 @@ public class GboardAboutActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(GboardM3Helper.resolveActivityTheme(this));
         super.onCreate(savedInstanceState);
-        palette = GboardM3Helper.Palette.forContext(this);
-        GboardM3Helper.setupSystemBars(this, palette);
-        GboardM3Helper.applyActivityEnterTransition(this);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(palette.windowBackground);
-        root.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        try {
+            palette = GboardM3Helper.Palette.forContext(this);
+            GboardM3Helper.initActivity(this, palette);
 
-        root.addView(GboardM3Helper.createToolbar(this, "About", palette));
+            LinearLayout root = new LinearLayout(this);
+            root.setOrientation(LinearLayout.VERTICAL);
+            root.setBackgroundColor(palette.windowBackground);
+            root.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        ScrollView scrollView = new ScrollView(this);
-        scrollView.setFillViewport(true);
-        scrollView.setVerticalScrollBarEnabled(false);
+            root.addView(GboardM3Helper.createToolbar(this, "About", palette));
 
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 12),
-                GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 32));
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setFillViewport(true);
+            scrollView.setVerticalScrollBarEnabled(false);
 
-        // 1. Top App Branding Card
-        content.addView(buildAppHeroCard());
+            LinearLayout content = new LinearLayout(this);
+            content.setOrientation(LinearLayout.VERTICAL);
+            content.setPadding(GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 12),
+                    GboardM3Helper.dp(this, 16), GboardM3Helper.dp(this, 32));
 
-        // 2. Information / Legal Section
-        TextView legalLabel = new TextView(this);
-        legalLabel.setText("LEGAL & LICENSES");
-        legalLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        legalLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        legalLabel.setTextColor(palette.accent);
-        legalLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 20),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
-        content.addView(legalLabel);
+            // 1. Top App Branding Card
+            content.addView(buildAppHeroCard());
 
-        LinearLayout itemsCard = new LinearLayout(this);
-        itemsCard.setOrientation(LinearLayout.VERTICAL);
-        itemsCard.setBackground(GboardM3Helper.createCardDrawable(
-                palette.surface, palette.surfaceStroke, GboardM3Helper.dp(this, 20)));
+            // 2. Information / Legal Section
+            TextView legalLabel = new TextView(this);
+            legalLabel.setText("LEGAL & LICENSES");
+            legalLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            legalLabel.setTypeface(Typeface.DEFAULT_BOLD);
+            legalLabel.setTextColor(palette.accent);
+            legalLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 20),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+            content.addView(legalLabel);
 
-        itemsCard.addView(buildClickableItem(
-                "Terms of Service",
-                "Terms governing usage and services",
-                "https://github.com/smartworldarafath/Gboard_Pro#readme",
-                true
-        ));
-        itemsCard.addView(buildDivider());
+            LinearLayout itemsCard = new LinearLayout(this);
+            itemsCard.setOrientation(LinearLayout.VERTICAL);
+            itemsCard.setBackground(GboardM3Helper.createCardDrawable(
+                    palette.surface, palette.surfaceStroke, GboardM3Helper.dp(this, 20)));
 
-        itemsCard.addView(buildClickableItem(
-                "Privacy Policy",
-                "Strict zero-telemetry and on-device privacy guarantee",
-                "https://github.com/smartworldarafath/Gboard_Pro#privacy--terms",
-                true
-        ));
-        itemsCard.addView(buildDivider());
+            itemsCard.addView(buildClickableItem(
+                    "Terms of Service",
+                    "Terms governing usage and services",
+                    "https://github.com/smartworldarafath/Gboard_Pro#readme",
+                    true
+            ));
+            itemsCard.addView(buildDivider());
 
-        itemsCard.addView(buildClickableItem(
-                "Open source licenses",
-                "GNU General Public License v3.0 (GPLv3) & dependencies",
-                "https://github.com/smartworldarafath/Gboard_Pro/blob/main/LICENSE",
-                true
-        ));
-        itemsCard.addView(buildDivider());
+            itemsCard.addView(buildClickableItem(
+                    "Privacy Policy",
+                    "Strict zero-telemetry and on-device privacy guarantee",
+                    "https://github.com/smartworldarafath/Gboard_Pro#privacy--terms",
+                    true
+            ));
+            itemsCard.addView(buildDivider());
 
-        itemsCard.addView(buildClickableItem(
-                "Current version",
-                "1.0.2 (18.4.1.985164140-release-arm64-v8a)",
-                "https://github.com/smartworldarafath/Gboard_Pro/releases",
-                false
-        ));
+            itemsCard.addView(buildClickableItem(
+                    "Open source licenses",
+                    "GNU General Public License v3.0 (GPLv3) & dependencies",
+                    "https://github.com/smartworldarafath/Gboard_Pro/blob/main/LICENSE",
+                    true
+            ));
+            itemsCard.addView(buildDivider());
 
-        content.addView(itemsCard);
+            itemsCard.addView(buildClickableItem(
+                    "Current version",
+                    "1.0.4 (18.4.1.985164140-release-arm64-v8a)",
+                    "https://github.com/smartworldarafath/Gboard_Pro/releases",
+                    false
+            ));
 
-        // 3. Developer Section
-        TextView devLabel = new TextView(this);
-        devLabel.setText("DEVELOPER & COMMUNITY");
-        devLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-        devLabel.setTypeface(Typeface.DEFAULT_BOLD);
-        devLabel.setTextColor(palette.accent);
-        devLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
-                GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
-        content.addView(devLabel);
+            content.addView(itemsCard);
 
-        content.addView(buildDeveloperCard());
+            // 3. Developer Section
+            TextView devLabel = new TextView(this);
+            devLabel.setText("DEVELOPER & COMMUNITY");
+            devLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+            devLabel.setTypeface(Typeface.DEFAULT_BOLD);
+            devLabel.setTextColor(palette.accent);
+            devLabel.setPadding(GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 24),
+                    GboardM3Helper.dp(this, 8), GboardM3Helper.dp(this, 8));
+            content.addView(devLabel);
 
-        scrollView.addView(content);
-        root.addView(scrollView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            content.addView(buildDeveloperCard());
 
-        setContentView(root);
+            scrollView.addView(content);
+            root.addView(scrollView, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            setContentView(root);
+        } catch (Throwable t) {
+            Log.e("GboardAboutActivity", "Error in onCreate", t);
+            fallbackView(t);
+        }
+    }
+
+    private void fallbackView(Throwable t) {
+        try {
+            LinearLayout fallback = new LinearLayout(this);
+            fallback.setOrientation(LinearLayout.VERTICAL);
+            fallback.setPadding(32, 64, 32, 32);
+            TextView tv = new TextView(this);
+            tv.setText("Gboard Pro\nVersion 1.0.4\n\nDeveloper: Arafath Rahman (@smartworldarafath)\nGitHub: https://github.com/smartworldarafath/Gboard_Pro");
+            tv.setTextSize(16f);
+            fallback.addView(tv);
+            setContentView(fallback);
+        } catch (Throwable ignored) {
+        }
     }
 
     private View buildAppHeroCard() {
@@ -156,7 +177,7 @@ public class GboardAboutActivity extends Activity {
 
         // Version Chip
         TextView versionChip = new TextView(this);
-        versionChip.setText("v1.0.2 Stable");
+        versionChip.setText("v1.0.4 Stable");
         versionChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
         versionChip.setTypeface(Typeface.DEFAULT_BOLD);
         versionChip.setTextColor(palette.onAccentContainer);
@@ -185,7 +206,7 @@ public class GboardAboutActivity extends Activity {
 
     private Drawable loadAppIcon() {
         try {
-            InputStream is = getAssets().open("custom_icons/preview/icon_purple.png");
+            InputStream is = getAssets().open("custom_icons/preview/default.png");
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             is.close();
             if (bitmap != null) {
@@ -228,14 +249,15 @@ public class GboardAboutActivity extends Activity {
         sLp.topMargin = GboardM3Helper.dp(this, 2);
         textCol.addView(sView, sLp);
 
-        row.addView(textCol, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
+        row.addView(textCol, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0f));
 
         if (hasChevron) {
             TextView chevron = new TextView(this);
-            chevron.setText("›");
-            chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+            chevron.setText(">");
+            chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
+            chevron.setTypeface(Typeface.DEFAULT_BOLD);
             chevron.setTextColor(palette.textSecondary);
-            chevron.setGravity(Gravity.CENTER);
             row.addView(chevron);
         }
 
@@ -280,7 +302,7 @@ public class GboardAboutActivity extends Activity {
         card.addView(devName);
 
         TextView devBio = new TextView(this);
-        devBio.setText("Project Maintainer & Android Engineer • @smartworldarafath");
+        devBio.setText("Project Maintainer & Android Engineer - @smartworldarafath");
         devBio.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
         devBio.setTextColor(palette.textSecondary);
         LinearLayout.LayoutParams bioLp = new LinearLayout.LayoutParams(

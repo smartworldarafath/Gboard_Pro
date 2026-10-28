@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
@@ -22,6 +23,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 public final class GboardM3Helper {
 
@@ -211,6 +216,26 @@ public final class GboardM3Helper {
         }
     }
 
+    public static int resolveActivityTheme(Activity activity) {
+        try {
+            android.content.pm.ActivityInfo info = activity.getPackageManager().getActivityInfo(
+                    new android.content.ComponentName(activity, "com.google.android.apps.inputmethod.latin.preference.SettingsActivity"),
+                    0);
+            if (info.theme != 0) {
+                return info.theme;
+            }
+        } catch (Throwable ignored) {
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return android.R.style.Theme_DeviceDefault_DayNight;
+        }
+        boolean nightMode = (activity.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        return nightMode
+                ? android.R.style.Theme_DeviceDefault_NoActionBar
+                : android.R.style.Theme_DeviceDefault_Light_NoActionBar;
+    }
+
     public static int dp(Context context, int dpValue) {
         return Math.round(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -282,34 +307,108 @@ public final class GboardM3Helper {
         }
     }
 
+    public static void initActivity(final Activity activity, Palette palette) {
+        if (activity == null || palette == null) return;
+
+        // Hide action bar safely
+        try {
+            if (activity.getActionBar() != null) {
+                activity.getActionBar().hide();
+            }
+        } catch (Throwable ignored) {
+        }
+
+        // Configure window, system bars, and refresh rate safely
+        try {
+            Window window = activity.getWindow();
+            if (window != null) {
+                window.setBackgroundDrawable(new ColorDrawable(palette.windowBackground));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    try {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                        window.setStatusBarColor(palette.windowBackground);
+                        window.setNavigationBarColor(palette.windowBackground);
+                    } catch (Throwable ignored) {
+                    }
+                }
+
+                enforceHighRefreshRate(window);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    try {
+                        window.setDecorFitsSystemWindows(true);
+                        WindowInsetsController controller = window.getInsetsController();
+                        if (controller != null) {
+                            int appearance = !palette.isNight
+                                    ? (WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
+                                    : 0;
+                            controller.setSystemBarsAppearance(
+                                    appearance,
+                                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+                            );
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    try {
+                        View decor = window.getDecorView();
+                        if (decor != null) {
+                            int flags = decor.getSystemUiVisibility();
+                            if (!palette.isNight) {
+                                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                            }
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !palette.isNight) {
+                                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                            }
+                            decor.setSystemUiVisibility(flags);
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+
+        // Apply smooth transition animations
+        applyActivityEnterTransition(activity);
+
+        // Register Android 13+ Predictive Back callback
+        registerPredictiveBackCallback(activity);
+    }
+
     public static void setupSystemBars(Activity activity, Palette palette) {
-        Window window = activity.getWindow();
-        enforceHighRefreshRate(window);
+        initActivity(activity, palette);
+    }
 
-        window.setStatusBarColor(palette.windowBackground);
-        window.setNavigationBarColor(palette.windowBackground);
+    public static void registerPredictiveBackCallback(final Activity activity) {
+        if (activity == null || Build.VERSION.SDK_INT < 33) return;
+        try {
+            Class<?> callbackClass = Class.forName("android.window.OnBackInvokedCallback");
+            Class<?> dispatcherClass = Class.forName("android.window.OnBackInvokedDispatcher");
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowInsetsController controller = window.getInsetsController();
-            if (controller != null) {
-                int appearance = !palette.isNight
-                        ? (WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS)
-                        : 0;
-                controller.setSystemBarsAppearance(
-                        appearance,
-                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-                );
+            Object callback = Proxy.newProxyInstance(
+                    callbackClass.getClassLoader(),
+                    new Class<?>[]{callbackClass},
+                    new InvocationHandler() {
+                        @Override
+                        public Object invoke(Object proxy, Method method, Object[] args) {
+                            if ("onBackInvoked".equals(method.getName())) {
+                                activity.finish();
+                                applyActivityExitTransition(activity);
+                            }
+                            return null;
+                        }
+                    }
+            );
+
+            Object dispatcher = activity.getClass().getMethod("getOnBackInvokedDispatcher").invoke(activity);
+            if (dispatcher != null) {
+                dispatcherClass.getMethod("registerOnBackInvokedCallback", int.class, callbackClass)
+                        .invoke(dispatcher, 0, callback);
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            View decor = window.getDecorView();
-            int flags = decor.getSystemUiVisibility();
-            if (!palette.isNight) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !palette.isNight) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            }
-            decor.setSystemUiVisibility(flags);
+        } catch (Throwable ignored) {
         }
     }
 
@@ -376,22 +475,40 @@ public final class GboardM3Helper {
     }
 
     public static void applyActivityEnterTransition(Activity activity) {
+        if (activity == null) return;
         try {
             int enterAnim = activity.getResources().getIdentifier("m3_slide_in_right", "anim", activity.getPackageName());
             int exitAnim = activity.getResources().getIdentifier("m3_slide_out_left", "anim", activity.getPackageName());
             if (enterAnim != 0 && exitAnim != 0) {
-                activity.overridePendingTransition(enterAnim, exitAnim);
+                if (Build.VERSION.SDK_INT >= 34) {
+                    try {
+                        activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, enterAnim, exitAnim);
+                    } catch (Throwable t) {
+                        activity.overridePendingTransition(enterAnim, exitAnim);
+                    }
+                } else {
+                    activity.overridePendingTransition(enterAnim, exitAnim);
+                }
             }
         } catch (Throwable ignored) {
         }
     }
 
     public static void applyActivityExitTransition(Activity activity) {
+        if (activity == null) return;
         try {
             int enterAnim = activity.getResources().getIdentifier("m3_slide_in_left", "anim", activity.getPackageName());
             int exitAnim = activity.getResources().getIdentifier("m3_slide_out_right", "anim", activity.getPackageName());
             if (enterAnim != 0 && exitAnim != 0) {
-                activity.overridePendingTransition(enterAnim, exitAnim);
+                if (Build.VERSION.SDK_INT >= 34) {
+                    try {
+                        activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, enterAnim, exitAnim);
+                    } catch (Throwable t) {
+                        activity.overridePendingTransition(enterAnim, exitAnim);
+                    }
+                } else {
+                    activity.overridePendingTransition(enterAnim, exitAnim);
+                }
             }
         } catch (Throwable ignored) {
         }
