@@ -71,7 +71,7 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
         List<GboardPatchesSettingsContract.Row> infoRows = new ArrayList<>();
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
                 "Release Version",
-                "v" + BuildConfig.PATCH_VERSION + " (Beta Dynamic Colors)",
+                "v" + BuildConfig.PATCH_VERSION + " (Beta 3.3)",
                 false
         ));
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
