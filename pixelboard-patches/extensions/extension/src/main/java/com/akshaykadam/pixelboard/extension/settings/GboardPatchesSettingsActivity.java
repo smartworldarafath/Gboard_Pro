@@ -114,6 +114,7 @@ public final class GboardPatchesSettingsActivity extends Activity
     public static final String ACTION_APPEARANCE = "com.akshaykadam.pixelboard.action.APPEARANCE";
     public static final String ACTION_BOARD_UI = "com.akshaykadam.pixelboard.action.BOARD_UI";
     public static final String ACTION_ABOUT = "com.akshaykadam.pixelboard.action.ABOUT";
+    public static final String ACTION_PRO = "com.akshaykadam.pixelboard.action.PRO";
     private boolean standaloneFeatureMode = false;
     public static final String EXTRA_NAVIGATION_PATH =
             "com.akshaykadam.pixelboard.extension.extra.PATCHES_NAVIGATION_PATH";
@@ -270,6 +271,12 @@ public final class GboardPatchesSettingsActivity extends Activity
         cancelDeferredRender();
         cancelOfflineSpeechLanguageQuery();
         super.onPause();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        GboardM3Helper.applyActivityExitTransition(this);
     }
 
     @Override
@@ -1568,6 +1575,7 @@ public final class GboardPatchesSettingsActivity extends Activity
 
     private void configureWindow() {
         GboardM3Helper.enforceHighRefreshRate(getWindow());
+        GboardM3Helper.applyActivityEnterTransition(this);
         if (getActionBar() != null) {
             getActionBar().hide();
         }
@@ -2849,6 +2857,8 @@ public final class GboardPatchesSettingsActivity extends Activity
             targetFeatureClass = GboardBoardUiFeature.class;
         } else if (ACTION_ABOUT.equals(action)) {
             targetFeatureClass = GboardAboutFeature.class;
+        } else if (ACTION_PRO.equals(action)) {
+            targetFeatureClass = GboardProFeature.class;
         }
 
         if (targetFeatureClass != null) {
@@ -2862,6 +2872,8 @@ public final class GboardPatchesSettingsActivity extends Activity
                 targetFeature = new GboardBoardUiFeature(this);
             } else if (ACTION_ABOUT.equals(action)) {
                 targetFeature = new GboardAboutFeature(this);
+            } else if (ACTION_PRO.equals(action)) {
+                targetFeature = new GboardProFeature(this);
             }
 
             if (targetFeature != null) {

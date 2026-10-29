@@ -1,20 +1,23 @@
 package com.akshaykadam.pixelboard.extension.settings;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class GboardAppearanceFeature implements GboardPatchesSettingsContract.Feature {
 
     public static final String PREF_NAME = "gboard_pro_appearance_prefs";
-    public static final String KEY_SELECTED_ICON = "selected_app_icon_alias";
     public static final String KEY_UI_THEME = "selected_gboard_ui_theme";
 
     private final Context context;
@@ -30,7 +33,7 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
 
     @Override
     public String getEntrySummary() {
-        return "App icons & styling";
+        return "Material 3 Expressive UI theme palettes";
     }
 
     @Override
@@ -47,87 +50,51 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
         Context ctx = host != null && host.getContext() != null ? host.getContext() : context;
         SharedPreferences prefs = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        String currentIcon = prefs.getString(KEY_SELECTED_ICON, "launcher.Default");
         String currentTheme = prefs.getString(KEY_UI_THEME, "default");
+        float density = ctx.getResources().getDisplayMetrics().density;
 
         List<GboardPatchesSettingsContract.Section> sections = new ArrayList<>();
 
-        // 1. App Launcher Icons Section with previews
-        List<GboardPatchesSettingsContract.Row> iconRows = new ArrayList<>();
-        String[] iconAliases = {
-                "launcher.Default",
-                "launcher.Purple",
-                "launcher.Slate",
-                "launcher.ForestGreen",
-                "launcher.NavyBlue"
-        };
-        String[] iconResNames = {
-                "ic_app",
-                "icon_purple",
-                "icon_slate",
-                "icon_forest_green",
-                "icon_navy_blue"
-        };
-        String[] iconTitles = {
-                "Classic Gboard Pro (Default)",
-                "Expressive Purple",
-                "Slate Charcoal",
-                "Forest Emerald",
-                "Midnight Navy"
-        };
-        String[] iconSummaries = {
-                "Official modern Material You adaptive icon",
-                "Vibrant violet-purple gradient with glow accent",
-                "Minimalist graphite matte aesthetic",
-                "Nature-inspired emerald green with deep sage",
-                "Deep indigo and cobalt blue"
-        };
+        // Info Card explaining the Theme & Color palette
+        List<GboardPatchesSettingsContract.Row> infoRows = new ArrayList<>();
+        infoRows.add(new GboardPatchesSettingsContract.InfoRow(
+                "Gboard UI Vibes",
+                "Select a Google Material 3 Expressive color palette. Changes apply across Gboard Pro settings and interface elements.",
+                true));
+        sections.add(new GboardPatchesSettingsContract.Section("PALETTE PREVIEW", infoRows));
 
-        for (int i = 0; i < iconAliases.length; i++) {
-            final String alias = iconAliases[i];
-            boolean selected = alias.equals(currentIcon);
-            Drawable iconDrawable = loadMipmapDrawable(ctx, iconResNames[i]);
-
-            iconRows.add(new GboardPatchesSettingsContract.RadioRow(
-                    iconTitles[i],
-                    iconSummaries[i],
-                    true,
-                    selected,
-                    () -> {
-                        applyAppIcon(ctx, alias);
-                        if (host != null) {
-                            host.submit(h -> h.refresh());
-                        }
-                    },
-                    iconDrawable
-            ));
-        }
-        sections.add(new GboardPatchesSettingsContract.Section(
-                "APP LAUNCHER ICONS",
-                iconRows
-        ));
-
-        // 2. Gboard UI Themes Section with multi-tone color demo swatches and "beta" badge
+        // Theme Palette Cards (Theme-section inspired)
         List<GboardPatchesSettingsContract.Row> themeRows = new ArrayList<>();
-        String[] themeKeys = {"default", "rainbow", "botanical", "ocean"};
+
+        String[] themeKeys = {
+                "default",
+                "rainbow",
+                "botanical",
+                "ocean"
+        };
         String[] themeTitles = {
-                "Default Material 3",
+                "Default (System Dynamic)",
                 "Expressive Rainbow",
                 "Fresh Botanical",
                 "Ocean Lavender"
         };
         String[] themeSummaries = {
-                "Official adaptive dynamic palette based on system wallpaper",
-                "Warm espresso and vivid sunset coral multi-tone vibe",
-                "Deep forest moss and luminous sage botanical palette",
-                "Midnight azure and ethereal twilight lavender multi-color"
+                "Material You dynamic wallpaper-based accent tones",
+                "Warm terracotta & vibrant sunset coral tones",
+                "Earthy botanical sage & emerald garden accents",
+                "Deep oceanic slate & calming indigo vibes"
+        };
+        int[][] themeSwatches = {
+                {0xFF1A73E8, 0xFF4285F4, 0xFFE8F0FE, 0xFFF1F3F4},
+                {0xFFE64A19, 0xFFFF7043, 0xFFFFCCBC, 0xFFFFF8F6},
+                {0xFF00796B, 0xFF4DB6AC, 0xFFC8E6C9, 0xFFF4FBF7},
+                {0xFF3949AB, 0xFF7986CB, 0xFFE8EAF6, 0xFFF6F8FE}
         };
 
-        int swatchSize = GboardM3Helper.dp(ctx, 42);
         for (int i = 0; i < themeKeys.length; i++) {
             final String key = themeKeys[i];
             boolean selected = key.equals(currentTheme);
-            Drawable swatch = GboardM3Helper.createThemeSwatchDrawable(ctx, key, swatchSize);
+            Drawable swatchDrawable = createPaletteSwatchDrawable(themeSwatches[i], 48, 48, density);
 
             themeRows.add(new GboardPatchesSettingsContract.RadioRow(
                     themeTitles[i],
@@ -137,80 +104,52 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
                     () -> {
                         prefs.edit().putString(KEY_UI_THEME, key).apply();
                         try {
-                            PreferenceManager.getDefaultSharedPreferences(ctx)
+                            android.preference.PreferenceManager.getDefaultSharedPreferences(ctx)
                                     .edit().putString(KEY_UI_THEME, key).apply();
-                        } catch (Throwable ignored) {
-                        }
-                        Toast.makeText(ctx, "Applied " + key + " UI theme", Toast.LENGTH_SHORT).show();
+                        } catch (Throwable ignored) {}
+                        Toast.makeText(ctx, "Applied " + key + " theme", Toast.LENGTH_SHORT).show();
                         if (host != null) {
                             host.submit(h -> h.refresh());
                         }
                     },
-                    swatch
-            ));
+                    swatchDrawable));
         }
-        sections.add(new GboardPatchesSettingsContract.Section(
-                "GBOARD UI (BETA)",
-                themeRows
-        ));
 
-        List<GboardPatchesSettingsContract.StatusBlock> statusBlocks = new ArrayList<>();
-        statusBlocks.add(new GboardPatchesSettingsContract.StatusBlock(
-                "Custom Appearance",
-                "Personalize your Gboard Pro experience with custom adaptive launcher icons and Material 3 Expressive UI tones.",
-                GboardPatchesSettingsContract.StatusTone.INFO
-        ));
+        sections.add(new GboardPatchesSettingsContract.Section("GBOARD UI (BETA)", themeRows));
 
         return new GboardPatchesSettingsContract.Screen(
                 "Appearance",
-                "Beta",
+                "Pro",
                 "Appearance",
-                "App icons & styling",
-                statusBlocks,
-                sections
-        );
+                "Personalize theme colors & visual styling",
+                Collections.emptyList(),
+                sections);
     }
 
-    private Drawable loadMipmapDrawable(Context ctx, String resName) {
-        try {
-            int id = ctx.getResources().getIdentifier(resName, "mipmap", ctx.getPackageName());
-            if (id != 0) {
-                return ctx.getDrawable(id);
-            }
-        } catch (Throwable ignored) {
+    private static Drawable createPaletteSwatchDrawable(int[] colors, int widthDp, int heightDp, float density) {
+        int w = Math.round(widthDp * density);
+        int h = Math.round(heightDp * density);
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+
+        Path clipPath = new Path();
+        float corner = 12f * density;
+        clipPath.addRoundRect(new RectF(0, 0, w, h), corner, corner, Path.Direction.CW);
+        canvas.clipPath(clipPath);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        float segW = (float) w / colors.length;
+        for (int i = 0; i < colors.length; i++) {
+            paint.setColor(colors[i]);
+            canvas.drawRect(i * segW, 0, (i + 1) * segW, h, paint);
         }
-        return null;
-    }
 
-    private void applyAppIcon(Context ctx, String targetAlias) {
-        try {
-            SharedPreferences prefs = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-            prefs.edit().putString(KEY_SELECTED_ICON, targetAlias).apply();
+        Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setStrokeWidth(1.5f * density);
+        strokePaint.setColor(0x28000000);
+        canvas.drawRoundRect(new RectF(1, 1, w - 1, h - 1), corner, corner, strokePaint);
 
-            PackageManager pm = ctx.getPackageManager();
-            String pkg = ctx.getPackageName();
-
-            String[] allAliases = {
-                    "launcher.Default",
-                    "launcher.Purple",
-                    "launcher.Slate",
-                    "launcher.ForestGreen",
-                    "launcher.NavyBlue"
-            };
-
-            for (String alias : allAliases) {
-                ComponentName comp = new ComponentName(pkg, pkg + "." + alias);
-                int newState = alias.equals(targetAlias)
-                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-                try {
-                    pm.setComponentEnabledSetting(comp, newState, PackageManager.DONT_KILL_APP);
-                } catch (Throwable ignored) {
-                }
-            }
-            Toast.makeText(ctx, "Icon updated! Launcher will refresh shortly.", Toast.LENGTH_SHORT).show();
-        } catch (Throwable t) {
-            Toast.makeText(ctx, "Icon preference saved.", Toast.LENGTH_SHORT).show();
-        }
+        return new BitmapDrawable(null, bitmap);
     }
 }
