@@ -583,6 +583,18 @@ public final class GboardM3Helper {
         return d;
     }
 
+    public static void applyActivityEnterTransition(Context context) {
+        if (context instanceof Activity) {
+            applyActivityEnterTransition((Activity) context);
+        }
+    }
+
+    public static void applyActivityExitTransition(Context context) {
+        if (context instanceof Activity) {
+            applyActivityExitTransition((Activity) context);
+        }
+    }
+
     public static void applyActivityEnterTransition(Activity activity) {
         if (activity == null) return;
         try {

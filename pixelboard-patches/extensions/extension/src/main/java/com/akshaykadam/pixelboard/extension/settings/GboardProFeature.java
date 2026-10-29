@@ -1,7 +1,6 @@
 package com.akshaykadam.pixelboard.extension.settings;
 
 import android.content.Context;
-import com.akshaykadam.pixelboard.extension.keyboard.GboardAiVoiceSettingsGroupFeature;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +33,7 @@ public final class GboardProFeature implements GboardPatchesSettingsContract.Fea
         return Arrays.asList(
                 new GboardAppearanceFeature(context),
                 new GboardBoardUiFeature(context),
-                new GboardAiVoiceSettingsGroupFeature(context));
+                new GboardAdvancedSettingsFeature(context));
     }
 
     @Override
@@ -73,7 +72,7 @@ public final class GboardProFeature implements GboardPatchesSettingsContract.Fea
                 true,
                 () -> {
                     if (host != null) {
-                        GboardPatchesSettingsContract.openFeature(host, new GboardAiVoiceSettingsGroupFeature(ctx));
+                        GboardPatchesSettingsContract.openFeature(host, new GboardAdvancedSettingsFeature(ctx));
                     }
                 }));
 

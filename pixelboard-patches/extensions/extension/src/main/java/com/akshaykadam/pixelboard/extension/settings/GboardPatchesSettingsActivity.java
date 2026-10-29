@@ -2755,6 +2755,27 @@ public final class GboardPatchesSettingsActivity extends Activity
         if (requestedScrollY >= 0) {
             scrollContentToPositionAfterLayout(requestedScrollY);
         }
+        if (appliedScreenDepth >= 0 && contentColumn != null) {
+            if (screenDepth > appliedScreenDepth) {
+                contentColumn.setTranslationX(dp(120));
+                contentColumn.setAlpha(0.2f);
+                contentColumn.animate()
+                        .translationX(0f)
+                        .alpha(1f)
+                        .setDuration(280)
+                        .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                        .start();
+            } else if (screenDepth < appliedScreenDepth) {
+                contentColumn.setTranslationX(-dp(120));
+                contentColumn.setAlpha(0.2f);
+                contentColumn.animate()
+                        .translationX(0f)
+                        .alpha(1f)
+                        .setDuration(280)
+                        .setInterpolator(new android.view.animation.DecelerateInterpolator())
+                        .start();
+            }
+        }
         restoreAccessibilityFocus(screenDepth);
     }
 

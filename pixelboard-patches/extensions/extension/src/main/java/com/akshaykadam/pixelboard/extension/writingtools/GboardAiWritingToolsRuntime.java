@@ -525,6 +525,23 @@ public final class GboardAiWritingToolsRuntime {
                     return Boolean.TRUE;
                 }
             }
+            if ("enable_frequent_emoji_recent_tab".equals(flagName)
+                    && originalResult instanceof Boolean) {
+                try {
+                    android.content.SharedPreferences patchesPrefs =
+                            com.akshaykadam.pixelboard.extension.settings.GboardPatchesSettings.preferences(context);
+                    if (patchesPrefs != null && patchesPrefs.getBoolean("frequently_used_emojis_enabled", false)) {
+                        return Boolean.TRUE;
+                    } else {
+                        return Boolean.FALSE;
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+            if ("enable_emoji_frequent_recent_switch_option".equals(flagName)
+                    && originalResult instanceof Boolean) {
+                return Boolean.TRUE;
+            }
             GboardAiWritingToolsSettings.Snapshot settings =
                     GboardAiWritingToolsSettings.snapshot(context);
             Object enforced = computeOverrideValue(
