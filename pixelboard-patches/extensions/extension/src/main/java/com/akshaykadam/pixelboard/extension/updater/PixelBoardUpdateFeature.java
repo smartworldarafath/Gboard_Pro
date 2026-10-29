@@ -334,7 +334,7 @@ public final class PixelBoardUpdateFeature implements GboardPatchesSettingsContr
         List<GboardPatchesSettingsContract.Row> prefRows = new ArrayList<>();
         prefRows.add(new GboardPatchesSettingsContract.ToggleRow(
                 "Check for updates automatically",
-                "Automatically query GitHub for new releases on launch",
+                "Automatically check every 8 hours in the background for new releases",
                 true,
                 PixelBoardUpdateManager.isAutoCheckEnabled(context),
                 value -> {

@@ -241,6 +241,11 @@ public final class GboardPatchesSettingsActivity extends Activity
             setContentView(contentView);
             installWindowInsetsHandling(contentView);
             registerBackCallback();
+            com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.requestNotificationPermission(this);
+            com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.ensureNotificationChannel(this);
+            if (com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateManager.isAutoCheckEnabled(this)) {
+                com.akshaykadam.pixelboard.extension.updater.GboardUpdateCheckReceiver.scheduleUpdateCheck(this);
+            }
         } catch (Throwable throwable) {
             showFatalFallbackScreen("Failed to initialize patches settings activity", throwable);
         }
@@ -288,6 +293,11 @@ public final class GboardPatchesSettingsActivity extends Activity
         cancelDeferredRender();
         cancelOfflineSpeechLanguageQuery();
         unregisterBackCallback();
+            com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.requestNotificationPermission(this);
+            com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.ensureNotificationChannel(this);
+            if (com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateManager.isAutoCheckEnabled(this)) {
+                com.akshaykadam.pixelboard.extension.updater.GboardUpdateCheckReceiver.scheduleUpdateCheck(this);
+            }
         detachKeyboardPreviewSafely();
         screenBuildExecutor.shutdownNow();
         backgroundStateExecutor.shutdownNow();
@@ -3773,7 +3783,7 @@ public final class GboardPatchesSettingsActivity extends Activity
             card.addView(titleView);
 
             TextView versionPill = new TextView(this);
-            versionPill.setText("v1.0.5 (Beta)");
+            versionPill.setText("v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (Beta)");
             versionPill.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
             versionPill.setTypeface(Typeface.DEFAULT_BOLD);
             versionPill.setTextColor(palette.accent);
@@ -4675,7 +4685,31 @@ public final class GboardPatchesSettingsActivity extends Activity
                 }
             }
 
-            if ("rainbow".equals(selectedTheme)) {
+                        if ("blush_lilac".equals(selectedTheme)) {
+                if (nightMode) {
+                    return new Palette(
+                            0xFF181122, 0xFF241C2E, 0xFF322840, 0x44D0BCFF,
+                            0xFF4F378B, Color.parseColor("#3F2D16"), 0xFF322840,
+                            0xFFF5EEFF, 0xFFCCC2DC, 0x77CCC2DC, 0xFFD0BCFF, 0x33D0BCFF);
+                } else {
+                    return new Palette(
+                            0xFFF7EFFA, 0xFFFFFFFF, 0xFFEBD7FA, 0x33542983,
+                            0xFFEBD7FA, Color.parseColor("#FEF3C7"), 0xFFEBD7FA,
+                            0xFF24152F, 0xFF5F4B6E, 0x775F4B6E, 0xFF542983, 0x26542983);
+                }
+            } else if ("cotton_candy".equals(selectedTheme)) {
+                if (nightMode) {
+                    return new Palette(
+                            0xFF1F1117, 0xFF2E1922, 0xFF402330, 0x44FF80AB,
+                            0xFF880E4F, Color.parseColor("#3F2D16"), 0xFF402330,
+                            0xFFFCE4EC, 0xFFF8BBD0, 0x77F8BBD0, 0xFFFF80AB, 0x33FF80AB);
+                } else {
+                    return new Palette(
+                            0xFFFDE7E9, 0xFFFFFFFF, 0xFFF6B0CA, 0x33B80058,
+                            0xFFF6B0CA, Color.parseColor("#FEF3C7"), 0xFFF6B0CA,
+                            0xFF2D121B, 0xFF6D4352, 0x776D4352, 0xFFB80058, 0x26B80058);
+                }
+            } else if ("sunset_peach".equals(selectedTheme) || "rainbow".equals(selectedTheme)) {
                 if (nightMode) {
                     return new Palette(
                             0xFF1C1310, 0xFF281C17, 0xFF372720, 0x44FF8A65,
@@ -4683,11 +4717,11 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFFBE9E7, 0xFFFFCCBC, 0x77FFCCBC, 0xFFFF7043, 0x33FF7043);
                 } else {
                     return new Palette(
-                            0xFFFFF8F6, 0xFFFDEEE9, 0xFFF8E2DB, 0x26FF5722,
-                            0xFFFFCCBC, Color.parseColor("#FEF3C7"), 0xFFF8E2DB,
-                            0xFF2D1610, 0xFF5F3E35, 0x775F3E35, 0xFFE64A19, 0x26E64A19);
+                            0xFFFDE8E7, 0xFFFFFFFF, 0xFFFD987C, 0x33D35A2D,
+                            0xFFFD987C, Color.parseColor("#FEF3C7"), 0xFFFD987C,
+                            0xFF2D1610, 0xFF6E443A, 0x776E443A, 0xFFD35A2D, 0x26D35A2D);
                 }
-            } else if ("botanical".equals(selectedTheme)) {
+            } else if ("fresh_mint".equals(selectedTheme) || "botanical".equals(selectedTheme)) {
                 if (nightMode) {
                     return new Palette(
                             0xFF0E1815, 0xFF162520, 0xFF20342E, 0x4480CBC4,
@@ -4695,9 +4729,9 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFE0F2F1, 0xFFB2DFDB, 0x77B2DFDB, 0xFF4DB6AC, 0x334DB6AC);
                 } else {
                     return new Palette(
-                            0xFFF4FBF7, 0xFFE8F5E9, 0xFFDCEDC8, 0x2600796B,
-                            0xFFC8E6C9, Color.parseColor("#FEF3C7"), 0xFFDCEDC8,
-                            0xFF0A261F, 0xFF2E5349, 0x772E5349, 0xFF00796B, 0x2600796B);
+                            0xFFEFF5F5, 0xFFFFFFFF, 0xFFD4FAEF, 0x33046665,
+                            0xFFD4FAEF, Color.parseColor("#FEF3C7"), 0xFFD4FAEF,
+                            0xFF0E1F1E, 0xFF3F5C5A, 0x773F5C5A, 0xFF046665, 0x26046665);
                 }
             } else if ("ocean".equals(selectedTheme)) {
                 if (nightMode) {

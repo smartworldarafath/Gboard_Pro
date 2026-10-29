@@ -38,7 +38,7 @@ import java.net.URL;
 public class GboardAppUpdatesActivity extends Activity {
 
     private static final String GITHUB_API_URL = "https://api.github.com/repos/smartworldarafath/Gboard_Pro/releases/latest";
-    private static final String CURRENT_VERSION = "1.0.4";
+    private static final String CURRENT_VERSION = com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION;
 
     private GboardM3Helper.Palette palette;
     private Handler mainHandler;

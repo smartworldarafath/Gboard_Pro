@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gboard Pro v2.0.1 (Beta: Dynamic Colors) - Visual Look Preview</title>
+  <title>Gboard Pro v2.0.2 (Beta: Dynamic Colors) - Visual Look Preview</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
@@ -13,12 +13,12 @@
       --surface: #FFFFFF;
       --surface-alt: #F3EAF6;
       --surface-stroke: #E8DDF0;
-      --primary: #7E57C2;
+      --primary: #542983;
       --primary-container: #EBDDFB;
       --on-primary-container: #2A0054;
       --text-primary: #1D162B;
       --text-secondary: #5B4F6E;
-      --switch-track: #7E57C2;
+      --switch-track: #542983;
       --switch-thumb: #FFFFFF;
       --key-bg: #FFFFFF;
       --key-special-bg: #EBDDFB;
@@ -126,7 +126,7 @@
     }
 
     .theme-btn.active {
-      background: #7E57C2;
+      background: #542983;
       border-color: #D0BCFF;
       color: #FFFFFF;
       box-shadow: 0 0 16px rgba(126, 87, 194, 0.4);
@@ -547,7 +547,7 @@
 
   <div class="container">
     <header>
-      <div class="badge">GBOARD PRO v2.0.1 (BETA)</div>
+      <div class="badge">GBOARD PRO v2.0.2 (BETA)</div>
       <h1>Dynamic Colors & Appearance Studio</h1>
       <p class="subtitle">
         Interactive local preview of the <strong>Blush Lilac (Showcase Light Pink)</strong> theme matching <code>showcase.png</code> and Material 3 Expressive dynamic color palettes.
@@ -559,19 +559,19 @@
       <div class="control-group">
         <span class="control-label">Select Color Theme:</span>
         <button class="theme-btn active" onclick="setTheme('blush_lilac')">
-          <span class="swatch-mini" style="background: #7E57C2;"></span>
+          <span class="swatch-mini" style="background: #542983;"></span>
           Blush Lilac (Showcase Pink)
         </button>
         <button class="theme-btn" onclick="setTheme('cotton_candy')">
-          <span class="swatch-mini" style="background: #D81B60;"></span>
+          <span class="swatch-mini" style="background: #B80058;"></span>
           Cotton Candy (Pastel Rose)
         </button>
         <button class="theme-btn" onclick="setTheme('sunset_peach')">
-          <span class="swatch-mini" style="background: #E64A19;"></span>
+          <span class="swatch-mini" style="background: #D35A2D;"></span>
           Sunset Peach (Warm Apricot)
         </button>
         <button class="theme-btn" onclick="setTheme('fresh_mint')">
-          <span class="swatch-mini" style="background: #00796B;"></span>
+          <span class="swatch-mini" style="background: #046665;"></span>
           Fresh Mint (Sage Teal)
         </button>
         <button class="theme-btn" onclick="setTheme('system_default')">
@@ -663,7 +663,7 @@
               <div class="theme-card-row" onclick="setTheme('blush_lilac')">
                 <div class="theme-card-left">
                   <div class="swatch-box">
-                    <div class="swatch-quad" style="background: #7E57C2;"></div>
+                    <div class="swatch-quad" style="background: #542983;"></div>
                     <div class="swatch-quad" style="background: #EBDDFB;"></div>
                     <div class="swatch-quad" style="background: #D0BCFF;"></div>
                     <div class="swatch-quad" style="background: #F8F2FA;"></div>
@@ -680,7 +680,7 @@
               <div class="theme-card-row" onclick="setTheme('cotton_candy')">
                 <div class="theme-card-left">
                   <div class="swatch-box">
-                    <div class="swatch-quad" style="background: #D81B60;"></div>
+                    <div class="swatch-quad" style="background: #B80058;"></div>
                     <div class="swatch-quad" style="background: #FCE4EC;"></div>
                     <div class="swatch-quad" style="background: #FF80AB;"></div>
                     <div class="swatch-quad" style="background: #FDF2F7;"></div>
@@ -697,7 +697,7 @@
               <div class="theme-card-row" onclick="setTheme('sunset_peach')">
                 <div class="theme-card-left">
                   <div class="swatch-box">
-                    <div class="swatch-quad" style="background: #E64A19;"></div>
+                    <div class="swatch-quad" style="background: #D35A2D;"></div>
                     <div class="swatch-quad" style="background: #FFCCBC;"></div>
                     <div class="swatch-quad" style="background: #FF8A65;"></div>
                     <div class="swatch-quad" style="background: #FFF5F2;"></div>
@@ -714,7 +714,7 @@
               <div class="theme-card-row" onclick="setTheme('fresh_mint')">
                 <div class="theme-card-left">
                   <div class="swatch-box">
-                    <div class="swatch-quad" style="background: #00796B;"></div>
+                    <div class="swatch-quad" style="background: #046665;"></div>
                     <div class="swatch-quad" style="background: #C8E6C9;"></div>
                     <div class="swatch-quad" style="background: #4DB6AC;"></div>
                     <div class="swatch-quad" style="background: #F2F8F5;"></div>
@@ -913,7 +913,7 @@
               </tr>
               <tr>
                 <td>Primary Accent (Active)</td>
-                <td><span class="color-chip" style="background: #7E57C2;"></span>Vibrant Violet Purple</td>
+                <td><span class="color-chip" style="background: #542983;"></span>Vibrant Violet Purple</td>
                 <td><code>#7E57C2</code></td>
               </tr>
               <tr>
@@ -942,16 +942,16 @@
     const themes = {
       blush_lilac: {
         light: {
-          bg: '#F8F2FA',
+          bg: '#F7EFFA',
           surface: '#FFFFFF',
           surfaceAlt: '#F3EAF6',
           surfaceStroke: '#E8DDF0',
-          primary: '#7E57C2',
-          primaryContainer: '#EBDDFB',
+          primary: '#542983',
+          primaryContainer: '#EBD7FA',
           onPrimaryContainer: '#2A0054',
-          textPrimary: '#1D162B',
-          textSecondary: '#5B4F6E',
-          switchTrack: '#7E57C2',
+          textPrimary: '#24152F',
+          textSecondary: '#5F4B6E',
+          switchTrack: '#542983',
           switchThumb: '#FFFFFF',
           keyBg: '#FFFFFF',
           keySpecialBg: '#EBDDFB',
@@ -976,16 +976,16 @@
       },
       cotton_candy: {
         light: {
-          bg: '#FDF2F7',
+          bg: '#FDE7E9',
           surface: '#FFFFFF',
           surfaceAlt: '#FCE4EC',
           surfaceStroke: '#F8BBD0',
-          primary: '#D81B60',
-          primaryContainer: '#F8BBD0',
+          primary: '#B80058',
+          primaryContainer: '#F6B0CA',
           onPrimaryContainer: '#4A0023',
-          textPrimary: '#2B121C',
-          textSecondary: '#6B4354',
-          switchTrack: '#D81B60',
+          textPrimary: '#2D121B',
+          textSecondary: '#6D4352',
+          switchTrack: '#B80058',
           switchThumb: '#FFFFFF',
           keyBg: '#FFFFFF',
           keySpecialBg: '#FCE4EC',
@@ -1010,16 +1010,16 @@
       },
       sunset_peach: {
         light: {
-          bg: '#FFF5F2',
+          bg: '#FDE8E7',
           surface: '#FFFFFF',
           surfaceAlt: '#FDEEE9',
           surfaceStroke: '#FFCCBC',
-          primary: '#E64A19',
-          primaryContainer: '#FFCCBC',
+          primary: '#D35A2D',
+          primaryContainer: '#FD987C',
           onPrimaryContainer: '#3E0F04',
           textPrimary: '#2D1610',
-          textSecondary: '#5F3E35',
-          switchTrack: '#E64A19',
+          textSecondary: '#6E443A',
+          switchTrack: '#D35A2D',
           switchThumb: '#FFFFFF',
           keyBg: '#FFFFFF',
           keySpecialBg: '#FFCCBC',
@@ -1044,16 +1044,16 @@
       },
       fresh_mint: {
         light: {
-          bg: '#F2F8F5',
+          bg: '#EFF5F5',
           surface: '#FFFFFF',
           surfaceAlt: '#E8F5E9',
           surfaceStroke: '#C8E6C9',
-          primary: '#00796B',
-          primaryContainer: '#C8E6C9',
+          primary: '#046665',
+          primaryContainer: '#D4FAEF',
           onPrimaryContainer: '#002B24',
-          textPrimary: '#10241E',
-          textSecondary: '#3E5B51',
-          switchTrack: '#00796B',
+          textPrimary: '#0E1F1E',
+          textSecondary: '#3F5C5A',
+          switchTrack: '#046665',
           switchThumb: '#FFFFFF',
           keyBg: '#FFFFFF',
           keySpecialBg: '#E8F5E9',

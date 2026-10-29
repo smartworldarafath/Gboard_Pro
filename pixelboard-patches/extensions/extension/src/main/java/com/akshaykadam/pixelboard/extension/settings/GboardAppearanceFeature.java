@@ -66,32 +66,32 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
         // Theme Palette Cards
         List<GboardPatchesSettingsContract.Row> themeRows = new ArrayList<>();
 
-        String[] themeKeys = {
+                String[] themeKeys = {
                 "blush_lilac",
                 "cotton_candy",
-                "rainbow",
-                "botanical",
+                "sunset_peach",
+                "fresh_mint",
                 "default"
         };
         String[] themeTitles = {
-                "Blush Lilac (Showcase Pink)",
-                "Cotton Candy (Pastel Rose)",
-                "Sunset Peach (Warm Apricot)",
-                "Fresh Mint (Sage Teal)",
+                "Blush Lilac",
+                "Cotton Candy",
+                "Sunset Peach",
+                "Fresh Mint",
                 "Default (System Dynamic)"
         };
         String[] themeSummaries = {
-                "Signature light pink background with vibrant violet-purple accents",
-                "Gentle pastel rose pink & airy sky tones",
-                "Warm glowing peach & soft melon pink",
-                "Botanical garden sage & fresh mint",
-                "Material You dynamic wallpaper-based accent tones"
+                "Signature soft pastel lilac with deep royal purple accents",
+                "Gentle powder rose pink with vivid raspberry magenta accents",
+                "Warm glowing peach with rich terracotta burnt orange accents",
+                "Clean pale mint sage with deep pine teal accents",
+                "Material You dynamic wallpaper-based system Monet palette"
         };
         int[][] themeSwatches = {
-                {0xFF7E57C2, 0xFFEBDDFB, 0xFFD0BCFF, 0xFFF8F2FA},
-                {0xFFD81B60, 0xFFFCE4EC, 0xFFFF80AB, 0xFFFDF2F7},
-                {0xFFE64A19, 0xFFFFCCBC, 0xFFFF8A65, 0xFFFFF5F2},
-                {0xFF00796B, 0xFFC8E6C9, 0xFF4DB6AC, 0xFFF2F8F5},
+                {0xFF542983, 0xFFEBD7FA, 0xFF7E57C2, 0xFFF7EFFA},
+                {0xFFB80058, 0xFFF6B0CA, 0xFFC2185B, 0xFFFDE7E9},
+                {0xFFD35A2D, 0xFFFD987C, 0xFFBF360C, 0xFFFDE8E7},
+                {0xFF046665, 0xFFD4FAEF, 0xFF00695C, 0xFFEFF5F5},
                 {0xFF1A73E8, 0xFFE8F0FE, 0xFF4285F4, 0xFFF1F3F4}
         };
 

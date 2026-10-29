@@ -101,7 +101,7 @@ public class GboardAboutActivity extends Activity {
 
             itemsCard.addView(buildClickableItem(
                     "Current version",
-                    "1.0.4 (18.4.1.985164140-release-arm64-v8a)",
+                    "v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (18.4.1.985164140-release-arm64-v8a)",
                     "https://github.com/smartworldarafath/Gboard_Pro/releases",
                     false
             ));
@@ -137,7 +137,7 @@ public class GboardAboutActivity extends Activity {
             fallback.setOrientation(LinearLayout.VERTICAL);
             fallback.setPadding(32, 64, 32, 32);
             TextView tv = new TextView(this);
-            tv.setText("Gboard Pro\nVersion 1.0.4\n\nDeveloper: Arafath Rahman (@smartworldarafath)\nGitHub: https://github.com/smartworldarafath/Gboard_Pro");
+            tv.setText("Gboard Pro\nVersion " + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + "\n\nDeveloper: Arafath Rahman (@smartworldarafath)\nGitHub: https://github.com/smartworldarafath/Gboard_Pro");
             tv.setTextSize(16f);
             fallback.addView(tv);
             setContentView(fallback);
@@ -180,7 +180,7 @@ public class GboardAboutActivity extends Activity {
 
         // Version Chip
         TextView versionChip = new TextView(this);
-        versionChip.setText("v1.0.4 Stable");
+        versionChip.setText("v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (Beta)");
         versionChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
         versionChip.setTypeface(Typeface.DEFAULT_BOLD);
         versionChip.setTextColor(palette.onAccentContainer);

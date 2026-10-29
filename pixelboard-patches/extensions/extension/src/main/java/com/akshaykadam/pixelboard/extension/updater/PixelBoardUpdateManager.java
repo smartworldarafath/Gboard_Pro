@@ -186,6 +186,13 @@ public final class PixelBoardUpdateManager {
         if (prefs != null) {
             prefs.edit().putBoolean(PREF_KEY_AUTO_CHECK, enabled).apply();
         }
+        if (context != null) {
+            if (enabled) {
+                GboardUpdateCheckReceiver.scheduleUpdateCheck(context);
+            } else {
+                GboardUpdateCheckReceiver.cancelUpdateCheck(context);
+            }
+        }
     }
 
     public static long getLastCheckTime(Context context) {

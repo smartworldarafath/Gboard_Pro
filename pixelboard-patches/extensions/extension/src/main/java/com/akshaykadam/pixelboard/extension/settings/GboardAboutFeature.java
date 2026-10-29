@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.akshaykadam.pixelboard.extension.BuildConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,21 +42,46 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
 
         List<GboardPatchesSettingsContract.Section> sections = new ArrayList<>();
 
-        // 1. Project Info Section
+        // 1. Maintainer & Developer Section
+        List<GboardPatchesSettingsContract.Row> devRows = new ArrayList<>();
+        devRows.add(new GboardPatchesSettingsContract.CommandRow(
+                "Arafath Rahman (@smartworldarafath)",
+                "Project Creator, Maintainer & Lead Android Engineer",
+                true,
+                () -> openUrl(ctx, "https://github.com/smartworldarafath")
+        ));
+        devRows.add(new GboardPatchesSettingsContract.CommandRow(
+                "Telegram Community & Support",
+                "Direct chat & updates @smartworldarafath",
+                true,
+                () -> openUrl(ctx, "https://t.me/smartworldarafath")
+        ));
+        devRows.add(new GboardPatchesSettingsContract.CommandRow(
+                "Issue Tracker & Feedback",
+                "Submit bug reports and feature requests on GitHub",
+                true,
+                () -> openUrl(ctx, "https://github.com/smartworldarafath/Gboard_Pro/issues")
+        ));
+        sections.add(new GboardPatchesSettingsContract.Section(
+                "MAINTAINER & COMMUNITY",
+                devRows
+        ));
+
+        // 2. Application & System Section
         List<GboardPatchesSettingsContract.Row> infoRows = new ArrayList<>();
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
-                "Application",
-                "Gboard Pro (Enhanced Edition)",
+                "Release Version",
+                "v" + BuildConfig.PATCH_VERSION + " (Beta Dynamic Colors)",
                 false
         ));
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
-                "Version",
-                "v1.0.5 (Beta)",
+                "Base Gboard",
+                "18.4.1.985164140-release-arm64-v8a",
                 false
         ));
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
-                "Maintainer & Developer",
-                "Arafath Rahman (@smartworldarafath)",
+                "Display Engine",
+                "144Hz / 120Hz Ultra Smooth Refresh Rate",
                 false
         ));
         infoRows.add(new GboardPatchesSettingsContract.DetailRow(
@@ -63,11 +90,38 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
                 false
         ));
         sections.add(new GboardPatchesSettingsContract.Section(
-                "PROJECT INFORMATION",
+                "APPLICATION & SYSTEM",
                 infoRows
         ));
 
-        // 2. Links & Community Section
+        // 3. Core Highlights Section
+        List<GboardPatchesSettingsContract.Row> highlightRows = new ArrayList<>();
+        highlightRows.add(new GboardPatchesSettingsContract.DetailRow(
+                "Material 3 Expressive",
+                "Blush Lilac, Cotton Candy, Sunset Peach & Fresh Mint dynamic palettes",
+                false
+        ));
+        highlightRows.add(new GboardPatchesSettingsContract.DetailRow(
+                "AI Voice Dictation",
+                "Gemini neural dictation model integration with smart punctuation",
+                false
+        ));
+        highlightRows.add(new GboardPatchesSettingsContract.DetailRow(
+                "Clipboard System",
+                "Dual standard & custom hourly retention with Samsung/Vivo sync",
+                false
+        ));
+        highlightRows.add(new GboardPatchesSettingsContract.DetailRow(
+                "Zero-Telemetry Privacy",
+                "100% on-device processing with zero data transmission",
+                false
+        ));
+        sections.add(new GboardPatchesSettingsContract.Section(
+                "CORE HIGHLIGHTS",
+                highlightRows
+        ));
+
+        // 4. Open Source & Legal Section
         List<GboardPatchesSettingsContract.Row> linkRows = new ArrayList<>();
         linkRows.add(new GboardPatchesSettingsContract.CommandRow(
                 "GitHub Repository",
@@ -76,32 +130,32 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
                 () -> openUrl(ctx, "https://github.com/smartworldarafath/Gboard_Pro")
         ));
         linkRows.add(new GboardPatchesSettingsContract.CommandRow(
-                "Report Issue or Request Feature",
-                "Submit feedback and bug reports on GitHub",
+                "Release Notes & Changelog",
+                "View full changelog history on GitHub Releases",
                 true,
-                () -> openUrl(ctx, "https://github.com/smartworldarafath/Gboard_Pro/issues")
+                () -> openUrl(ctx, "https://github.com/smartworldarafath/Gboard_Pro/releases")
         ));
         linkRows.add(new GboardPatchesSettingsContract.CommandRow(
-                "Developer Telegram",
-                "@smartworldarafath",
+                "Privacy Policy & Terms",
+                "Zero-telemetry guarantee and open-source terms",
                 true,
-                () -> openUrl(ctx, "https://t.me/smartworldarafath")
+                () -> openUrl(ctx, "https://github.com/smartworldarafath/Gboard_Pro#readme")
         ));
         sections.add(new GboardPatchesSettingsContract.Section(
-                "COMMUNITY & SUPPORT",
+                "OPEN SOURCE & LEGAL",
                 linkRows
         ));
 
         List<GboardPatchesSettingsContract.StatusBlock> statusBlocks = new ArrayList<>();
         statusBlocks.add(new GboardPatchesSettingsContract.StatusBlock(
                 "Gboard Pro",
-                "A modern, high-performance Gboard enhancement with Material 3 Expressive styling, 144Hz refresh rate, Gemini Voice, and in-app updates.",
+                "Next-generation Gboard enhancement with Material 3 Expressive styling, 144Hz high refresh rate, Gemini Voice, and dual clipboard retention.",
                 GboardPatchesSettingsContract.StatusTone.INFO
         ));
 
         return new GboardPatchesSettingsContract.Screen(
                 "About",
-                "v1.0.5",
+                "v" + BuildConfig.PATCH_VERSION,
                 "About",
                 "Developer & project details",
                 statusBlocks,

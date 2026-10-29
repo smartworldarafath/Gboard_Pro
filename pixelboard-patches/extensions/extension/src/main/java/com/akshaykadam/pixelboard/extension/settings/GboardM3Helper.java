@@ -73,17 +73,17 @@ public final class GboardM3Helper {
             } catch (Throwable ignored) {
             }
 
-            // Material 3 Expressive Multi-Color Theme Overrides
+                        // Material 3 Expressive Multi-Color Theme Overrides
             if ("blush_lilac".equals(selectedTheme)) {
                 if (night) {
                     return new Palette(
-                            0xFF181122, // windowBackground (Deep amethyst)
+                            0xFF181122, // windowBackground
                             0xFF241C2E, // surface
                             0xFF322840, // surfaceAlt
                             0x44D0BCFF, // surfaceStroke
                             0xFFF5EEFF, // textPrimary
                             0xFFCCC2DC, // textSecondary
-                            0xFFD0BCFF, // accent (Soft Lilac)
+                            0xFFD0BCFF, // accent
                             0xFF4F378B, // accentContainer
                             0xFFEADDFF, // onAccentContainer
                             0x33D0BCFF, // ripple
@@ -91,16 +91,16 @@ public final class GboardM3Helper {
                     );
                 } else {
                     return new Palette(
-                            0xFFF8F2FA, // windowBackground (Showcase light pink / pastel lilac)
-                            0xFFFFFFFF, // surface (Crisp white elevated cards)
-                            0xFFF3EAF6, // surfaceAlt (Tinted tonal elements)
-                            0x337E57C2, // surfaceStroke (Delicate lilac outline)
-                            0xFF1D162B, // textPrimary (Deep eggplant)
-                            0xFF5B4F6E, // textSecondary (Slate violet)
-                            0xFF7E57C2, // accent (Vibrant violet switch/button from showcase.png)
-                            0xFFEBDDFB, // accentContainer (Pastel lavender container)
-                            0xFF2A0054, // onAccentContainer
-                            0x267E57C2, // ripple
+                            0xFFF7EFFA, // windowBackground (Screenshot matched)
+                            0xFFFFFFFF, // surface
+                            0xFFEBD7FA, // surfaceAlt (Pill container)
+                            0x33542983, // surfaceStroke
+                            0xFF24152F, // textPrimary
+                            0xFF5F4B6E, // textSecondary
+                            0xFF542983, // accent (Royal violet switch/radio)
+                            0xFFEBD7FA, // accentContainer
+                            0xFF24152F, // onAccentContainer
+                            0x26542983, // ripple
                             false
                     );
                 }
@@ -121,107 +121,106 @@ public final class GboardM3Helper {
                     );
                 } else {
                     return new Palette(
-                            0xFFFDF2F7, // windowBackground (Soft pastel rose)
+                            0xFFFDE7E9, // windowBackground (Screenshot matched)
                             0xFFFFFFFF, // surface
-                            0xFFFCE4EC, // surfaceAlt
-                            0x33D81B60, // surfaceStroke
-                            0xFF2B121C, // textPrimary
-                            0xFF6B4354, // textSecondary
-                            0xFFD81B60, // accent
-                            0xFFF8BBD0, // accentContainer
-                            0xFF4A0023, // onAccentContainer
-                            0x26D81B60, // ripple
+                            0xFFF6B0CA, // surfaceAlt (Pill container)
+                            0x33B80058, // surfaceStroke
+                            0xFF2D121B, // textPrimary
+                            0xFF6D4352, // textSecondary
+                            0xFFB80058, // accent (Vivid raspberry magenta switch/radio)
+                            0xFFF6B0CA, // accentContainer
+                            0xFF2D121B, // onAccentContainer
+                            0x26B80058, // ripple
                             false
                     );
                 }
-            } else
-            if ("rainbow".equals(selectedTheme)) {
+            } else if ("sunset_peach".equals(selectedTheme) || "rainbow".equals(selectedTheme)) {
                 if (night) {
                     return new Palette(
-                            0xFF1C1310, // windowBackground (Warm dark espresso)
-                            0xFF281C17, // surface
-                            0xFF372720, // surfaceAlt
-                            0x44FF8A65, // surfaceStroke
-                            0xFFFBE9E7, // textPrimary
-                            0xFFFFCCBC, // textSecondary
-                            0xFFFF7043, // accent (Vivid Sunset Coral)
-                            0xFF5D2416, // accentContainer
-                            0xFFFFDBCF, // onAccentContainer
-                            0x33FF7043, // ripple
+                            0xFF1C1310,
+                            0xFF281C17,
+                            0xFF372720,
+                            0x44FF8A65,
+                            0xFFFBE9E7,
+                            0xFFFFCCBC,
+                            0xFFFF7043,
+                            0xFF5D2416,
+                            0xFFFFDBCF,
+                            0x33FF7043,
                             true
                     );
                 } else {
                     return new Palette(
-                            0xFFFFF8F6, // windowBackground (Warm light peach)
-                            0xFFFDEEE9, // surface
-                            0xFFF8E2DB, // surfaceAlt
-                            0x26FF5722, // surfaceStroke
+                            0xFFFDE8E7, // windowBackground (Screenshot matched)
+                            0xFFFFFFFF, // surface
+                            0xFFFD987C, // surfaceAlt (Pill container)
+                            0x33D35A2D, // surfaceStroke
                             0xFF2D1610, // textPrimary
-                            0xFF5F3E35, // textSecondary
-                            0xFFE64A19, // accent (Vivid Expressive Coral)
-                            0xFFFFCCBC, // accentContainer
-                            0xFF3E0F04, // onAccentContainer
-                            0x26E64A19, // ripple
+                            0xFF6E443A, // textSecondary
+                            0xFFD35A2D, // accent (Burnt orange terracotta switch/radio)
+                            0xFFFD987C, // accentContainer
+                            0xFF2D1610, // onAccentContainer
+                            0x26D35A2D, // ripple
                             false
                     );
                 }
-            } else if ("botanical".equals(selectedTheme)) {
+            } else if ("fresh_mint".equals(selectedTheme) || "botanical".equals(selectedTheme)) {
                 if (night) {
                     return new Palette(
-                            0xFF0E1815, // windowBackground (Deep Sage Night)
-                            0xFF162520, // surface
-                            0xFF20342E, // surfaceAlt
-                            0x4480CBC4, // surfaceStroke
-                            0xFFE0F2F1, // textPrimary
-                            0xFFB2DFDB, // textSecondary
-                            0xFF4DB6AC, // accent (Fresh Mint Teal)
-                            0xFF0E3E37, // accentContainer
-                            0xFFB2DFDB, // onAccentContainer
-                            0x334DB6AC, // ripple
+                            0xFF0E1815,
+                            0xFF162520,
+                            0xFF20342E,
+                            0x4480CBC4,
+                            0xFFE0F2F1,
+                            0xFFB2DFDB,
+                            0xFF4DB6AC,
+                            0xFF0E3E37,
+                            0xFFB2DFDB,
+                            0x334DB6AC,
                             true
                     );
                 } else {
                     return new Palette(
-                            0xFFF4FBF7, // windowBackground (Fresh Spring Light)
-                            0xFFE8F5E9, // surface (Soft Botanical Sage)
-                            0xFFDCEDC8, // surfaceAlt (Pastel Peach/Sage)
-                            0x2600796B, // surfaceStroke
-                            0xFF0A261F, // textPrimary
-                            0xFF2E5349, // textSecondary
-                            0xFF00796B, // accent (Botanical Mint Green)
-                            0xFFC8E6C9, // accentContainer
-                            0xFF00382F, // onAccentContainer
-                            0x2600796B, // ripple
+                            0xFFEFF5F5, // windowBackground (Screenshot matched)
+                            0xFFFFFFFF, // surface
+                            0xFFD4FAEF, // surfaceAlt (Pill container)
+                            0x33046665, // surfaceStroke
+                            0xFF0E1F1E, // textPrimary
+                            0xFF3F5C5A, // textSecondary
+                            0xFF046665, // accent (Pine teal switch/radio)
+                            0xFFD4FAEF, // accentContainer
+                            0xFF0E1F1E, // onAccentContainer
+                            0x26046665, // ripple
                             false
                     );
                 }
             } else if ("ocean".equals(selectedTheme)) {
                 if (night) {
                     return new Palette(
-                            0xFF101322, // windowBackground (Twilight Oceanic)
-                            0xFF191D32, // surface
-                            0xFF232845, // surfaceAlt
-                            0x449FA8DA, // surfaceStroke
-                            0xFFE8EAF6, // textPrimary
-                            0xFFC5CAE9, // textSecondary
-                            0xFF7986CB, // accent (Lavender Twilight)
-                            0xFF1E265C, // accentContainer
-                            0xFFE8EAF6, // onAccentContainer
-                            0x337986CB, // ripple
+                            0xFF101322,
+                            0xFF191D32,
+                            0xFF232845,
+                            0x449FA8DA,
+                            0xFFE8EAF6,
+                            0xFFC5CAE9,
+                            0xFF7986CB,
+                            0xFF1E265C,
+                            0xFFE8EAF6,
+                            0x337986CB,
                             true
                     );
                 } else {
                     return new Palette(
-                            0xFFF6F8FE, // windowBackground (Ocean Breeze)
-                            0xFFEEF2FC, // surface
-                            0xFFE0E7FA, // surfaceAlt
-                            0x263949AB, // surfaceStroke
-                            0xFF12182E, // textPrimary
-                            0xFF3F4A6A, // textSecondary
-                            0xFF3949AB, // accent (Coastal Azure Indigo)
-                            0xFFD1C4E9, // accentContainer (Soft Rose Lavender)
-                            0xFF101642, // onAccentContainer
-                            0x263949AB, // ripple
+                            0xFFF6F8FE,
+                            0xFFEEF2FC,
+                            0xFFE0E7FA,
+                            0x263949AB,
+                            0xFF12182E,
+                            0xFF3F4A6A,
+                            0xFF3949AB,
+                            0xFFD1C4E9,
+                            0xFF101642,
+                            0x263949AB,
                             false
                     );
                 }
