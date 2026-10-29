@@ -180,7 +180,7 @@ public class GboardAboutActivity extends Activity {
 
         // Version Chip
         TextView versionChip = new TextView(this);
-        versionChip.setText("v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (Beta 3.3)");
+        versionChip.setText("v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (Beta)");
         versionChip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
         versionChip.setTypeface(Typeface.DEFAULT_BOLD);
         versionChip.setTextColor(palette.onAccentContainer);

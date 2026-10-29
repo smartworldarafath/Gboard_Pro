@@ -3783,7 +3783,7 @@ public final class GboardPatchesSettingsActivity extends Activity
             card.addView(titleView);
 
             TextView versionPill = new TextView(this);
-            versionPill.setText("v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (Beta 3.3)");
+            versionPill.setText("v" + com.akshaykadam.pixelboard.extension.BuildConfig.PATCH_VERSION + " (Beta)");
             versionPill.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
             versionPill.setTypeface(Typeface.DEFAULT_BOLD);
             versionPill.setTextColor(palette.accent);
@@ -4693,9 +4693,9 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFF5EEFF, 0xFFCCC2DC, 0x77CCC2DC, 0xFFD0BCFF, 0x33D0BCFF);
                 } else {
                     return new Palette(
-                            0xFFF5EFF9, 0xFFFFFFFF, 0xFFE4CEFF, 0x33522781,
-                            0xFFE4CEFF, Color.parseColor("#FEF3C7"), 0xFFF0ECF8,
-                            0xFF1F1A24, 0xFF5F4B6E, 0x775F4B6E, 0xFF522781, 0x26522781);
+                            0xFFF7EFFA, 0xFFFFFFFF, 0xFFEBD7FA, 0x33542983,
+                            0xFFEBD7FA, Color.parseColor("#FEF3C7"), 0xFFEBD7FA,
+                            0xFF24152F, 0xFF5F4B6E, 0x775F4B6E, 0xFF542983, 0x26542983);
                 }
             } else if ("cotton_candy".equals(selectedTheme)) {
                 if (nightMode) {
@@ -4705,9 +4705,9 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFFCE4EC, 0xFFF8BBD0, 0x77F8BBD0, 0xFFFF80AB, 0x33FF80AB);
                 } else {
                     return new Palette(
-                            0xFFFFE7EB, 0xFFFFFFFF, 0xFFFFAACD, 0x33B80056,
-                            0xFFFFAACD, Color.parseColor("#FEF3C7"), 0xFFFCECF2,
-                            0xFF201A1B, 0xFF6D4352, 0x776D4352, 0xFFB80056, 0x26B80056);
+                            0xFFFDE7E9, 0xFFFFFFFF, 0xFFF6B0CA, 0x33B80058,
+                            0xFFF6B0CA, Color.parseColor("#FEF3C7"), 0xFFF6B0CA,
+                            0xFF2D121B, 0xFF6D4352, 0x776D4352, 0xFFB80058, 0x26B80058);
                 }
             } else if ("sunset_peach".equals(selectedTheme) || "rainbow".equals(selectedTheme)) {
                 if (nightMode) {
@@ -4717,9 +4717,9 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFFBE9E7, 0xFFFFCCBC, 0x77FFCCBC, 0xFFFF7043, 0x33FF7043);
                 } else {
                     return new Palette(
-                            0xFFFEE9E6, 0xFFFFFFFF, 0xFFFF936F, 0x33D05A2C,
-                            0xFFFF936F, Color.parseColor("#FEF3C7"), 0xFFFDF0EC,
-                            0xFF241A16, 0xFF6E443A, 0x776E443A, 0xFFD05A2C, 0x26D05A2C);
+                            0xFFFDE8E7, 0xFFFFFFFF, 0xFFFD987C, 0x33D35A2D,
+                            0xFFFD987C, Color.parseColor("#FEF3C7"), 0xFFFD987C,
+                            0xFF2D1610, 0xFF6E443A, 0x776E443A, 0xFFD35A2D, 0x26D35A2D);
                 }
             } else if ("fresh_mint".equals(selectedTheme) || "botanical".equals(selectedTheme)) {
                 if (nightMode) {
@@ -4729,9 +4729,9 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFE0F2F1, 0xFFB2DFDB, 0x77B2DFDB, 0xFF4DB6AC, 0x334DB6AC);
                 } else {
                     return new Palette(
-                            0xFFEFF5F3, 0xFFFFFFFF, 0xFFCEEED6, 0x33036564,
-                            0xFFCEEED6, Color.parseColor("#FEF3C7"), 0xFFEEFAF6,
-                            0xFF191C1B, 0xFF3F5C5A, 0x773F5C5A, 0xFF036564, 0x26036564);
+                            0xFFEFF5F5, 0xFFFFFFFF, 0xFFD4FAEF, 0x33046665,
+                            0xFFD4FAEF, Color.parseColor("#FEF3C7"), 0xFFD4FAEF,
+                            0xFF0E1F1E, 0xFF3F5C5A, 0x773F5C5A, 0xFF046665, 0x26046665);
                 }
             } else if ("ocean".equals(selectedTheme)) {
                 if (nightMode) {
