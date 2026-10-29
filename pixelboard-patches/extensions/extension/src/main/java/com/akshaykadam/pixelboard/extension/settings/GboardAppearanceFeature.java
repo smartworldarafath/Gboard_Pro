@@ -50,7 +50,7 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
         Context ctx = host != null && host.getContext() != null ? host.getContext() : context;
         SharedPreferences prefs = ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
-        String currentTheme = prefs.getString(KEY_UI_THEME, "default");
+        String currentTheme = prefs.getString(KEY_UI_THEME, "blush_lilac");
         float density = ctx.getResources().getDisplayMetrics().density;
 
         List<GboardPatchesSettingsContract.Section> sections = new ArrayList<>();
@@ -59,36 +59,40 @@ public final class GboardAppearanceFeature implements GboardPatchesSettingsContr
         List<GboardPatchesSettingsContract.Row> infoRows = new ArrayList<>();
         infoRows.add(new GboardPatchesSettingsContract.InfoRow(
                 "Gboard UI Vibes",
-                "Select a Google Material 3 Expressive color palette. Changes apply across Gboard Pro settings and interface elements.",
+                "Select a Google Material 3 Expressive color palette. The signature Blush Lilac replicates the exact light pink pastel look from showcase.png.",
                 true));
         sections.add(new GboardPatchesSettingsContract.Section("PALETTE PREVIEW", infoRows));
 
-        // Theme Palette Cards (Theme-section inspired)
+        // Theme Palette Cards
         List<GboardPatchesSettingsContract.Row> themeRows = new ArrayList<>();
 
         String[] themeKeys = {
-                "default",
+                "blush_lilac",
+                "cotton_candy",
                 "rainbow",
                 "botanical",
-                "ocean"
+                "default"
         };
         String[] themeTitles = {
-                "Default (System Dynamic)",
-                "Expressive Rainbow",
-                "Fresh Botanical",
-                "Ocean Lavender"
+                "Blush Lilac (Showcase Pink)",
+                "Cotton Candy (Pastel Rose)",
+                "Sunset Peach (Warm Apricot)",
+                "Fresh Mint (Sage Teal)",
+                "Default (System Dynamic)"
         };
         String[] themeSummaries = {
-                "Material You dynamic wallpaper-based accent tones",
-                "Warm terracotta & vibrant sunset coral tones",
-                "Earthy botanical sage & emerald garden accents",
-                "Deep oceanic slate & calming indigo vibes"
+                "Signature light pink background with vibrant violet-purple accents",
+                "Gentle pastel rose pink & airy sky tones",
+                "Warm glowing peach & soft melon pink",
+                "Botanical garden sage & fresh mint",
+                "Material You dynamic wallpaper-based accent tones"
         };
         int[][] themeSwatches = {
-                {0xFF1A73E8, 0xFF4285F4, 0xFFE8F0FE, 0xFFF1F3F4},
-                {0xFFE64A19, 0xFFFF7043, 0xFFFFCCBC, 0xFFFFF8F6},
-                {0xFF00796B, 0xFF4DB6AC, 0xFFC8E6C9, 0xFFF4FBF7},
-                {0xFF3949AB, 0xFF7986CB, 0xFFE8EAF6, 0xFFF6F8FE}
+                {0xFF7E57C2, 0xFFEBDDFB, 0xFFD0BCFF, 0xFFF8F2FA},
+                {0xFFD81B60, 0xFFFCE4EC, 0xFFFF80AB, 0xFFFDF2F7},
+                {0xFFE64A19, 0xFFFFCCBC, 0xFFFF8A65, 0xFFFFF5F2},
+                {0xFF00796B, 0xFFC8E6C9, 0xFF4DB6AC, 0xFFF2F8F5},
+                {0xFF1A73E8, 0xFFE8F0FE, 0xFF4285F4, 0xFFF1F3F4}
         };
 
         for (int i = 0; i < themeKeys.length; i++) {

@@ -74,6 +74,67 @@ public final class GboardM3Helper {
             }
 
             // Material 3 Expressive Multi-Color Theme Overrides
+            if ("blush_lilac".equals(selectedTheme)) {
+                if (night) {
+                    return new Palette(
+                            0xFF181122, // windowBackground (Deep amethyst)
+                            0xFF241C2E, // surface
+                            0xFF322840, // surfaceAlt
+                            0x44D0BCFF, // surfaceStroke
+                            0xFFF5EEFF, // textPrimary
+                            0xFFCCC2DC, // textSecondary
+                            0xFFD0BCFF, // accent (Soft Lilac)
+                            0xFF4F378B, // accentContainer
+                            0xFFEADDFF, // onAccentContainer
+                            0x33D0BCFF, // ripple
+                            true
+                    );
+                } else {
+                    return new Palette(
+                            0xFFF8F2FA, // windowBackground (Showcase light pink / pastel lilac)
+                            0xFFFFFFFF, // surface (Crisp white elevated cards)
+                            0xFFF3EAF6, // surfaceAlt (Tinted tonal elements)
+                            0x337E57C2, // surfaceStroke (Delicate lilac outline)
+                            0xFF1D162B, // textPrimary (Deep eggplant)
+                            0xFF5B4F6E, // textSecondary (Slate violet)
+                            0xFF7E57C2, // accent (Vibrant violet switch/button from showcase.png)
+                            0xFFEBDDFB, // accentContainer (Pastel lavender container)
+                            0xFF2A0054, // onAccentContainer
+                            0x267E57C2, // ripple
+                            false
+                    );
+                }
+            } else if ("cotton_candy".equals(selectedTheme)) {
+                if (night) {
+                    return new Palette(
+                            0xFF1F1117,
+                            0xFF2E1922,
+                            0xFF402330,
+                            0x44FF80AB,
+                            0xFFFCE4EC,
+                            0xFFF8BBD0,
+                            0xFFFF80AB,
+                            0xFF880E4F,
+                            0xFFFCE4EC,
+                            0x33FF80AB,
+                            true
+                    );
+                } else {
+                    return new Palette(
+                            0xFFFDF2F7, // windowBackground (Soft pastel rose)
+                            0xFFFFFFFF, // surface
+                            0xFFFCE4EC, // surfaceAlt
+                            0x33D81B60, // surfaceStroke
+                            0xFF2B121C, // textPrimary
+                            0xFF6B4354, // textSecondary
+                            0xFFD81B60, // accent
+                            0xFFF8BBD0, // accentContainer
+                            0xFF4A0023, // onAccentContainer
+                            0x26D81B60, // ripple
+                            false
+                    );
+                }
+            } else
             if ("rainbow".equals(selectedTheme)) {
                 if (night) {
                     return new Palette(
@@ -342,7 +403,15 @@ public final class GboardM3Helper {
                 Window window = dialog.getWindow();
                 if (window != null) {
                     enforceHighRefreshRate(window);
-                    applyKeyboardStyling(service, window);
+                    // Crucial fix for photo_1_2026-10-29_12-48-19.jpg:
+                    // The InputMethodService Window and DecorView cover the ENTIRE screen.
+                    // The window MUST ALWAYS have a transparent background so it never blocks
+                    // or blacks out the user's application above the keyboard.
+                    window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    View decor = window.getDecorView();
+                    if (decor != null) {
+                        decor.setBackgroundColor(Color.TRANSPARENT);
+                    }
                 }
             }
         } catch (Throwable ignored) {
@@ -350,38 +419,10 @@ public final class GboardM3Helper {
     }
 
     public static void applyKeyboardStyling(android.inputmethodservice.InputMethodService service, Window window) {
-        if (service == null || window == null) return;
-        try {
-            SharedPreferences boardPrefs = service.getSharedPreferences("gboard_pro_board_ui_prefs", Context.MODE_PRIVATE);
-            boolean amoledBlack = boardPrefs.getBoolean("amoled_black_enabled", false);
-            if (!amoledBlack) {
-                try {
-                    amoledBlack = android.preference.PreferenceManager.getDefaultSharedPreferences(service)
-                            .getBoolean("amoled_black_enabled", false);
-                } catch (Throwable ignored) {
-                }
-            }
-
-            if (amoledBlack) {
-                window.setBackgroundDrawable(new ColorDrawable(0xFF000000));
-                View decor = window.getDecorView();
-                if (decor != null) {
-                    decor.setBackgroundColor(0xFF000000);
-                }
-            } else {
-                SharedPreferences appPrefs = service.getSharedPreferences(PREF_APPEARANCE, Context.MODE_PRIVATE);
-                String theme = appPrefs.getString(KEY_UI_THEME, "default");
-                if (!"default".equals(theme)) {
-                    Palette p = Palette.forContext(service);
-                    window.setBackgroundDrawable(new ColorDrawable(p.windowBackground));
-                    View decor = window.getDecorView();
-                    if (decor != null) {
-                        decor.setBackgroundColor(p.windowBackground);
-                    }
-                }
-            }
-        } catch (Throwable ignored) {
-        }
+        // Intentionally NO-OP for Window / DecorView background!
+        // The IME Window and DecorView span the ENTIRE display. Painting them opaque
+        // occludes the host application (WhatsApp, Telegram, browser, etc.).
+        // The IME Window must strictly remain transparent.
     }
 
     public static Drawable createThemeSwatchDrawable(Context context, String themeKey, int sizePx) {
