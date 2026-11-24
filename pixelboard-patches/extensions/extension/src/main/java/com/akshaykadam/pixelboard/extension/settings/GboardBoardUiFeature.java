@@ -70,7 +70,7 @@ public final class GboardBoardUiFeature implements GboardPatchesSettingsContract
                     } catch (Throwable ignored) {
                     }
                     if (ctx instanceof GboardPatchesSettingsActivity act) {
-                        act.runOnUiThread(act::refreshAfterThemeChange);
+                        act.runOnUiThread(act::animateThemeChangeTransition);
                     } else if (host != null) {
                         host.submit(h -> h.refresh());
                     }

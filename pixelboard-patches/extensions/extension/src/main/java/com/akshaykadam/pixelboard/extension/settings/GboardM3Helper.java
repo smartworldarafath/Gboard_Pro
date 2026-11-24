@@ -44,6 +44,8 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.akshaykadam.pixelboard.extension.keyboard.GboardKeyboardLiquidGlassRuntime;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -54,6 +56,9 @@ public final class GboardM3Helper {
 
     public static final String PREF_APPEARANCE = "gboard_pro_appearance_prefs";
     public static final String KEY_UI_THEME = "selected_gboard_ui_theme";
+    public static final String KEY_UI_STYLE_MODE = "ui_style_mode_v220";
+    public static final String UI_STYLE_LIQUID_GLASS = "liquid_glass";
+    public static final String UI_STYLE_CLASSIC = "classic";
     private static final String PREF_BOARD_UI = "gboard_pro_board_ui_prefs";
     private static final String KEY_AMOLED_BLACK = "amoled_black_enabled";
     private static final String KEY_PRIVACY_DEFAULTS_MIGRATED = "privacy_defaults_off_v215";
@@ -197,6 +202,46 @@ public final class GboardM3Helper {
                 }
             }
 
+            // Default: Auto-adapt to phone system dynamic colors (Material You / Monet on Android 12+)
+            // and system Dark/Light mode while preserving 3D Liquid Glass pearlescent shading.
+            if (Build.VERSION.SDK_INT >= 31 && context != null) {
+                try {
+                    int acc600 = context.getColor(android.R.color.system_accent1_600);
+                    int acc200 = context.getColor(android.R.color.system_accent1_200);
+                    int acc100 = context.getColor(android.R.color.system_accent1_100);
+                    int acc800 = context.getColor(android.R.color.system_accent1_800);
+                    int neu10 = context.getColor(android.R.color.system_neutral1_10);
+                    int neu50 = context.getColor(android.R.color.system_neutral1_50);
+                    int neu100 = context.getColor(android.R.color.system_neutral1_100);
+                    int neu800 = context.getColor(android.R.color.system_neutral1_800);
+                    int neu900 = context.getColor(android.R.color.system_neutral1_900);
+                    if (night) {
+                        int winBg = blendColor(0xFF121318, neu900, 0.50f);
+                        int surf = blendColor(0xFF1A1D2A, neu800, 0.50f);
+                        int surfAlt = blendColor(0xFF232738, acc800, 0.36f);
+                        int txtPri = blendColor(0xFFF5F7FF, neu50, 0.40f);
+                        int txtSec = blendColor(0xFFB0B8D0, acc100, 0.32f);
+                        return new Palette(
+                                winBg, surf, surfAlt, blendAlpha(acc200, 0.28f),
+                                txtPri, txtSec, acc200, acc800,
+                                neu50, blendAlpha(acc200, 0.22f), true
+                        );
+                    } else {
+                        int winBg = blendColor(0xFFEFEFF6, neu50, 0.45f);
+                        int surf = blendColor(0xFFF7F8FD, neu10, 0.45f);
+                        int surfAlt = blendColor(0xFFE8EBF8, acc100, 0.42f);
+                        int txtPri = blendColor(0xFF0E1224, neu900, 0.45f);
+                        int txtSec = blendColor(0xFF525A70, neu800, 0.25f);
+                        return new Palette(
+                                winBg, surf, surfAlt, 0xCCFFFFFF,
+                                txtPri, txtSec, acc600, blendColor(0xFFE3E7FC, acc100, 0.55f),
+                                neu900, blendAlpha(acc600, 0.16f), false
+                        );
+                    }
+                } catch (Throwable ignored) {
+                }
+            }
+
             if (night) {
                 return new Palette(
                         0xFF121318, // windowBackground
@@ -280,6 +325,74 @@ public final class GboardM3Helper {
         }
     }
 
+    public static boolean isLiquidGlassUiEnabled(Context context) {
+        if (context == null) return true;
+        try {
+            SharedPreferences prefs = context.getSharedPreferences(PREF_APPEARANCE, Context.MODE_PRIVATE);
+            if (prefs != null && prefs.contains(KEY_UI_STYLE_MODE)) {
+                return !UI_STYLE_CLASSIC.equals(prefs.getString(KEY_UI_STYLE_MODE, UI_STYLE_LIQUID_GLASS));
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Context dps = context.createDeviceProtectedStorageContext();
+                if (dps != null) {
+                    SharedPreferences dpsPrefs = dps.getSharedPreferences(PREF_APPEARANCE, Context.MODE_PRIVATE);
+                    if (dpsPrefs != null && dpsPrefs.contains(KEY_UI_STYLE_MODE)) {
+                        return !UI_STYLE_CLASSIC.equals(dpsPrefs.getString(KEY_UI_STYLE_MODE, UI_STYLE_LIQUID_GLASS));
+                    }
+                    SharedPreferences dpsDef = PreferenceManager.getDefaultSharedPreferences(dps);
+                    if (dpsDef != null && dpsDef.contains(KEY_UI_STYLE_MODE)) {
+                        return !UI_STYLE_CLASSIC.equals(dpsDef.getString(KEY_UI_STYLE_MODE, UI_STYLE_LIQUID_GLASS));
+                    }
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            SharedPreferences defPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            if (defPrefs != null && defPrefs.contains(KEY_UI_STYLE_MODE)) {
+                return !UI_STYLE_CLASSIC.equals(defPrefs.getString(KEY_UI_STYLE_MODE, UI_STYLE_LIQUID_GLASS));
+            }
+        } catch (Throwable ignored) {
+        }
+        return true;
+    }
+
+    public static void setLiquidGlassUiEnabled(Context context, boolean enabled) {
+        if (context == null) return;
+        String modeValue = enabled ? UI_STYLE_LIQUID_GLASS : UI_STYLE_CLASSIC;
+        try {
+            context.getSharedPreferences(PREF_APPEARANCE, Context.MODE_PRIVATE)
+                    .edit().putString(KEY_UI_STYLE_MODE, modeValue).commit();
+        } catch (Throwable ignored) {
+        }
+        try {
+            PreferenceManager.getDefaultSharedPreferences(context)
+                    .edit().putString(KEY_UI_STYLE_MODE, modeValue).commit();
+        } catch (Throwable ignored) {
+        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !context.isDeviceProtectedStorage()) {
+                Context dps = context.createDeviceProtectedStorageContext();
+                if (dps != null) {
+                    dps.getSharedPreferences(PREF_APPEARANCE, Context.MODE_PRIVATE)
+                            .edit().putString(KEY_UI_STYLE_MODE, modeValue).commit();
+                    PreferenceManager.getDefaultSharedPreferences(dps)
+                            .edit().putString(KEY_UI_STYLE_MODE, modeValue).commit();
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        sStyledViews.clear();
+        sAppliedThemes.clear();
+        try {
+            GboardKeyboardLiquidGlassRuntime.onUiStyleModeChanged();
+        } catch (Throwable ignored) {
+        }
+    }
+
     public static void ensurePrivacyDefaultsOff(Context context) {
         if (context == null || sPrivacyDefaultsChecked) return;
         sPrivacyDefaultsChecked = true;
@@ -345,6 +458,16 @@ public final class GboardM3Helper {
     public static int blendAlpha(int color, float alpha) {
         int a = Math.round(Color.alpha(color) * alpha);
         return Color.argb(a, Color.red(color), Color.green(color), Color.blue(color));
+    }
+
+    public static int blendColor(int c1, int c2, float ratio) {
+        float t = Math.max(0f, Math.min(1f, ratio));
+        float inv = 1f - t;
+        int a = Math.round(Color.alpha(c1) * inv + Color.alpha(c2) * t);
+        int r = Math.round(Color.red(c1) * inv + Color.red(c2) * t);
+        int g = Math.round(Color.green(c1) * inv + Color.green(c2) * t);
+        int b = Math.round(Color.blue(c1) * inv + Color.blue(c2) * t);
+        return Color.argb(a, r, g, b);
     }
 
     public static void enforceHighRefreshRate(Window window) {
@@ -545,6 +668,7 @@ public final class GboardM3Helper {
         private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint glossPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint rimPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path clipPath = new Path();
 
         LiquidGlassOrbDrawable(Context context, Palette palette) {
             this.context = context;
@@ -560,60 +684,74 @@ public final class GboardM3Helper {
             float d = context.getResources().getDisplayMetrics().density;
             float cx = b.exactCenterX();
             float cy = b.exactCenterY();
-            float inset = 2.5f * d;
+            float inset = 2.0f * d;
             float radius = (Math.min(b.width(), b.height()) / 2f) - inset;
             if (radius <= 2f) return;
 
-            // Multi-step feathered drop shadow
-            int baseShadow = palette.isNight ? 0x55000000 : 0x1A1B2440;
-            int shadowLayers = 3;
-            for (int i = shadowLayers; i >= 1; i--) {
-                float frac = (float) i / shadowLayers;
-                int a = Math.round(Color.alpha(baseShadow) * (1f - frac * 0.6f) / shadowLayers);
-                shadowPaint.setColor(Color.argb(a, Color.red(baseShadow), Color.green(baseShadow), Color.blue(baseShadow)));
-                canvas.drawCircle(cx, cy + (1.4f * d * frac), radius + (1.2f * d * frac), shadowPaint);
+            // 1. Single whisper-soft ambient drop shadow (matches IMG_20261124_011136 (1).png & liquidGL)
+            if (!palette.isAmoled) {
+                int baseShadow = palette.isNight ? 0x2C000000 : 0x0E18223C;
+                for (int i = 2; i >= 1; i--) {
+                    float frac = (float) i / 2f;
+                    int a = Math.round(Color.alpha(baseShadow) * (i == 2 ? 0.45f : 0.75f));
+                    shadowPaint.setColor(Color.argb(a, Color.red(baseShadow), Color.green(baseShadow), Color.blue(baseShadow)));
+                    canvas.drawCircle(cx, cy + (1.0f * d * frac), radius + (0.7f * d * frac), shadowPaint);
+                }
             }
 
-            // Main 3D glass orb gradient
+            // 2. Smooth single convex water droplet lens body (zero inner stepped rings)
             int[] bodyColors;
             if (palette.isAmoled) {
-                bodyColors = new int[]{0xFF181C28, 0xFF07080E, 0xFF131724};
+                bodyColors = new int[]{0xFF1C2232, 0xFF07090F, 0xFF141926};
             } else if (palette.isNight) {
-                bodyColors = new int[]{0xFF2B3146, 0xFF1A1E2E, 0xFF24293D};
+                int topC = blendColor(0xFF2A3148, palette.surfaceAlt, 0.35f);
+                int midC = blendColor(0xFF171B2A, palette.surface, 0.50f);
+                int botC = blendColor(0xFF23293E, palette.surfaceAlt, 0.42f);
+                bodyColors = new int[]{topC, midC, botC};
             } else {
-                bodyColors = new int[]{0xFFFFFFFF, 0xFFE5E8F7, 0xFFF4F6FE};
+                int topC = blendColor(0xFFFFFFFF, palette.surface, 0.25f);
+                int midC = blendColor(0xFFE5E8F6, palette.accentContainer, 0.22f);
+                int botC = blendColor(0xFFF7F8FE, palette.surface, 0.30f);
+                bodyColors = new int[]{topC, midC, botC};
             }
             fillPaint.setShader(new LinearGradient(
-                    cx - radius * 0.7f, cy - radius * 0.8f,
-                    cx + radius * 0.8f, cy + radius * 0.9f,
-                    bodyColors, new float[]{0f, 0.55f, 1f}, Shader.TileMode.CLAMP));
+                    cx - radius * 0.72f, cy - radius * 0.85f,
+                    cx + radius * 0.78f, cy + radius * 0.88f,
+                    bodyColors, new float[]{0f, 0.50f, 1f}, Shader.TileMode.CLAMP));
             canvas.drawCircle(cx, cy, radius, fillPaint);
 
-            // Top-left curved glass refraction highlight
-            int glossCenter = palette.isAmoled ? 0x26FFFFFF : (palette.isNight ? 0x30FFFFFF : 0xA8FFFFFF);
-            int glossEdge = palette.isNight ? 0x00FFFFFF : 0x00FFFFFF;
-            glossPaint.setShader(new RadialGradient(
-                    cx - radius * 0.35f, cy - radius * 0.4f, radius * 0.9f,
-                    new int[]{glossCenter, glossEdge},
-                    new float[]{0f, 1f}, Shader.TileMode.CLAMP));
+            // 3. Water-drop curved top-left specular dome highlight + bottom-right internal caustic crescent
             canvas.save();
-            Path clip = new Path();
-            clip.addCircle(cx, cy, radius, Path.Direction.CW);
-            canvas.clipPath(clip);
-            canvas.drawCircle(cx - radius * 0.25f, cy - radius * 0.3f, radius * 0.85f, glossPaint);
+            clipPath.reset();
+            clipPath.addCircle(cx, cy, radius, Path.Direction.CW);
+            canvas.clipPath(clipPath);
+
+            int glossCenter = palette.isAmoled ? 0x28FFFFFF : (palette.isNight ? 0x36FFFFFF : 0xD8FFFFFF);
+            glossPaint.setShader(new RadialGradient(
+                    cx - radius * 0.36f, cy - radius * 0.38f, radius * 0.82f,
+                    new int[]{glossCenter, 0x00FFFFFF},
+                    new float[]{0f, 1f}, Shader.TileMode.CLAMP));
+            canvas.drawCircle(cx - radius * 0.26f, cy - radius * 0.30f, radius * 0.80f, glossPaint);
+
+            int causticColor = palette.isNight ? blendAlpha(palette.accent, 0.20f) : 0x85FFFFFF;
+            glossPaint.setShader(new RadialGradient(
+                    cx + radius * 0.24f, cy + radius * 0.54f, radius * 0.62f,
+                    new int[]{causticColor, 0x00FFFFFF},
+                    new float[]{0f, 1f}, Shader.TileMode.CLAMP));
+            canvas.drawCircle(cx + radius * 0.20f, cy + radius * 0.52f, radius * 0.62f, glossPaint);
             canvas.restore();
 
-            // Specular 3D bevel rim
-            float strokeW = 1.4f * d;
+            // 4. Outer 3D Fresnel specular rim
+            float strokeW = 1.25f * d;
             rimPaint.setStrokeWidth(strokeW);
             int[] rimColors = palette.isAmoled
-                    ? new int[]{0x66A8C7FA, 0x1AFFFFFF, 0x44A8C7FA}
+                    ? new int[]{0x66A8C7FA, 0x1AFFFFFF, 0x48A8C7FA}
                     : (palette.isNight
-                    ? new int[]{0x55FFFFFF, 0x18FFFFFF, 0x40A8C7FA}
-                    : new int[]{0xFAFFFFFF, 0x448A95BE, 0xD8FFFFFF});
+                    ? new int[]{0x58FFFFFF, 0x1AFFFFFF, blendAlpha(palette.accent, 0.38f)}
+                    : new int[]{0xFFFFFFFF, 0x358690B8, 0xF2FFFFFF});
             rimPaint.setShader(new LinearGradient(
                     cx - radius, cy - radius, cx + radius, cy + radius,
-                    rimColors, new float[]{0f, 0.52f, 1f}, Shader.TileMode.CLAMP));
+                    rimColors, new float[]{0f, 0.50f, 1f}, Shader.TileMode.CLAMP));
             canvas.drawCircle(cx, cy, radius - strokeW * 0.5f, rimPaint);
         }
 
@@ -655,15 +793,17 @@ public final class GboardM3Helper {
             rect.set(b.left + pad, b.top + pad, b.right - pad, b.bottom - pad);
             if (rect.width() <= 4f || rect.height() <= 4f) return;
 
-            // Soft feathered outer shadow
-            int shadowColor = palette.isNight ? 0x55000000 : 0x14182038;
-            for (int i = 3; i >= 1; i--) {
-                float expand = i * 0.9f * d;
-                int a = Math.round(Color.alpha(shadowColor) * (1f - (i - 1) * 0.3f) / 3f);
-                shadowPaint.setColor(Color.argb(a, Color.red(shadowColor), Color.green(shadowColor), Color.blue(shadowColor)));
-                shadowRect.set(rect.left - expand * 0.5f, rect.top + (1.0f * d),
-                        rect.right + expand * 0.5f, rect.bottom + (1.8f * d) + expand);
-                canvas.drawRoundRect(shadowRect, r + expand * 0.5f, r + expand * 0.5f, shadowPaint);
+            // Soft feathered outer shadow (zero shadow on AMOLED)
+            if (!palette.isAmoled) {
+                int shadowColor = palette.isNight ? 0x26000000 : 0x0A182038;
+                for (int i = 2; i >= 1; i--) {
+                    float expand = i * 0.8f * d;
+                    int a = Math.round(Color.alpha(shadowColor) * (i == 2 ? 0.45f : 0.75f));
+                    shadowPaint.setColor(Color.argb(a, Color.red(shadowColor), Color.green(shadowColor), Color.blue(shadowColor)));
+                    shadowRect.set(rect.left - expand * 0.35f, rect.top + (0.8f * d),
+                            rect.right + expand * 0.35f, rect.bottom + (1.2f * d) + expand);
+                    canvas.drawRoundRect(shadowRect, r + expand * 0.4f, r + expand * 0.4f, shadowPaint);
+                }
             }
 
             if (isHero) {
@@ -671,9 +811,17 @@ public final class GboardM3Helper {
                 if (palette.isAmoled) {
                     heroColors = new int[]{0xFF0E111C, 0xFF040508, 0xFF101422};
                 } else if (palette.isNight) {
-                    heroColors = new int[]{0xFF21263B, 0xFF141828, 0xFF1C2034};
+                    heroColors = new int[]{
+                            blendColor(0xFF21263B, palette.surfaceAlt, 0.45f),
+                            blendColor(0xFF141828, palette.surface, 0.45f),
+                            blendColor(0xFF1C2034, palette.accentContainer, 0.25f)
+                    };
                 } else {
-                    heroColors = new int[]{0xFFF4F5FE, 0xFFE3E6FC, 0xFFEDEFFD};
+                    heroColors = new int[]{
+                            blendColor(0xFFF6F7FE, palette.surface, 0.45f),
+                            blendColor(0xFFE3E6FC, palette.accentContainer, 0.40f),
+                            blendColor(0xFFEDEFFD, palette.surfaceAlt, 0.40f)
+                    };
                 }
                 fillPaint.setShader(new LinearGradient(
                         rect.left, rect.top, rect.right, rect.bottom,
@@ -711,9 +859,15 @@ public final class GboardM3Helper {
                 if (palette.isAmoled) {
                     cardColors = new int[]{0xFF0C0E16, 0xFF07080D};
                 } else if (palette.isNight) {
-                    cardColors = new int[]{0xFF1E2231, 0xFF181B27};
+                    cardColors = new int[]{
+                            blendColor(0xFF1E2231, palette.surface, 0.55f),
+                            blendColor(0xFF181B27, palette.windowBackground, 0.30f)
+                    };
                 } else {
-                    cardColors = new int[]{0xFFF9FAFE, 0xFFF1F3FB};
+                    cardColors = new int[]{
+                            blendColor(0xFFFAFBFE, palette.surface, 0.45f),
+                            blendColor(0xFFF0F2FA, palette.surfaceAlt, 0.35f)
+                    };
                 }
                 fillPaint.setShader(new LinearGradient(
                         rect.left, rect.top, rect.right, rect.bottom,
@@ -769,23 +923,33 @@ public final class GboardM3Helper {
             if (rect.width() <= 4f || rect.height() <= 4f) return;
             float r = rect.height() / 2f;
 
-            // Shadow
-            int shadowColor = palette.isNight ? 0x60000000 : 0x181B2444;
-            for (int i = 3; i >= 1; i--) {
-                float ex = i * 0.8f * d;
-                int a = Math.round(Color.alpha(shadowColor) * (1f - (i - 1) * 0.3f) / 3f);
-                shadowPaint.setColor(Color.argb(a, Color.red(shadowColor), Color.green(shadowColor), Color.blue(shadowColor)));
-                innerRect.set(rect.left - ex * 0.4f, rect.top + 1.2f * d,
-                        rect.right + ex * 0.4f, rect.bottom + 2.2f * d + ex);
-                canvas.drawRoundRect(innerRect, r + ex * 0.5f, r + ex * 0.5f, shadowPaint);
+            // Shadow (whisper-soft ambient glow, zero shadow on AMOLED)
+            if (!palette.isAmoled) {
+                int shadowColor = palette.isNight ? 0x28000000 : 0x0D1B2444;
+                for (int i = 2; i >= 1; i--) {
+                    float ex = i * 0.75f * d;
+                    int a = Math.round(Color.alpha(shadowColor) * (i == 2 ? 0.45f : 0.75f));
+                    shadowPaint.setColor(Color.argb(a, Color.red(shadowColor), Color.green(shadowColor), Color.blue(shadowColor)));
+                    innerRect.set(rect.left - ex * 0.3f, rect.top + 0.9f * d,
+                            rect.right + ex * 0.3f, rect.bottom + 1.4f * d + ex);
+                    canvas.drawRoundRect(innerRect, r + ex * 0.4f, r + ex * 0.4f, shadowPaint);
+                }
             }
 
-            // Glossy capsule fill
+            // Glossy capsule fill (tinted with dynamic system / theme palette)
             int[] bodyColors = palette.isAmoled
                     ? new int[]{0xFF151926, 0xFF0A0C12, 0xFF121622}
                     : (palette.isNight
-                    ? new int[]{0xFF282D42, 0xFF1C2032, 0xFF24293E}
-                    : new int[]{0xFFFAFBFD, 0xFFE5E8FC, 0xFFF2F4FE});
+                    ? new int[]{
+                            blendColor(0xFF282D42, palette.surfaceAlt, 0.45f),
+                            blendColor(0xFF1C2032, palette.surface, 0.45f),
+                            blendColor(0xFF24293E, palette.accentContainer, 0.28f)
+                    }
+                    : new int[]{
+                            blendColor(0xFFFAFBFD, palette.surface, 0.40f),
+                            blendColor(0xFFE5E8FC, palette.accentContainer, 0.42f),
+                            blendColor(0xFFF2F4FE, palette.surface, 0.40f)
+                    });
             fillPaint.setShader(new LinearGradient(
                     rect.left, rect.top, rect.left, rect.bottom,
                     bodyColors, new float[]{0f, 0.55f, 1f}, Shader.TileMode.CLAMP));
@@ -874,9 +1038,15 @@ public final class GboardM3Helper {
                 if (palette.isAmoled) {
                     onColors = new int[]{0xFF3E4C6E, 0xFF28334E};
                 } else if (palette.isNight) {
-                    onColors = new int[]{0xFF4D5878, 0xFF38425E};
+                    onColors = new int[]{
+                            blendColor(0xFF4D5878, palette.accent, 0.45f),
+                            blendColor(0xFF38425E, palette.accentContainer, 0.45f)
+                    };
                 } else if ("default".equals(getSelectedThemeKey(context))) {
-                    onColors = new int[]{0xFF646B7F, 0xFF4D5467};
+                    onColors = new int[]{
+                            blendColor(0xFF5D657E, palette.accent, 0.52f),
+                            blendColor(0xFF464D66, palette.accent, 0.62f)
+                    };
                 } else {
                     onColors = new int[]{palette.accent, blendAlpha(palette.accent, 0.85f)};
                 }
@@ -983,7 +1153,7 @@ public final class GboardM3Helper {
             float r = isChecked ? (11.5f * d) : (10.5f * d);
 
             // Subtle thumb drop shadow
-            shadowPaint.setColor(palette.isNight ? 0x66000000 : 0x261B2440);
+            shadowPaint.setColor(palette.isNight ? 0x44000000 : 0x161B2440);
             canvas.drawCircle(cx, cy + 1.2f * d, r + 0.6f * d, shadowPaint);
 
             if (isChecked) {
@@ -1000,9 +1170,9 @@ public final class GboardM3Helper {
                 if (showCheckmark) {
                     int checkColor;
                     if (palette.isAmoled || palette.isNight) {
-                        checkColor = 0xFF28334E;
+                        checkColor = blendColor(0xFF28334E, palette.accentContainer, 0.40f);
                     } else if ("default".equals(getSelectedThemeKey(context))) {
-                        checkColor = 0xFF4D5467;
+                        checkColor = blendColor(0xFF4D5467, palette.accent, 0.58f);
                     } else {
                         checkColor = palette.accent;
                     }
@@ -1042,9 +1212,10 @@ public final class GboardM3Helper {
         ensurePrivacyDefaultsOff(activity);
 
         final boolean amoled = isAmoledBlackEnabled(activity);
+        final boolean liquidGlass = isLiquidGlassUiEnabled(activity);
         final String themeKey = getSelectedThemeKey(activity);
         final Palette palette = Palette.forContext(activity);
-        final String stateKey = themeKey + "_" + amoled + "_" + palette.isNight;
+        final String stateKey = themeKey + "_" + amoled + "_" + palette.isNight + "_" + palette.accent + "_" + palette.windowBackground + "|" + liquidGlass;
         sAppliedThemes.put(activity, stateKey);
 
         try {
@@ -1158,12 +1329,18 @@ public final class GboardM3Helper {
         ensurePrivacyDefaultsOff(activity);
 
         Palette p = Palette.forContext(activity);
-        String currentState = getSelectedThemeKey(activity) + "_" + isAmoledBlackEnabled(activity) + "_" + p.isNight;
+        boolean liquidGlass = isLiquidGlassUiEnabled(activity);
+        String currentState = getSelectedThemeKey(activity) + "_" + isAmoledBlackEnabled(activity) + "_" + p.isNight + "_" + p.accent + "_" + p.windowBackground + "|" + liquidGlass;
         String lastApplied = sAppliedThemes.get(activity);
 
         if (lastApplied != null && !lastApplied.equals(currentState)) {
+            boolean uiModeChanged = !lastApplied.endsWith("|" + liquidGlass);
             sAppliedThemes.put(activity, currentState);
             sStyledViews.clear();
+            if (uiModeChanged) {
+                activity.recreate();
+                return;
+            }
             applyTheme(activity);
             return;
         }
@@ -1197,7 +1374,35 @@ public final class GboardM3Helper {
 
     private static void stylePreferenceCardRow(final View rowView, final Context ctx, final Palette palette) {
         if (rowView == null) return;
-        String stateTag = "pref_card_v3_" + palette.windowBackground + "_" + palette.isAmoled;
+        if (!isLiquidGlassUiEnabled(ctx)) {
+            String classicTag = "pref_card_classic_" + palette.windowBackground;
+            Drawable bg = rowView.getBackground();
+            boolean hasClassicBg = (bg instanceof RippleDrawable) && !(bg instanceof LiquidGlassCardRipple)
+                    && classicTag.equals(sStyledViews.get(rowView));
+            if (!hasClassicBg) {
+                sStyledViews.put(rowView, classicTag);
+                if (rowView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams mlp) {
+                    if (mlp.leftMargin != 0 || mlp.topMargin != 0 || mlp.bottomMargin != 0) {
+                        mlp.leftMargin = 0;
+                        mlp.rightMargin = 0;
+                        mlp.setMarginStart(0);
+                        mlp.setMarginEnd(0);
+                        mlp.topMargin = 0;
+                        mlp.bottomMargin = 0;
+                        rowView.setLayoutParams(mlp);
+                    }
+                }
+                rowView.setPaddingRelative(dp(ctx, 16), dp(ctx, 12), dp(ctx, 16), dp(ctx, 12));
+                GradientDrawable mask = new GradientDrawable();
+                mask.setColor(Color.WHITE);
+                rowView.setBackground(new RippleDrawable(ColorStateList.valueOf(palette.ripple), null, mask));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    rowView.setElevation(0f);
+                }
+            }
+            return;
+        }
+        String stateTag = "pref_card_v4_" + palette.windowBackground + "_" + palette.isAmoled;
         boolean hasLayout = rowView.getLayoutParams() instanceof ViewGroup.MarginLayoutParams;
         Drawable bg = rowView.getBackground();
         boolean hasCardBg = (bg instanceof LiquidGlassCardRipple)
@@ -1229,7 +1434,7 @@ public final class GboardM3Helper {
                 rowView.setBackground(createLiquidGlassClickableCardDrawable(ctx, palette, 20, stateTag));
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                rowView.setElevation(dpF(ctx, 2f));
+                rowView.setElevation(0f);
             }
         }
     }
@@ -1239,7 +1444,33 @@ public final class GboardM3Helper {
             return;
         }
         Context ctx = iv.getContext();
-        String tag = "pref_orb_v2_" + palette.isNight + "_" + palette.isAmoled;
+        if (!isLiquidGlassUiEnabled(ctx)) {
+            String classicTag = "pref_icon_classic_" + palette.isNight + "_" + palette.textSecondary;
+            if (!classicTag.equals(sStyledViews.get(iv))) {
+                sStyledViews.put(iv, classicTag);
+                ViewGroup.LayoutParams lp = iv.getLayoutParams();
+                if (lp != null) {
+                    int size24 = dp(ctx, 24);
+                    lp.width = size24;
+                    lp.height = size24;
+                    iv.setLayoutParams(lp);
+                }
+                iv.setPadding(0, 0, 0, 0);
+                iv.setBackground(null);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    iv.setElevation(0f);
+                }
+                if (iv.getParent() instanceof ViewGroup frame && frame.getId() != android.R.id.list) {
+                    frame.setMinimumWidth(dp(ctx, 48));
+                    frame.setPaddingRelative(0, 0, dp(ctx, 16), 0);
+                }
+            }
+            int iconTint = palette.textSecondary;
+            iv.setImageTintList(ColorStateList.valueOf(iconTint));
+            iv.setColorFilter(new PorterDuffColorFilter(iconTint, PorterDuff.Mode.SRC_IN));
+            return;
+        }
+        String tag = "pref_orb_v3_" + palette.isNight + "_" + palette.isAmoled;
         int targetPx = dp(ctx, 44);
         int padPx = dp(ctx, 10);
         if (!tag.equals(sStyledViews.get(iv))) {
@@ -1260,7 +1491,7 @@ public final class GboardM3Helper {
             iv.setPadding(padPx, padPx, padPx, padPx);
             iv.setBackground(createLiquidGlassOrbDrawable(ctx, palette));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                iv.setElevation(dpF(ctx, 2f));
+                iv.setElevation(0f);
             }
             if (iv.getParent() instanceof ViewGroup frame && frame.getId() != android.R.id.list) {
                 frame.setClipChildren(false);
@@ -1282,7 +1513,8 @@ public final class GboardM3Helper {
     public static void styleViewHierarchy(View view, Palette palette) {
         if (view == null || palette == null) return;
         Context ctx = view.getContext();
-        String hierarchyTag = palette.windowBackground + "_" + palette.accent + "_" + palette.isAmoled;
+        final boolean liquidGlass = isLiquidGlassUiEnabled(ctx);
+        String hierarchyTag = palette.windowBackground + "_" + palette.accent + "_" + palette.isAmoled + "_" + liquidGlass;
 
         try {
             int vid = view.getId();
@@ -1368,7 +1600,11 @@ public final class GboardM3Helper {
                         if (child instanceof TextView tv && !(child.getClass().getName().contains("ActionMenu"))) {
                             tv.setTextColor(palette.textPrimary);
                         } else if (child instanceof ImageButton) {
-                            styleToolbarOrbButton(child, palette);
+                            if (liquidGlass) {
+                                styleToolbarOrbButton(child, palette);
+                            } else {
+                                child.setBackground(null);
+                            }
                             int navTint = palette.isNight ? 0xFFF2F5FF : 0xFF1A2033;
                             ((ImageButton) child).setImageTintList(ColorStateList.valueOf(navTint));
                             ((ImageButton) child).setColorFilter(new PorterDuffColorFilter(navTint, PorterDuff.Mode.SRC_IN));
@@ -1387,12 +1623,20 @@ public final class GboardM3Helper {
                                         }
                                     }
                                     if (hasIcon && (tvMenu.getText() == null || tvMenu.getText().length() == 0)) {
-                                        styleToolbarOrbButton(tvMenu, palette);
+                                        if (liquidGlass) {
+                                            styleToolbarOrbButton(tvMenu, palette);
+                                        } else {
+                                            tvMenu.setBackground(null);
+                                        }
                                     } else if (tvMenu.getText() != null && tvMenu.getText().length() > 0) {
                                         tvMenu.setTextColor(palette.accent);
                                     }
                                 } else if (menuItem instanceof ImageView) {
-                                    styleToolbarOrbButton(menuItem, palette);
+                                    if (liquidGlass) {
+                                        styleToolbarOrbButton(menuItem, palette);
+                                    } else {
+                                        menuItem.setBackground(null);
+                                    }
                                     ((ImageView) menuItem).setColorFilter(new PorterDuffColorFilter(
                                             palette.isNight ? 0xFFF2F5FF : 0xFF1A2033, PorterDuff.Mode.SRC_IN));
                                 }
@@ -1410,13 +1654,85 @@ public final class GboardM3Helper {
                 View iconFrameV = view.findViewById(android.R.id.icon_frame);
                 View widgetFrameV = view.findViewById(android.R.id.widget_frame);
                 View summaryV = view.findViewById(android.R.id.summary);
-                boolean hasRowContent = (titleV != null && titleV.getVisibility() == View.VISIBLE)
+                int parentId = ((View) view.getParent()).getId();
+                boolean isLanguageListRow = parentId == 0x7f0b0609;
+                boolean hasRowContent = isLanguageListRow
+                        || ((titleV != null && titleV.getVisibility() == View.VISIBLE)
                         && ((iconFrameV != null && iconFrameV.getVisibility() == View.VISIBLE)
                         || (widgetFrameV != null && widgetFrameV.getVisibility() == View.VISIBLE)
-                        || (summaryV != null && summaryV.getVisibility() == View.VISIBLE));
+                        || (summaryV != null && summaryV.getVisibility() == View.VISIBLE)));
                 if (hasRowContent) {
                     stylePreferenceCardRow(view, ctx, palette);
                 }
+            }
+
+            // 2c. Languages section "+ Add keyboard" button (0x7f0b07da) -> 3D Liquid Glass Stadium Pill (or M3 flat pill in Classic)
+            if (vid == 0x7f0b07da) {
+                String tag = "lang_add_btn_v3_" + hierarchyTag;
+                if (!tag.equals(sStyledViews.get(view))) {
+                    sStyledViews.put(view, tag);
+                    if (view.getParent() instanceof ViewGroup pvg) {
+                        pvg.setClipChildren(false);
+                        pvg.setClipToPadding(false);
+                    }
+                    view.setBackgroundTintList(null);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        view.setStateListAnimator(null);
+                        view.setElevation(0f);
+                    }
+                    Drawable pillBg;
+                    int btnTint;
+                    if (liquidGlass) {
+                        pillBg = createLiquidGlassPillButtonDrawable(ctx, palette);
+                        btnTint = palette.isNight ? palette.textPrimary : blendColor(0xFF1D2C5E, palette.accent, 0.35f);
+                    } else {
+                        GradientDrawable m3Pill = new GradientDrawable();
+                        m3Pill.setShape(GradientDrawable.RECTANGLE);
+                        m3Pill.setCornerRadius(dpF(ctx, 999f));
+                        m3Pill.setColor(palette.accent);
+                        GradientDrawable mask = new GradientDrawable();
+                        mask.setShape(GradientDrawable.RECTANGLE);
+                        mask.setCornerRadius(dpF(ctx, 999f));
+                        mask.setColor(Color.WHITE);
+                        pillBg = new RippleDrawable(ColorStateList.valueOf(palette.ripple), m3Pill, mask);
+                        btnTint = palette.isNight ? palette.windowBackground : Color.WHITE;
+                    }
+                    if (view instanceof android.widget.Button btn) {
+                        btn.setBackgroundDrawable(pillBg);
+                    } else {
+                        view.setBackground(pillBg);
+                    }
+                    view.setMinimumHeight(dp(ctx, 52));
+                    view.setPadding(dp(ctx, 26), dp(ctx, 13), dp(ctx, 26), dp(ctx, 13));
+                    if (view instanceof TextView tv) {
+                        tv.setTextColor(btnTint);
+                        tv.setAllCaps(false);
+                        tv.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
+                        Drawable[] cds = tv.getCompoundDrawablesRelative();
+                        for (Drawable d : cds) {
+                            if (d != null) {
+                                d.setTint(btnTint);
+                            }
+                        }
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            tv.setCompoundDrawableTintList(ColorStateList.valueOf(btnTint));
+                        }
+                    }
+                    try {
+                        ColorStateList iconCsl = ColorStateList.valueOf(btnTint);
+                        view.getClass().getMethod("q", ColorStateList.class).invoke(view, iconCsl);
+                    } catch (Throwable ignored) {
+                    }
+                    try {
+                        view.getClass().getMethod("u", ColorStateList.class)
+                                .invoke(view, ColorStateList.valueOf(palette.ripple));
+                    } catch (Throwable ignored) {
+                    }
+                    view.invalidate();
+                }
+            }
+            if (vid == 0x7f0b060a) {
+                view.setVisibility(liquidGlass ? View.GONE : View.VISIBLE);
             }
 
             // 3. Preference list icons (@android:id/icon)
@@ -1426,10 +1742,17 @@ public final class GboardM3Helper {
 
             // 4. Theme Section "+" card (0x7f0b29ac) and Collapse button (0x7f0b29a1)
             if (vid == 0x7f0b29ac) {
-                String tag = "theme_plus_v2_" + hierarchyTag;
+                String tag = "theme_plus_v3_" + hierarchyTag;
                 if (!tag.equals(sStyledViews.get(view))) {
                     sStyledViews.put(view, tag);
-                    view.setBackground(createLiquidGlassCardDrawable(ctx, palette, 20, true));
+                    if (liquidGlass) {
+                        view.setBackground(createLiquidGlassCardDrawable(ctx, palette, 20, true));
+                    } else {
+                        GradientDrawable flatCard = new GradientDrawable();
+                        flatCard.setColor(palette.surfaceAlt);
+                        flatCard.setCornerRadius(dpF(ctx, 18f));
+                        view.setBackground(flatCard);
+                    }
                     View p = view.getParent() instanceof View ? (View) view.getParent() : null;
                     ColorStateList clearCsl = ColorStateList.valueOf(Color.TRANSPARENT);
                     for (int depth = 0; depth < 3 && p != null; depth++) {
@@ -1463,11 +1786,18 @@ public final class GboardM3Helper {
                 }
             }
             if (vid == 0x7f0b29a1) {
-                String tag = "theme_collapse_" + hierarchyTag;
+                String tag = "theme_collapse_v2_" + hierarchyTag;
                 if (!tag.equals(sStyledViews.get(view))) {
                     sStyledViews.put(view, tag);
                     view.setBackgroundTintList(null);
-                    view.setBackground(createLiquidGlassOrbWithRipple(ctx, palette));
+                    if (liquidGlass) {
+                        view.setBackground(createLiquidGlassOrbWithRipple(ctx, palette));
+                    } else {
+                        GradientDrawable flatPill = new GradientDrawable();
+                        flatPill.setColor(palette.surfaceAlt);
+                        flatPill.setCornerRadius(dpF(ctx, 999f));
+                        view.setBackground(flatPill);
+                    }
                     try {
                         view.getClass().getMethod("setIconTint", ColorStateList.class)
                                 .invoke(view, ColorStateList.valueOf(palette.textPrimary));
@@ -1483,11 +1813,19 @@ public final class GboardM3Helper {
 
             // 5. Preferences Section Pill Buttons ("Use device font size", "Use default" -> 0x7f0b29ff)
             if (vid == 0x7f0b29ff) {
-                String tag = "pref_pill_" + hierarchyTag;
+                String tag = "pref_pill_v2_" + hierarchyTag;
                 if (!tag.equals(sStyledViews.get(view))) {
                     sStyledViews.put(view, tag);
                     view.setBackgroundTintList(null);
-                    view.setBackground(createLiquidGlassPillButtonDrawable(ctx, palette));
+                    if (liquidGlass) {
+                        view.setBackground(createLiquidGlassPillButtonDrawable(ctx, palette));
+                    } else {
+                        GradientDrawable flatBtn = new GradientDrawable();
+                        flatBtn.setColor(palette.surfaceAlt);
+                        flatBtn.setCornerRadius(dpF(ctx, 999f));
+                        flatBtn.setStroke(dp(ctx, 1), palette.surfaceStroke);
+                        view.setBackground(flatBtn);
+                    }
                     if (view instanceof TextView) {
                         TextView tv = (TextView) view;
                         tv.setTextColor(palette.isNight ? palette.textPrimary : 0xFF586076);
@@ -1546,7 +1884,7 @@ public final class GboardM3Helper {
             }
 
             // 7. Native Switch & SwitchCompat / MaterialSwitch
-            if (view instanceof Switch) {
+            if (liquidGlass && view instanceof Switch) {
                 String tag = "switch_" + hierarchyTag;
                 if (!tag.equals(sStyledViews.get(view))) {
                     sStyledViews.put(view, tag);
@@ -1556,7 +1894,7 @@ public final class GboardM3Helper {
                     sw.setTrackDrawable(createLiquidGlassSwitchTrackDrawable(ctx, palette));
                     sw.setThumbDrawable(createLiquidGlassSwitchThumbDrawable(ctx, palette, true));
                 }
-            } else if (className.contains("SwitchCompat") || className.contains("MaterialSwitch")) {
+            } else if (liquidGlass && (className.contains("SwitchCompat") || className.contains("MaterialSwitch"))) {
                 String tag = "switchcompat_v3_" + hierarchyTag;
                 if (!tag.equals(sStyledViews.get(view))) {
                     sStyledViews.put(view, tag);
@@ -1695,9 +2033,21 @@ public final class GboardM3Helper {
     public static void animateThemeSectionEnter(final View rootView) {
         if (rootView == null) return;
         try {
-            Context ctx = rootView.getContext();
+            final Context ctx = rootView.getContext();
             styleViewHierarchy(rootView, Palette.forContext(ctx));
-            animateViewSlideFade(rootView, dpF(ctx, 56f), 260L);
+            // Let FragmentManager's native m3_slide_* transition drive navigation cleanly without
+            // stacking a second competing translationX slide on top.
+            rootView.setTranslationX(0f);
+            rootView.setAlpha(1f);
+            rootView.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        styleViewHierarchy(rootView, Palette.forContext(ctx));
+                    } catch (Throwable ignored) {
+                    }
+                }
+            });
         } catch (Throwable ignored) {
         }
     }
@@ -2021,15 +2371,27 @@ public final class GboardM3Helper {
             int enterAnim = 0;
             int exitAnim = 0;
             try {
-                enterAnim = activity.getResources().getIdentifier("m3_slide_in_right", "anim", activity.getPackageName());
-                exitAnim = activity.getResources().getIdentifier("m3_slide_out_left", "anim", activity.getPackageName());
+                enterAnim = activity.getResources().getIdentifier("m3_act_slide_in_right", "anim", activity.getPackageName());
+                exitAnim = activity.getResources().getIdentifier("m3_act_slide_out_left", "anim", activity.getPackageName());
+                if (enterAnim == 0 || exitAnim == 0) {
+                    enterAnim = activity.getResources().getIdentifier("m3_slide_in_right", "anim", activity.getPackageName());
+                    exitAnim = activity.getResources().getIdentifier("m3_slide_out_left", "anim", activity.getPackageName());
+                }
             } catch (Throwable ignored) {
             }
-            if (enterAnim != 0 && exitAnim != 0) {
-                activity.overridePendingTransition(enterAnim, exitAnim);
-            } else {
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            if (enterAnim == 0 || exitAnim == 0) {
+                enterAnim = android.R.anim.fade_in;
+                exitAnim = android.R.anim.fade_out;
             }
+            if (Build.VERSION.SDK_INT >= 34) {
+                try {
+                    activity.getClass().getMethod("overrideActivityTransition", int.class, int.class, int.class)
+                            .invoke(activity, 0, enterAnim, exitAnim);
+                    return;
+                } catch (Throwable ignored) {
+                }
+            }
+            activity.overridePendingTransition(enterAnim, exitAnim);
         } catch (Throwable ignored) {
         }
     }
@@ -2040,15 +2402,27 @@ public final class GboardM3Helper {
             int enterAnim = 0;
             int exitAnim = 0;
             try {
-                enterAnim = activity.getResources().getIdentifier("m3_slide_in_left", "anim", activity.getPackageName());
-                exitAnim = activity.getResources().getIdentifier("m3_slide_out_right", "anim", activity.getPackageName());
+                enterAnim = activity.getResources().getIdentifier("m3_act_slide_in_left", "anim", activity.getPackageName());
+                exitAnim = activity.getResources().getIdentifier("m3_act_slide_out_right", "anim", activity.getPackageName());
+                if (enterAnim == 0 || exitAnim == 0) {
+                    enterAnim = activity.getResources().getIdentifier("m3_slide_in_left", "anim", activity.getPackageName());
+                    exitAnim = activity.getResources().getIdentifier("m3_slide_out_right", "anim", activity.getPackageName());
+                }
             } catch (Throwable ignored) {
             }
-            if (enterAnim != 0 && exitAnim != 0) {
-                activity.overridePendingTransition(enterAnim, exitAnim);
-            } else {
-                activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            if (enterAnim == 0 || exitAnim == 0) {
+                enterAnim = android.R.anim.fade_in;
+                exitAnim = android.R.anim.fade_out;
             }
+            if (Build.VERSION.SDK_INT >= 34) {
+                try {
+                    activity.getClass().getMethod("overrideActivityTransition", int.class, int.class, int.class)
+                            .invoke(activity, 1, enterAnim, exitAnim);
+                    return;
+                } catch (Throwable ignored) {
+                }
+            }
+            activity.overridePendingTransition(enterAnim, exitAnim);
         } catch (Throwable ignored) {
         }
     }

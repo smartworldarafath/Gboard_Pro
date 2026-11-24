@@ -281,16 +281,16 @@ public final class PixelBoardUpdateFeature implements GboardPatchesSettingsContr
 
         List<GboardPatchesSettingsContract.Row> changelogRows = new ArrayList<>();
         changelogRows.add(new GboardPatchesSettingsContract.DetailRow(
-                "3D Liquid Glass UI System",
-                "Complete visual redesign across Settings, Theme, Preferences, Advanced Settings, About, and Updates with frosted glass cards and orbs.",
+                "Native Liquid Glass App Icon",
+                "Integrated the official Gboard Pro liquid glass icon directly into the APK.",
                 false));
         changelogRows.add(new GboardPatchesSettingsContract.DetailRow(
-                "AMOLED Pure Black Mode & Pro Hub",
-                "Dedicated Pro > Amoled controls applying true #000000 pure black across both the app UI and keyboard surfaces.",
+                "Full Multi-Density Support",
+                "Replaced all legacy launcher icons across mdpi, hdpi, xhdpi, xxhdpi, and xxxhdpi.",
                 false));
         changelogRows.add(new GboardPatchesSettingsContract.DetailRow(
-                "In-App Feedback & Additional Tools",
-                "Native Help & feedback GitHub issue builder, Additional section preview controls, and privacy-first default toggles.",
+                "Package Icon Integration",
+                "Configured the AndroidManifest to use the new liquid glass icon as the default.",
                 false));
 
         String sectionTitle = "Gboard Pro v" + changelogRelease.getVersion();
@@ -300,22 +300,6 @@ public final class PixelBoardUpdateFeature implements GboardPatchesSettingsContr
                 sectionDesc,
                 GboardPatchesSettingsContract.SectionStyle.DEFAULT,
                 changelogRows));
-
-        // Update Preferences Section
-        List<GboardPatchesSettingsContract.Row> prefRows = new ArrayList<>();
-        prefRows.add(new GboardPatchesSettingsContract.ToggleRow(
-                "Check for updates automatically",
-                "Automatically check every 8 hours in the background for new releases",
-                true,
-                PixelBoardUpdateManager.isAutoCheckEnabled(context),
-                value -> {
-                    PixelBoardUpdateManager.setAutoCheckEnabled(context, value);
-                    GboardPatchesSettingsContract.refresh(host);
-                }));
-
-        sections.add(new GboardPatchesSettingsContract.Section(
-                "PREFERENCES",
-                prefRows));
 
         return new GboardPatchesSettingsContract.Screen(
                 entryTitle,

@@ -36,6 +36,7 @@ public final class GboardAdditionalFeature implements GboardPatchesSettingsContr
     @Override
     public List<GboardPatchesSettingsContract.Feature> getNavigationChildren() {
         return Arrays.asList(
+                new ChooseUiFeature(context),
                 new TestingModeFeature(context, "Notification", "Manage keyboard notifications & alerts"),
                 new TestingModeFeature(context, "Permissions", "Review runtime & system permissions"),
                 new TestingModeFeature(context, "Reset", "Reset Gboard Pro settings & caches"),
@@ -50,8 +51,17 @@ public final class GboardAdditionalFeature implements GboardPatchesSettingsContr
     @Override
     public GboardPatchesSettingsContract.Screen buildScreen(GboardPatchesSettingsContract.FeatureHost host) {
         final Context ctx = host != null && host.getContext() != null ? host.getContext() : context;
+        final String currentUiSummary = GboardM3Helper.isLiquidGlassUiEnabled(ctx)
+                ? "3D Liquid Glass UI (Active)"
+                : "Classic UI (Previous) (Active)";
 
         List<GboardPatchesSettingsContract.Row> rows = new ArrayList<>();
+        rows.add(new GboardPatchesSettingsContract.NavigationRow(
+                "Choose UI",
+                currentUiSummary,
+                true,
+                () -> GboardPatchesSettingsContract.openFeature(host, new ChooseUiFeature(ctx))
+        ));
         rows.add(new GboardPatchesSettingsContract.NavigationRow(
                 "Notification",
                 "Manage keyboard notifications & alerts",
@@ -161,6 +171,97 @@ public final class GboardAdditionalFeature implements GboardPatchesSettingsContr
                     null,
                     false
             );
+        }
+    }
+
+    /**
+     * Allows switching seamlessly between the 3D water-drop Liquid Glass UI and the previous
+     * clean Material 3 Classic UI across app settings and keyboard surfaces.
+     */
+    public static final class ChooseUiFeature implements GboardPatchesSettingsContract.Feature {
+
+        private final Context context;
+
+        public ChooseUiFeature(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public String getEntryTitle() {
+            return "Choose UI";
+        }
+
+        @Override
+        public String getEntrySummary() {
+            return GboardM3Helper.isLiquidGlassUiEnabled(context)
+                    ? "3D Liquid Glass UI"
+                    : "Classic UI (Previous)";
+        }
+
+        @Override
+        public boolean isAvailable(Context context) {
+            return true;
+        }
+
+        @Override
+        public void onVisible(GboardPatchesSettingsContract.FeatureHost host) {
+        }
+
+        @Override
+        public GboardPatchesSettingsContract.Screen buildScreen(
+                final GboardPatchesSettingsContract.FeatureHost host) {
+            final Context ctx = host != null && host.getContext() != null ? host.getContext() : context;
+            final boolean isLiquidGlass = GboardM3Helper.isLiquidGlassUiEnabled(ctx);
+
+            Runnable selectLiquidGlass = () -> applyUiSelection(ctx, host, true);
+            Runnable selectClassic = () -> applyUiSelection(ctx, host, false);
+
+            List<GboardPatchesSettingsContract.Row> rows = new ArrayList<>();
+            rows.add(new GboardPatchesSettingsContract.RadioRow(
+                    "3D Liquid Glass UI",
+                    "3D water-drop Liquid Glass cards, orbs, pills, switches & keyboard",
+                    true,
+                    isLiquidGlass,
+                    selectLiquidGlass
+            ));
+            rows.add(new GboardPatchesSettingsContract.RadioRow(
+                    "Classic UI (Previous)",
+                    "Restore previous clean Material 3 UI across app & keyboard",
+                    true,
+                    !isLiquidGlass,
+                    selectClassic
+            ));
+
+            List<GboardPatchesSettingsContract.Section> sections = new ArrayList<>();
+            sections.add(new GboardPatchesSettingsContract.Section("CHOOSE UI STYLE", rows));
+
+            return new GboardPatchesSettingsContract.Screen(
+                    "Choose UI",
+                    null,
+                    "Choose UI",
+                    "Switch between 3D Liquid Glass UI and Classic Material UI",
+                    Collections.emptyList(),
+                    sections,
+                    GboardPatchesSettingsContract.RefreshPolicy.none(),
+                    GboardPatchesSettingsContract.PanelStyle.FLAT,
+                    null,
+                    false
+            );
+        }
+
+        private void applyUiSelection(
+                Context ctx,
+                GboardPatchesSettingsContract.FeatureHost host,
+                boolean enableLiquidGlass) {
+            if (GboardM3Helper.isLiquidGlassUiEnabled(ctx) == enableLiquidGlass) {
+                return;
+            }
+            GboardM3Helper.setLiquidGlassUiEnabled(ctx, enableLiquidGlass);
+            if (ctx instanceof GboardPatchesSettingsActivity act) {
+                act.animateThemeChangeTransition();
+            } else if (host != null) {
+                host.submit(GboardPatchesSettingsContract.Host::refresh);
+            }
         }
     }
 }

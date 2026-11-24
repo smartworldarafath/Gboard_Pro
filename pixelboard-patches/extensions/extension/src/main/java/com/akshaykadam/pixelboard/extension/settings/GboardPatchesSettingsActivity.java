@@ -30,11 +30,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Insets;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -164,7 +168,11 @@ public final class GboardPatchesSettingsActivity extends Activity
     private Palette palette;
     private GboardM3Helper.Palette m3Palette;
     private boolean lastRenderedAmoled;
+    private boolean lastRenderedLiquidGlass;
     private String lastRenderedThemeKey;
+    private int lastRenderedAccent;
+    private int lastRenderedWindowBg;
+    private boolean skipNextResumeRebuild;
     private FrameLayout rootView;
     private LinearLayout toolbarView;
     private View backButtonView;
@@ -246,14 +254,19 @@ public final class GboardPatchesSettingsActivity extends Activity
             m3Palette = GboardM3Helper.Palette.forContext(this);
             palette = Palette.forContext(this, getResources().getConfiguration());
             lastRenderedAmoled = GboardM3Helper.isAmoledBlackEnabled(this);
+            lastRenderedLiquidGlass = GboardM3Helper.isLiquidGlassUiEnabled(this);
             lastRenderedThemeKey = GboardM3Helper.getSelectedThemeKey(this);
+            lastRenderedAccent = palette.accent;
+            lastRenderedWindowBg = palette.windowBackground;
             features = Collections.emptyList();
             featuresInitialized = false;
+            GboardM3Helper.applyActivityEnterTransition(this);
             configureWindow();
             View contentView = buildContentView();
             setContentView(contentView);
             installWindowInsetsHandling(contentView);
             registerBackCallback();
+            renderInitialScreenSynchronously();
             com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.requestNotificationPermission(this);
             com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.ensureNotificationChannel(this);
             if (com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateManager.isAutoCheckEnabled(this)) {
@@ -264,12 +277,98 @@ public final class GboardPatchesSettingsActivity extends Activity
         }
     }
 
+    private void renderInitialScreenSynchronously() {
+        try {
+            palette = Palette.forContext(this, getResources().getConfiguration());
+            ensureFeaturesInitialized();
+            Intent intent = getIntent();
+            List<GboardPatchesSettingsContract.Feature> initialPath = resolveInitialPathFromIntent(intent);
+            initialFeatureFromIntentHandled = true;
+            if (initialPath != null && !initialPath.isEmpty()) {
+                scrollState.resetForDirectPath(initialPath.size() - 1);
+                requestScrollPositionOnNextScreenApply(0);
+                GboardPatchesSettingsOrchestrator.Transition<
+                        GboardPatchesSettingsContract.Feature,
+                        GboardPatchesSettingsContract.Intent> replaceTr =
+                        settingsOrchestrator.accept(
+                                GboardPatchesSettingsOrchestrator.Event.replacePath(initialPath));
+                GboardPatchesSettingsContract.Feature top = initialPath.get(initialPath.size() - 1);
+                GboardPatchesSettingsContract.Screen screen = top.buildScreen(this);
+                int gen = settingsOrchestrator.snapshot().getRenderGeneration();
+                GboardPatchesSettingsOrchestrator.Transition<
+                        GboardPatchesSettingsContract.Feature,
+                        GboardPatchesSettingsContract.Intent> readyTr =
+                        settingsOrchestrator.accept(
+                                GboardPatchesSettingsOrchestrator.Event.renderReady(
+                                        gen, screen.getRefreshIntervalMs()));
+                applyScreen(screen);
+                applyOrchestration(replaceTr);
+                applyOrchestration(readyTr);
+                skipNextResumeRebuild = true;
+                return;
+            }
+            GboardPatchesSettingsContract.Screen rootScreen = buildRootScreen();
+            int gen = settingsOrchestrator.snapshot().getRenderGeneration();
+            GboardPatchesSettingsOrchestrator.Transition<
+                    GboardPatchesSettingsContract.Feature,
+                    GboardPatchesSettingsContract.Intent> readyTr =
+                    settingsOrchestrator.accept(
+                            GboardPatchesSettingsOrchestrator.Event.renderReady(
+                                    gen, rootScreen.getRefreshIntervalMs()));
+            applyScreen(rootScreen);
+            applyOrchestration(readyTr);
+            skipNextResumeRebuild = true;
+        } catch (Throwable throwable) {
+            Log.w(TAG, "Synchronous initial screen render fallback", throwable);
+        }
+    }
+
+    private List<GboardPatchesSettingsContract.Feature> resolveInitialPathFromIntent(Intent intent) {
+        if (intent == null) {
+            standaloneFeatureMode = false;
+            return null;
+        }
+        String action = intent.getAction();
+        GboardPatchesSettingsContract.Feature targetFeature = null;
+        if (ACTION_UPDATES.equals(action)) {
+            targetFeature = new com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateFeature(this);
+        } else if (ACTION_APPEARANCE.equals(action)) {
+            targetFeature = new GboardAppearanceFeature(this);
+        } else if (ACTION_BOARD_UI.equals(action)) {
+            targetFeature = new GboardBoardUiFeature(this);
+        } else if (ACTION_ABOUT.equals(action)) {
+            targetFeature = new GboardAboutFeature(this);
+        } else if (ACTION_PRO.equals(action)) {
+            targetFeature = new GboardProFeature(this);
+        } else if (ACTION_ADDITIONAL.equals(action)) {
+            targetFeature = new GboardAdditionalFeature(this);
+        } else if (ACTION_HELP_FEEDBACK.equals(action)) {
+            targetFeature = new GboardHelpFeedbackFeature(this);
+        }
+        if (targetFeature != null) {
+            standaloneFeatureMode = true;
+            return Collections.singletonList(targetFeature);
+        }
+        standaloneFeatureMode = false;
+        if (intent.hasExtra(EXTRA_NAVIGATION_PATH)) {
+            ArrayList<String> pathIds = intent.getStringArrayListExtra(EXTRA_NAVIGATION_PATH);
+            intent.removeExtra(EXTRA_NAVIGATION_PATH);
+            List<GboardPatchesSettingsContract.Feature> resolvedPath =
+                    GboardPatchesNavigationPath.resolve(this, features, pathIds);
+            if (pathIds != null && !pathIds.isEmpty() && resolvedPath.size() == pathIds.size()) {
+                return resolvedPath;
+            }
+        }
+        return null;
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         setRestartButtonPending(false);
         initialFeatureFromIntentHandled = false;
+        skipNextResumeRebuild = false;
         scheduleDeferredRender();
     }
 
@@ -279,14 +378,85 @@ public final class GboardPatchesSettingsActivity extends Activity
         GboardM3Helper.enforceHighRefreshRate(getWindow());
         featureLifecycleEnabled = true;
         boolean currentAmoled = GboardM3Helper.isAmoledBlackEnabled(this);
+        boolean currentLiquidGlass = GboardM3Helper.isLiquidGlassUiEnabled(this);
         String currentThemeKey = GboardM3Helper.getSelectedThemeKey(this);
+        Palette latestPalette = Palette.forContext(this, getResources().getConfiguration());
         if (currentAmoled != lastRenderedAmoled
-                || !TextUtils.equals(currentThemeKey, lastRenderedThemeKey)) {
+                || currentLiquidGlass != lastRenderedLiquidGlass
+                || !TextUtils.equals(currentThemeKey, lastRenderedThemeKey)
+                || latestPalette.accent != lastRenderedAccent
+                || latestPalette.windowBackground != lastRenderedWindowBg) {
+            skipNextResumeRebuild = false;
             refreshAfterThemeChange();
+            return;
+        }
+        if (skipNextResumeRebuild) {
+            skipNextResumeRebuild = false;
+            syncVisibleFeatureLifecycle();
             return;
         }
         applyOrchestration(settingsOrchestrator.accept(
                 GboardPatchesSettingsOrchestrator.Event.resume()));
+    }
+
+    public void animateThemeChangeTransition() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            runOnUiThread(this::animateThemeChangeTransition);
+            return;
+        }
+        final FrameLayout hostRoot = rootView;
+        if (hostRoot == null || hostRoot.getWidth() <= 0 || hostRoot.getHeight() <= 0) {
+            refreshAfterThemeChange();
+            return;
+        }
+        hostRoot.postDelayed(() -> {
+            if (isFinishing()) return;
+            Bitmap captured = null;
+            try {
+                captured = Bitmap.createBitmap(
+                        hostRoot.getWidth(), hostRoot.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(captured);
+                hostRoot.draw(canvas);
+            } catch (Throwable ignored) {
+                if (captured != null) {
+                    captured.recycle();
+                }
+                refreshAfterThemeChange();
+                return;
+            }
+            final Bitmap finalBitmap = captured;
+            final ImageView overlay = new ImageView(this);
+            overlay.setScaleType(ImageView.ScaleType.FIT_XY);
+            overlay.setImageBitmap(finalBitmap);
+            overlay.setClickable(false);
+            overlay.setFocusable(false);
+            hostRoot.addView(overlay, new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+
+            refreshAfterThemeChange();
+
+            overlay.animate()
+                    .alpha(0f)
+                    .scaleX(0.992f)
+                    .scaleY(0.992f)
+                    .setDuration(340L)
+                    .setInterpolator(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                            ? new android.view.animation.PathInterpolator(0.22f, 1f, 0.36f, 1f)
+                            : new android.view.animation.DecelerateInterpolator())
+                    .withLayer()
+                    .withEndAction(() -> {
+                        try {
+                            hostRoot.removeView(overlay);
+                            overlay.setImageDrawable(null);
+                            if (!finalBitmap.isRecycled()) {
+                                finalBitmap.recycle();
+                            }
+                        } catch (Throwable ignored) {
+                        }
+                    })
+                    .start();
+        }, 95L);
     }
 
     public void refreshAfterThemeChange() {
@@ -297,7 +467,10 @@ public final class GboardPatchesSettingsActivity extends Activity
         m3Palette = GboardM3Helper.Palette.forContext(this);
         palette = Palette.forContext(this, getResources().getConfiguration());
         lastRenderedAmoled = GboardM3Helper.isAmoledBlackEnabled(this);
+        lastRenderedLiquidGlass = GboardM3Helper.isLiquidGlassUiEnabled(this);
         lastRenderedThemeKey = GboardM3Helper.getSelectedThemeKey(this);
+        lastRenderedAccent = palette.accent;
+        lastRenderedWindowBg = palette.windowBackground;
         configureWindow();
         if (rootView != null) {
             rootView.setBackgroundColor(palette.windowBackground);
@@ -306,13 +479,17 @@ public final class GboardPatchesSettingsActivity extends Activity
             toolbarView.setBackgroundColor(palette.windowBackground);
         }
         if (backButtonView != null) {
-            backButtonView.setBackground(
-                    GboardM3Helper.createLiquidGlassOrbWithRipple(this, m3Palette));
+            backButtonView.setBackground(lastRenderedLiquidGlass
+                    ? GboardM3Helper.createLiquidGlassOrbWithRipple(this, m3Palette)
+                    : buildRippleDrawable(dp(22)));
+            backButtonView.setElevation(0f);
             backButtonView.invalidate();
         }
         if (restartButton != null) {
-            restartButton.setBackground(
-                    GboardM3Helper.createLiquidGlassOrbWithRipple(this, m3Palette));
+            restartButton.setBackground(lastRenderedLiquidGlass
+                    ? GboardM3Helper.createLiquidGlassOrbWithRipple(this, m3Palette)
+                    : buildRippleDrawable(dp(22)));
+            restartButton.setElevation(0f);
             restartButton.invalidate();
         }
         if (toolbarTitleView != null) {
@@ -365,11 +542,6 @@ public final class GboardPatchesSettingsActivity extends Activity
         cancelDeferredRender();
         cancelOfflineSpeechLanguageQuery();
         unregisterBackCallback();
-            com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.requestNotificationPermission(this);
-            com.akshaykadam.pixelboard.extension.updater.GboardNotificationHelper.ensureNotificationChannel(this);
-            if (com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateManager.isAutoCheckEnabled(this)) {
-                com.akshaykadam.pixelboard.extension.updater.GboardUpdateCheckReceiver.scheduleUpdateCheck(this);
-            }
         detachKeyboardPreviewSafely();
         screenBuildExecutor.shutdownNow();
         backgroundStateExecutor.shutdownNow();
@@ -1674,7 +1846,6 @@ public final class GboardPatchesSettingsActivity extends Activity
 
     private void configureWindow() {
         GboardM3Helper.enforceHighRefreshRate(getWindow());
-        GboardM3Helper.applyActivityEnterTransition(this);
         if (getActionBar() != null) {
             getActionBar().hide();
         }
@@ -1956,9 +2127,11 @@ public final class GboardPatchesSettingsActivity extends Activity
         };
         restartButton.setContentDescription(restartLabel);
         restartButton.setLayoutParams(new LinearLayout.LayoutParams(dp(44), dp(44)));
-        restartButton.setBackground(GboardM3Helper.createLiquidGlassOrbWithRipple(
-                this, m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this)));
-        restartButton.setElevation(dp(3));
+        restartButton.setBackground(GboardM3Helper.isLiquidGlassUiEnabled(this)
+                ? GboardM3Helper.createLiquidGlassOrbWithRipple(
+                        this, m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this))
+                : buildRippleDrawable(dp(22)));
+        restartButton.setElevation(0f);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             restartButton.setTooltipText(restartLabel);
         } else {
@@ -2177,9 +2350,11 @@ public final class GboardPatchesSettingsActivity extends Activity
         };
         backButton.setContentDescription(text(R.string.gboard_patches_navigate_up));
         backButton.setLayoutParams(new LinearLayout.LayoutParams(dp(44), dp(44)));
-        backButton.setBackground(GboardM3Helper.createLiquidGlassOrbWithRipple(
-                this, m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this)));
-        backButton.setElevation(dp(3));
+        backButton.setBackground(GboardM3Helper.isLiquidGlassUiEnabled(this)
+                ? GboardM3Helper.createLiquidGlassOrbWithRipple(
+                        this, m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this))
+                : buildRippleDrawable(dp(22)));
+        backButton.setElevation(0f);
         backButton.setOnClickListener(view -> goBackOrFinish());
         backButtonView = backButton;
         return backButton;
@@ -4010,6 +4185,7 @@ public final class GboardPatchesSettingsActivity extends Activity
             List<GboardPatchesSettingsContract.Section> screenSections) {
         final GboardM3Helper.Palette m3Pal =
                 m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this);
+        final boolean liquidGlass = GboardM3Helper.isLiquidGlassUiEnabled(this);
 
         if ("Gboard Pro".equals(block.getTitle()) || "About Gboard Pro".equals(block.getTitle())) {
             LinearLayout wrapper = new LinearLayout(this);
@@ -4018,27 +4194,37 @@ public final class GboardPatchesSettingsActivity extends Activity
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             wrapperLp.setMargins(dp(16), dp(8), dp(16), dp(14));
             wrapper.setLayoutParams(wrapperLp);
+            wrapper.setClipChildren(false);
+            wrapper.setClipToPadding(false);
 
             LinearLayout card = new LinearLayout(this);
             card.setOrientation(LinearLayout.VERTICAL);
             card.setGravity(Gravity.CENTER_HORIZONTAL);
             card.setPadding(dp(22), dp(26), dp(22), dp(24));
-            card.setBackground(GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 26, true));
-            card.setElevation(dp(4));
+            card.setBackground(liquidGlass
+                    ? GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 26, true)
+                    : buildCardDrawable(palette.surface, palette.surfaceStroke, dp(26)));
+            card.setElevation(0f);
 
             ImageView heroIcon = new ImageView(this);
             heroIcon.setImageDrawable(loadMipmapDrawable("ic_app"));
             heroIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                heroIcon.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, android.graphics.Outline outline) {
+                        outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), dpF(19f));
+                    }
+                });
                 heroIcon.setClipToOutline(true);
             }
-            LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(dp(72), dp(72));
+            LinearLayout.LayoutParams iconLp = new LinearLayout.LayoutParams(dp(74), dp(74));
             iconLp.bottomMargin = dp(14);
             card.addView(heroIcon, iconLp);
 
             TextView titleView = new TextView(this);
             titleView.setText("Gboard Pro");
-            titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f);
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f);
             titleView.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
             titleView.setTextColor(palette.textPrimary);
             titleView.setGravity(Gravity.CENTER);
@@ -4046,9 +4232,9 @@ public final class GboardPatchesSettingsActivity extends Activity
 
             TextView versionText = new TextView(this);
             versionText.setText("v" + BuildConfig.PATCH_VERSION);
-            versionText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
-            versionText.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-            versionText.setTextColor(palette.textSecondary);
+            versionText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f);
+            versionText.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
+            versionText.setTextColor(m3Pal.isNight ? palette.textSecondary : 0xFF6D758F);
             versionText.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams verLp = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -4058,43 +4244,94 @@ public final class GboardPatchesSettingsActivity extends Activity
 
             TextView summaryView = new TextView(this);
             summaryView.setText(block.getSummary());
-            summaryView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f);
-            summaryView.setLineSpacing(dp(2), 1.15f);
+            summaryView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13.5f);
+            summaryView.setLineSpacing(dp(2), 1.18f);
             summaryView.setTextColor(palette.textSecondary);
             summaryView.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams sumLp = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             card.addView(summaryView, sumLp);
 
-            // If this screen has an ACTIONS section (Updates screen), embed the 3D Liquid Glass Pill CTA button inside the Hero Card
+            // Show "[ ↻ Check for Updates ]" 3D Liquid Glass pill button on BOTH About & Gboard Pro Updates
             final GboardPatchesSettingsContract.Row primaryHeroActionRow = findFirstActionRow(screenSections);
-            if (primaryHeroActionRow != null) {
-                TextView ctaButton = new TextView(this);
-                ctaButton.setText(primaryHeroActionRow.getTitle());
-                ctaButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15.5f);
-                ctaButton.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
-                ctaButton.setTextColor(m3Pal.isAmoled || m3Pal.isNight ? 0xFFF5F7FF : 0xFF1A2236);
-                ctaButton.setGravity(Gravity.CENTER);
-                ctaButton.setBackground(GboardM3Helper.createLiquidGlassPillButtonDrawable(this, m3Pal));
-                ctaButton.setElevation(dp(3));
-                ctaButton.setPadding(dp(28), dp(13), dp(28), dp(13));
-                boolean enabled = primaryHeroActionRow.isEnabled();
-                ctaButton.setEnabled(enabled);
-                ctaButton.setClickable(enabled);
-                ctaButton.setFocusable(enabled);
-                ctaButton.setAlpha(enabled ? 1f : 0.65f);
-                ctaButton.setOnClickListener(v -> {
+            int ctaInk = (m3Pal.isAmoled || m3Pal.isNight) ? m3Pal.accent : 0xFF2336F5;
+            String ctaLabel = primaryHeroActionRow != null
+                    ? primaryHeroActionRow.getTitle().toString()
+                    : "Check for Updates";
+            boolean enabled = primaryHeroActionRow == null || primaryHeroActionRow.isEnabled();
+
+            LinearLayout ctaPill = new LinearLayout(this);
+            ctaPill.setOrientation(LinearLayout.HORIZONTAL);
+            ctaPill.setGravity(Gravity.CENTER);
+            ctaPill.setBackground(liquidGlass
+                    ? GboardM3Helper.createLiquidGlassPillButtonDrawable(this, m3Pal)
+                    : buildChipDrawable(palette.infoContainer, palette.surfaceStroke));
+            ctaPill.setElevation(0f);
+            ctaPill.setPadding(dp(26), dp(12), dp(28), dp(12));
+            ctaPill.setMinimumHeight(dp(50));
+            ctaPill.setEnabled(enabled);
+            ctaPill.setClickable(enabled);
+            ctaPill.setFocusable(enabled);
+            ctaPill.setAlpha(enabled ? 1f : 0.65f);
+
+            View refreshGlyph = new View(this) {
+                private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+                private final Path path = new Path();
+                private final RectF oval = new RectF();
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    super.onDraw(canvas);
+                    float cx = getWidth() / 2f;
+                    float cy = getHeight() / 2f;
+                    float u = dpF(1f);
+                    p.setColor(ctaInk);
+                    p.setStyle(Paint.Style.STROKE);
+                    p.setStrokeCap(Paint.Cap.ROUND);
+                    p.setStrokeJoin(Paint.Join.ROUND);
+                    p.setStrokeWidth(2.0f * u);
+                    float r = 6.2f * u;
+                    oval.set(cx - r, cy - r, cx + r, cy + r);
+                    canvas.drawArc(oval, -20f, 305f, false, p);
+                    // Clockwise top-right arrowhead
+                    path.reset();
+                    path.moveTo(cx + 2.4f * u, cy - 6.6f * u);
+                    path.lineTo(cx + 6.2f * u, cy - 5.6f * u);
+                    path.lineTo(cx + 5.2f * u, cy - 1.8f * u);
+                    canvas.drawPath(path, p);
+                }
+            };
+            LinearLayout.LayoutParams glyphLp = new LinearLayout.LayoutParams(dp(20), dp(20));
+            glyphLp.rightMargin = dp(9);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                glyphLp.setMarginEnd(dp(9));
+            }
+            ctaPill.addView(refreshGlyph, glyphLp);
+
+            TextView ctaButton = new TextView(this);
+            ctaButton.setText(ctaLabel);
+            ctaButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15.5f);
+            ctaButton.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
+            ctaButton.setTextColor(ctaInk);
+            ctaButton.setSingleLine(true);
+            ctaPill.addView(ctaButton);
+
+            ctaPill.setOnClickListener(v -> {
+                if (!v.isEnabled()) return;
+                if (primaryHeroActionRow != null) {
                     Runnable action = extractRowAction(primaryHeroActionRow);
-                    if (action != null && v.isEnabled()) {
+                    if (action != null) {
                         runSafely("handle hero action", action);
                     }
-                });
-                LinearLayout.LayoutParams ctaLp = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, dp(48));
-                ctaLp.topMargin = dp(18);
-                ctaLp.gravity = Gravity.CENTER_HORIZONTAL;
-                card.addView(ctaButton, ctaLp);
-            }
+                } else {
+                    runSafely("open updates from about hero", () ->
+                            openFeature(new com.akshaykadam.pixelboard.extension.updater.PixelBoardUpdateFeature(this)));
+                }
+            });
+            LinearLayout.LayoutParams ctaLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, dp(50));
+            ctaLp.topMargin = dp(18);
+            ctaLp.gravity = Gravity.CENTER_HORIZONTAL;
+            card.addView(ctaPill, ctaLp);
 
             wrapper.addView(card);
             return wrapper;
@@ -4106,12 +4343,16 @@ public final class GboardPatchesSettingsActivity extends Activity
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         wrapperLp.setMargins(dp(16), dp(6), dp(16), dp(12));
         wrapper.setLayoutParams(wrapperLp);
+        wrapper.setClipChildren(false);
+        wrapper.setClipToPadding(false);
 
         LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(18), dp(16), dp(18), dp(16));
-        card.setBackground(GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 24, false));
-        card.setElevation(dp(2));
+        card.setBackground(liquidGlass
+                ? GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 24, false)
+                : buildCardDrawable(toneBackground(block.getTone()), palette.surfaceStroke, dp(24)));
+        card.setElevation(0f);
 
         TextView titleView = new TextView(this);
         titleView.setText(block.getTitle());
@@ -4172,8 +4413,11 @@ public final class GboardPatchesSettingsActivity extends Activity
     private View createSectionView(GboardPatchesSettingsContract.Section section) {
         final GboardM3Helper.Palette m3Pal =
                 m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this);
+        final boolean liquidGlass = GboardM3Helper.isLiquidGlassUiEnabled(this);
         LinearLayout container = buildSectionContainer(
                 section.getStyle() == GboardPatchesSettingsContract.SectionStyle.ADVANCED);
+        container.setClipChildren(false);
+        container.setClipToPadding(false);
         String sectionTitle = section.getTitle();
         String sectionDesc = section.getDescription();
         boolean isActionsSection = "ACTIONS".equalsIgnoreCase(sectionTitle);
@@ -4198,11 +4442,15 @@ public final class GboardPatchesSettingsActivity extends Activity
                 for (GboardPatchesSettingsContract.Row item : items) {
                     LinearLayout actionCard = new LinearLayout(this);
                     actionCard.setOrientation(LinearLayout.VERTICAL);
-                    actionCard.setBackground(
-                            GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 22, false));
-                    actionCard.setElevation(dp(2));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    actionCard.setBackground(liquidGlass
+                            ? GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 22, false)
+                            : buildCardDrawable(palette.surface, palette.surfaceStroke, dp(22)));
+                    actionCard.setElevation(0f);
+                    if (!liquidGlass && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         actionCard.setClipToOutline(true);
+                    } else {
+                        actionCard.setClipChildren(false);
+                        actionCard.setClipToPadding(false);
                     }
                     LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -4221,11 +4469,15 @@ public final class GboardPatchesSettingsActivity extends Activity
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                     card.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
                 }
-                card.setBackground(
-                        GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 24, false));
-                card.setElevation(dp(2));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                card.setBackground(liquidGlass
+                        ? GboardM3Helper.createLiquidGlassCardDrawable(this, m3Pal, 24, false)
+                        : buildCardDrawable(palette.surface, palette.surfaceStroke, dp(24)));
+                card.setElevation(0f);
+                if (!liquidGlass && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     card.setClipToOutline(true);
+                } else {
+                    card.setClipChildren(false);
+                    card.setClipToPadding(false);
                 }
                 LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -4264,11 +4516,111 @@ public final class GboardPatchesSettingsActivity extends Activity
         return container;
     }
 
+    private Drawable createGboardProHeroEmblemDrawable(final GboardM3Helper.Palette m3Pal) {
+        return new Drawable() {
+            private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+            private final RectF r = new RectF();
+            private final Path path = new Path();
+
+            @Override
+            public void draw(Canvas canvas) {
+                Rect b = getBounds();
+                if (b.width() <= 0 || b.height() <= 0) return;
+                float u = Math.min(b.width(), b.height()) / 76f;
+                float cx = b.exactCenterX();
+                float cy = b.exactCenterY();
+                canvas.save();
+                canvas.translate(cx - 38f * u, cy - 38f * u);
+
+                // Outer frosted glass frame matching About.png & Gboard Pro Updates.png
+                p.setStyle(Paint.Style.FILL);
+                p.setColor(m3Pal.isNight ? 0x33000000 : 0x1A182240);
+                r.set(3f * u, 5f * u, 73f * u, 75f * u);
+                canvas.drawRoundRect(r, 20f * u, 20f * u, p);
+
+                p.setShader(new LinearGradient(
+                        4f * u, 4f * u, 72f * u, 72f * u,
+                        m3Pal.isNight
+                                ? new int[]{0xFF1F253A, 0xFF141828}
+                                : new int[]{0xFFF4F5FC, 0xFFE3E6F4},
+                        null, Shader.TileMode.CLAMP));
+                r.set(4f * u, 4f * u, 72f * u, 72f * u);
+                canvas.drawRoundRect(r, 20f * u, 20f * u, p);
+                p.setShader(null);
+
+                p.setStyle(Paint.Style.STROKE);
+                p.setStrokeWidth(1.4f * u);
+                p.setColor(m3Pal.isNight ? 0x44A8C7FA : 0xFAFFFFFF);
+                canvas.drawRoundRect(r, 20f * u, 20f * u, p);
+
+                // Dark slate-blue keyboard base inside bottom-right of badge
+                p.setStyle(Paint.Style.FILL);
+                p.setShader(new LinearGradient(
+                        16f * u, 24f * u, 68f * u, 68f * u,
+                        0xFF3E4F78, 0xFF283452, Shader.TileMode.CLAMP));
+                r.set(16f * u, 24f * u, 68f * u, 68f * u);
+                canvas.drawRoundRect(r, 14f * u, 14f * u, p);
+                p.setShader(null);
+
+                // Keyboard mini keys inside dark slate base (2 rows + spacebar)
+                p.setColor(0xD8E8EEF8);
+                float kSize = 5.2f * u;
+                for (int col = 0; col < 4; col++) {
+                    float kx = (24f + col * 9.5f) * u;
+                    r.set(kx, 46f * u, kx + kSize, 46f * u + kSize);
+                    canvas.drawRoundRect(r, 1.8f * u, 1.8f * u, p);
+                }
+                for (int col = 0; col < 2; col++) {
+                    float kx = (24f + col * 9.5f) * u;
+                    r.set(kx, 55.5f * u, kx + kSize, 55.5f * u + kSize);
+                    canvas.drawRoundRect(r, 1.8f * u, 1.8f * u, p);
+                }
+                r.set(43f * u, 55.5f * u, 59f * u, 55.5f * u + kSize);
+                canvas.drawRoundRect(r, 2.2f * u, 2.2f * u, p);
+
+                // Overlapping glossy white top-left G speech-tile casting soft shadow
+                p.setColor(0x30101628);
+                r.set(10f * u, 12f * u, 46f * u, 48f * u);
+                canvas.drawRoundRect(r, 10f * u, 10f * u, p);
+
+                p.setShader(new LinearGradient(
+                        9f * u, 9f * u, 45f * u, 45f * u,
+                        0xFFFFFFFF, 0xFFF1F4FE, Shader.TileMode.CLAMP));
+                r.set(9f * u, 9f * u, 45f * u, 45f * u);
+                canvas.drawRoundRect(r, 10f * u, 10f * u, p);
+                p.setShader(null);
+
+                // Sky-royal blue 'G' emblem inside the white tile
+                float gcx = 27f * u;
+                float gcy = 27f * u;
+                float gr = 9.2f * u;
+                p.setStyle(Paint.Style.STROKE);
+                p.setStrokeWidth(3.6f * u);
+                p.setStrokeCap(Paint.Cap.BUTT);
+                p.setColor(0xFF4285F4);
+                r.set(gcx - gr, gcy - gr, gcx + gr, gcy + gr);
+                canvas.drawArc(r, 42f, 275f, false, p);
+                p.setStrokeCap(Paint.Cap.ROUND);
+                canvas.drawLine(gcx, gcy + 0.4f * u, gcx + gr * 0.96f, gcy + 0.4f * u, p);
+                // Vertical cap down on right bar of 'G'
+                p.setStyle(Paint.Style.FILL);
+                r.set(gcx + gr * 0.62f, gcy - 1.4f * u, gcx + gr * 1.15f, gcy + gr * 0.62f);
+                canvas.drawRect(r, p);
+
+                canvas.restore();
+            }
+
+            @Override public void setAlpha(int alpha) { p.setAlpha(alpha); }
+            @Override public void setColorFilter(ColorFilter colorFilter) { p.setColorFilter(colorFilter); }
+            @Override public int getOpacity() { return PixelFormat.TRANSLUCENT; }
+        };
+    }
+
     private View buildActionsHeaderView(String title, final GboardM3Helper.Palette m3Pal) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(22), dp(14), dp(20), dp(6));
+        row.setPadding(dp(22), dp(14), dp(20), dp(8));
 
         View bolt = new View(this) {
             private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -4279,7 +4631,7 @@ public final class GboardPatchesSettingsActivity extends Activity
                 float w = getWidth();
                 float h = getHeight();
                 p.setStyle(Paint.Style.FILL);
-                p.setColor(m3Pal.accent);
+                p.setColor(m3Pal.isAmoled || m3Pal.isNight ? m3Pal.accent : 0xFF2E90FA);
                 path.reset();
                 path.moveTo(w * 0.56f, h * 0.08f);
                 path.lineTo(w * 0.18f, h * 0.54f);
@@ -4297,8 +4649,8 @@ public final class GboardPatchesSettingsActivity extends Activity
 
         TextView label = new TextView(this);
         label.setText(title);
-        label.setTextColor(palette.accent);
-        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
+        label.setTextColor(palette.textPrimary);
+        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f);
         label.setLetterSpacing(0.08f);
         label.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
         row.addView(label);
@@ -4307,10 +4659,13 @@ public final class GboardPatchesSettingsActivity extends Activity
 
     private View buildHighlightsHeaderView(
             String title, String subtitle, final GboardM3Helper.Palette m3Pal) {
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(22), dp(16), dp(20), dp(8));
+        LinearLayout wrapper = new LinearLayout(this);
+        wrapper.setOrientation(LinearLayout.VERTICAL);
+        wrapper.setPadding(dp(22), dp(16), dp(20), dp(8));
+
+        LinearLayout topRow = new LinearLayout(this);
+        topRow.setOrientation(LinearLayout.HORIZONTAL);
+        topRow.setGravity(Gravity.CENTER_VERTICAL);
 
         View infoBadge = new View(this) {
             private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -4321,45 +4676,44 @@ public final class GboardPatchesSettingsActivity extends Activity
                 float cy = getHeight() / 2f;
                 float r = Math.min(cx, cy) - dpF(1f);
                 p.setStyle(Paint.Style.FILL);
-                p.setColor(m3Pal.accent);
+                p.setColor(m3Pal.isAmoled || m3Pal.isNight ? m3Pal.accent : 0xFF2E90FA);
                 canvas.drawCircle(cx, cy, r, p);
                 p.setColor(m3Pal.isAmoled || m3Pal.isNight ? 0xFF000000 : 0xFFFFFFFF);
                 p.setStyle(Paint.Style.STROKE);
                 p.setStrokeCap(Paint.Cap.ROUND);
-                p.setStrokeWidth(dpF(2.2f));
-                canvas.drawLine(cx, cy - dpF(1f), cx, cy + dpF(5f), p);
+                p.setStrokeWidth(dpF(2.1f));
+                canvas.drawLine(cx, cy - dpF(0.6f), cx, cy + dpF(4.6f), p);
                 p.setStyle(Paint.Style.FILL);
-                canvas.drawCircle(cx, cy - dpF(4.8f), dpF(1.3f), p);
+                canvas.drawCircle(cx, cy - dpF(4.4f), dpF(1.2f), p);
             }
         };
-        LinearLayout.LayoutParams badgeLp = new LinearLayout.LayoutParams(dp(26), dp(26));
-        badgeLp.rightMargin = dp(12);
-        row.addView(infoBadge, badgeLp);
-
-        LinearLayout textCol = new LinearLayout(this);
-        textCol.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams badgeLp = new LinearLayout.LayoutParams(dp(24), dp(24));
+        badgeLp.rightMargin = dp(10);
+        topRow.addView(infoBadge, badgeLp);
 
         TextView titleView = new TextView(this);
         titleView.setText(title);
         titleView.setTextColor(palette.textPrimary);
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
         titleView.setTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD));
-        textCol.addView(titleView);
+        topRow.addView(titleView);
+        wrapper.addView(topRow);
 
         if (!TextUtils.isEmpty(subtitle)) {
             TextView subView = new TextView(this);
             subView.setText(subtitle);
             subView.setTextColor(palette.textSecondary);
-            subView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
-            textCol.addView(subView);
+            subView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13.5f);
+            LinearLayout.LayoutParams subLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            subLp.topMargin = dp(4);
+            wrapper.addView(subView, subLp);
         }
-
-        row.addView(textCol);
-        return row;
+        return wrapper;
     }
 
     private View createRowOrbIconView(CharSequence title) {
-        if (title == null) {
+        if (title == null || !GboardM3Helper.isLiquidGlassUiEnabled(this)) {
             return null;
         }
         final String key = title.toString();
@@ -4377,6 +4731,39 @@ public final class GboardPatchesSettingsActivity extends Activity
             {
                 paint.setStrokeCap(Paint.Cap.ROUND);
                 paint.setStrokeJoin(Paint.Join.ROUND);
+                setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            }
+
+            private void drawSolidGitHubOctocat(Canvas canvas, float cx, float cy, float u, int bgColor, int fgColor) {
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(bgColor);
+                float r = 7.4f * u;
+                canvas.drawCircle(cx, cy, r, paint);
+                // Punch out crisp Octocat silhouette
+                paint.setColor(fgColor);
+                // Ears
+                path.reset();
+                path.moveTo(cx - 4.2f * u, cy - 1.5f * u);
+                path.lineTo(cx - 4.6f * u, cy - 5.2f * u);
+                path.lineTo(cx - 1.8f * u, cy - 3.6f * u);
+                path.lineTo(cx + 1.8f * u, cy - 3.6f * u);
+                path.lineTo(cx + 4.6f * u, cy - 5.2f * u);
+                path.lineTo(cx + 4.2f * u, cy - 1.5f * u);
+                // Head dome + torso down to bottom circle rim
+                path.cubicTo(cx + 5.6f * u, cy + 0.4f * u, cx + 4.6f * u, cy + 2.8f * u, cx + 2.0f * u, cy + 3.4f * u);
+                path.lineTo(cx + 2.2f * u, cy + 7.2f * u);
+                path.lineTo(cx - 2.2f * u, cy + 7.2f * u);
+                path.lineTo(cx - 2.0f * u, cy + 3.4f * u);
+                path.cubicTo(cx - 4.6f * u, cy + 2.8f * u, cx - 5.6f * u, cy + 0.4f * u, cx - 4.2f * u, cy - 1.5f * u);
+                path.close();
+                canvas.drawPath(path, paint);
+                // Little curled tail on left
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(1.25f * u);
+                path.reset();
+                path.moveTo(cx - 1.8f * u, cy + 5.2f * u);
+                path.cubicTo(cx - 3.6f * u, cy + 5.2f * u, cx - 4.0f * u, cy + 3.5f * u, cx - 5.2f * u, cy + 3.6f * u);
+                canvas.drawPath(path, paint);
             }
 
             @Override
@@ -4385,90 +4772,143 @@ public final class GboardPatchesSettingsActivity extends Activity
                 float cx = getWidth() / 2f;
                 float cy = getHeight() / 2f;
                 float u = dpF(1f);
-                paint.setColor(m3Pal.accent);
+                int primaryBlue = (m3Pal.isAmoled || m3Pal.isNight) ? m3Pal.accent : 0xFF2E40F5;
+                int cutoutBg = m3Pal.isAmoled ? 0xFF0A0E18 : (m3Pal.isNight ? 0xFF1F2436 : 0xFFF2F4FC);
+                paint.setColor(primaryBlue);
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setStrokeWidth(1.85f * u);
 
                 switch (iconKind) {
-                    case 1: // Developer (person silhouette)
-                        canvas.drawCircle(cx, cy - 3.6f * u, 3.3f * u, paint);
-                        oval.set(cx - 6.2f * u, cy + 1.4f * u, cx + 6.2f * u, cy + 9.2f * u);
-                        canvas.drawArc(oval, 195f, 150f, false, paint);
-                        break;
-                    case 2: // Community (paper plane)
-                        path.reset();
-                        path.moveTo(cx + 7.2f * u, cy - 5.6f * u);
-                        path.lineTo(cx - 7.4f * u, cy - 0.6f * u);
-                        path.lineTo(cx - 1.2f * u, cy + 1.8f * u);
-                        path.lineTo(cx + 1.6f * u, cy + 7.2f * u);
-                        path.close();
-                        canvas.drawPath(path, paint);
-                        canvas.drawLine(cx - 1.2f * u, cy + 1.8f * u, cx + 6.8f * u, cy - 5.2f * u, paint);
-                        break;
-                    case 3: // Source Code (</> brackets)
-                        path.reset();
-                        path.moveTo(cx - 3.6f * u, cy - 4.2f * u);
-                        path.lineTo(cx - 7.4f * u, cy);
-                        path.lineTo(cx - 3.6f * u, cy + 4.2f * u);
-                        path.moveTo(cx + 3.6f * u, cy - 4.2f * u);
-                        path.lineTo(cx + 7.4f * u, cy);
-                        path.lineTo(cx + 3.6f * u, cy + 4.2f * u);
-                        canvas.drawPath(path, paint);
-                        canvas.drawLine(cx + 1.5f * u, cy - 5.2f * u, cx - 1.5f * u, cy + 5.2f * u, paint);
-                        break;
-                    case 4: // Release Version (tag)
-                        path.reset();
-                        path.moveTo(cx - 6.5f * u, cy - 6.5f * u);
-                        path.lineTo(cx - 0.2f * u, cy - 6.5f * u);
-                        path.lineTo(cx + 6.8f * u, cy + 0.5f * u);
-                        path.lineTo(cx + 0.5f * u, cy + 6.8f * u);
-                        path.lineTo(cx - 6.5f * u, cy - 0.2f * u);
-                        path.close();
-                        canvas.drawPath(path, paint);
+                    case 1: // Developer (solid filled person bust - About.png)
                         paint.setStyle(Paint.Style.FILL);
-                        canvas.drawCircle(cx - 3.0f * u, cy - 3.0f * u, 1.3f * u, paint);
-                        break;
-                    case 5: // Base Gboard (layers)
+                        canvas.drawCircle(cx, cy - 3.4f * u, 3.2f * u, paint);
+                        oval.set(cx - 5.8f * u, cy + 1.0f * u, cx + 5.8f * u, cy + 7.4f * u);
                         path.reset();
-                        path.moveTo(cx, cy - 7.0f * u);
-                        path.lineTo(cx + 7.0f * u, cy - 3.0f * u);
-                        path.lineTo(cx, cy + 1.0f * u);
-                        path.lineTo(cx - 7.0f * u, cy - 3.0f * u);
+                        path.addArc(oval, 180f, 180f);
+                        path.lineTo(cx + 5.8f * u, cy + 5.8f * u);
+                        path.quadTo(cx + 5.8f * u, cy + 6.8f * u, cx + 4.4f * u, cy + 6.8f * u);
+                        path.lineTo(cx - 4.4f * u, cy + 6.8f * u);
+                        path.quadTo(cx - 5.8f * u, cy + 6.8f * u, cx - 5.8f * u, cy + 5.8f * u);
                         path.close();
                         canvas.drawPath(path, paint);
-                        path.reset();
-                        path.moveTo(cx - 7.0f * u, cy + 1.2f * u);
-                        path.lineTo(cx, cy + 5.0f * u);
-                        path.lineTo(cx + 7.0f * u, cy + 1.2f * u);
-                        path.moveTo(cx - 7.0f * u, cy + 4.5f * u);
-                        path.lineTo(cx, cy + 8.2f * u);
-                        path.lineTo(cx + 7.0f * u, cy + 4.5f * u);
-                        canvas.drawPath(path, paint);
                         break;
-                    case 6: // Check for Updates / Download / Reset (circular arrow)
-                        oval.set(cx - 6.4f * u, cy - 6.4f * u, cx + 6.4f * u, cy + 6.4f * u);
-                        canvas.drawArc(oval, -50f, 285f, false, paint);
+                    case 2: // Community (solid filled Telegram paper plane with inner wing fold - About.png)
+                        paint.setStyle(Paint.Style.FILL);
                         path.reset();
-                        path.moveTo(cx + 2.0f * u, cy - 6.8f * u);
-                        path.lineTo(cx + 5.8f * u, cy - 6.6f * u);
-                        path.lineTo(cx + 5.2f * u, cy - 2.6f * u);
+                        path.moveTo(cx + 7.2f * u, cy - 5.8f * u);
+                        path.lineTo(cx - 7.6f * u, cy - 0.6f * u);
+                        path.lineTo(cx - 2.0f * u, cy + 1.4f * u);
+                        path.lineTo(cx - 0.6f * u, cy + 6.6f * u);
+                        path.lineTo(cx + 1.8f * u, cy + 3.4f * u);
+                        path.lineTo(cx + 4.6f * u, cy + 6.2f * u);
+                        path.close();
                         canvas.drawPath(path, paint);
+                        paint.setColor(cutoutBg);
+                        paint.setStyle(Paint.Style.STROKE);
+                        paint.setStrokeWidth(1.3f * u);
+                        canvas.drawLine(cx - 1.6f * u, cy + 1.6f * u, cx + 4.8f * u, cy - 3.8f * u, paint);
                         break;
-                    case 7: // All Releases / Cube box
+                    case 3: // Source Code & All Releases (solid GitHub Octocat circle badge)
+                        int ghBg = (m3Pal.isAmoled || m3Pal.isNight) ? m3Pal.accent
+                                : ("source code".equalsIgnoreCase(key) ? 0xFF3A426E : 0xFF2034F2);
+                        drawSolidGitHubOctocat(canvas, cx, cy, u, ghBg, cutoutBg);
+                        break;
+                    case 4: // Release Version (3D isometric wireframe cube - About.png)
+                        paint.setStyle(Paint.Style.STROKE);
+                        paint.setStrokeWidth(1.65f * u);
                         path.reset();
                         path.moveTo(cx, cy - 7.2f * u);
-                        path.lineTo(cx + 6.6f * u, cy - 3.6f * u);
-                        path.lineTo(cx + 6.6f * u, cy + 3.6f * u);
+                        path.lineTo(cx + 6.5f * u, cy - 3.5f * u);
+                        path.lineTo(cx + 6.5f * u, cy + 3.5f * u);
                         path.lineTo(cx, cy + 7.2f * u);
-                        path.lineTo(cx - 6.6f * u, cy + 3.6f * u);
-                        path.lineTo(cx - 6.6f * u, cy - 3.6f * u);
+                        path.lineTo(cx - 6.5f * u, cy + 3.5f * u);
+                        path.lineTo(cx - 6.5f * u, cy - 3.5f * u);
                         path.close();
                         canvas.drawPath(path, paint);
                         canvas.drawLine(cx, cy, cx, cy + 7.2f * u, paint);
-                        canvas.drawLine(cx - 6.6f * u, cy - 3.6f * u, cx, cy, paint);
-                        canvas.drawLine(cx + 6.6f * u, cy - 3.6f * u, cx, cy, paint);
+                        canvas.drawLine(cx - 6.5f * u, cy - 3.5f * u, cx, cy, paint);
+                        canvas.drawLine(cx + 6.5f * u, cy - 3.5f * u, cx, cy, paint);
                         break;
-                    case 8: // Amoled (crisp crescent moon)
+                    case 5: // Base Gboard (smartphone handset outline - About.png)
+                        paint.setStyle(Paint.Style.STROKE);
+                        paint.setStrokeWidth(1.65f * u);
+                        oval.set(cx - 4.7f * u, cy - 7.4f * u, cx + 4.7f * u, cy + 7.4f * u);
+                        canvas.drawRoundRect(oval, 1.8f * u, 1.8f * u, paint);
+                        paint.setStrokeWidth(1.4f * u);
+                        canvas.drawLine(cx - 1.3f * u, cy - 5.1f * u, cx + 1.3f * u, cy - 5.1f * u, paint);
+                        paint.setStyle(Paint.Style.FILL);
+                        canvas.drawCircle(cx, cy + 4.9f * u, 0.9f * u, paint);
+                        break;
+                    case 6: // Check for Updates / Download (tray box + downward arrow - Gboard Pro Updates.png)
+                        paint.setStyle(Paint.Style.STROKE);
+                        paint.setStrokeWidth(1.8f * u);
+                        // Rounded square box notched at top center
+                        path.reset();
+                        path.moveTo(cx - 2.4f * u, cy - 5.8f * u);
+                        path.lineTo(cx - 5.2f * u, cy - 5.8f * u);
+                        path.quadTo(cx - 6.6f * u, cy - 5.8f * u, cx - 6.6f * u, cy - 4.2f * u);
+                        path.lineTo(cx - 6.6f * u, cy + 4.8f * u);
+                        path.quadTo(cx - 6.6f * u, cy + 6.4f * u, cx - 5.0f * u, cy + 6.4f * u);
+                        path.lineTo(cx + 5.0f * u, cy + 6.4f * u);
+                        path.quadTo(cx + 6.6f * u, cy + 6.4f * u, cx + 6.6f * u, cy + 4.8f * u);
+                        path.lineTo(cx + 6.6f * u, cy - 4.2f * u);
+                        path.quadTo(cx + 6.6f * u, cy - 5.8f * u, cx + 5.2f * u, cy - 5.8f * u);
+                        path.lineTo(cx + 2.4f * u, cy - 5.8f * u);
+                        canvas.drawPath(path, paint);
+                        // Down arrow inside box
+                        canvas.drawLine(cx, cy - 6.8f * u, cx, cy + 2.4f * u, paint);
+                        path.reset();
+                        path.moveTo(cx - 3.2f * u, cy - 0.6f * u);
+                        path.lineTo(cx, cy + 2.8f * u);
+                        path.lineTo(cx + 3.2f * u, cy - 0.6f * u);
+                        canvas.drawPath(path, paint);
+                        break;
+                    case 7: // Highlights Row 1: Solid filled artist palette (Gboard Pro Updates.png)
+                        paint.setStyle(Paint.Style.FILL);
+                        path.reset();
+                        path.moveTo(cx, cy - 7.4f * u);
+                        path.cubicTo(cx + 4.8f * u, cy - 7.4f * u, cx + 7.6f * u, cy - 3.8f * u, cx + 7.4f * u, cy + 0.4f * u);
+                        path.cubicTo(cx + 7.2f * u, cy + 2.4f * u, cx + 5.4f * u, cy + 2.6f * u, cx + 3.8f * u, cy + 2.4f * u);
+                        path.cubicTo(cx + 2.4f * u, cy + 2.3f * u, cx + 2.2f * u, cy + 3.8f * u, cx + 3.0f * u, cy + 5.0f * u);
+                        path.cubicTo(cx + 3.8f * u, cy + 6.4f * u, cx + 2.2f * u, cy + 7.4f * u, cx - 0.4f * u, cy + 7.4f * u);
+                        path.cubicTo(cx - 5.2f * u, cy + 7.4f * u, cx - 7.6f * u, cy + 3.8f * u, cx - 7.6f * u, cy - 0.2f * u);
+                        path.cubicTo(cx - 7.6f * u, cy - 4.4f * u, cx - 4.4f * u, cy - 7.4f * u, cx, cy - 7.4f * u);
+                        path.close();
+                        canvas.drawPath(path, paint);
+                        // Paint dots cutout
+                        paint.setColor(cutoutBg);
+                        canvas.drawCircle(cx - 3.2f * u, cy - 1.6f * u, 1.25f * u, paint);
+                        canvas.drawCircle(cx - 0.2f * u, cy - 3.8f * u, 1.25f * u, paint);
+                        canvas.drawCircle(cx + 3.4f * u, cy - 2.0f * u, 1.25f * u, paint);
+                        canvas.drawCircle(cx - 2.8f * u, cy + 2.4f * u, 1.25f * u, paint);
+                        break;
+                    case 8: // Highlights Row 2: Solid 4-rounded-squares 2x2 grid (Gboard Pro Updates.png)
+                        paint.setStyle(Paint.Style.FILL);
+                        float gGap = 1.6f * u;
+                        float gCell = 5.4f * u;
+                        float gx0 = cx - gCell - gGap * 0.5f;
+                        float gy0 = cy - gCell - gGap * 0.5f;
+                        for (int rr = 0; rr < 2; rr++) {
+                            for (int cc = 0; cc < 2; cc++) {
+                                float x1 = gx0 + cc * (gCell + gGap);
+                                float y1 = gy0 + rr * (gCell + gGap);
+                                oval.set(x1, y1, x1 + gCell, y1 + gCell);
+                                canvas.drawRoundRect(oval, 1.6f * u, 1.6f * u, paint);
+                            }
+                        }
+                        break;
+                    case 9: // Highlights Row 3: Solid filled jigsaw puzzle piece (Gboard Pro Updates.png)
+                        paint.setStyle(Paint.Style.FILL);
+                        oval.set(cx - 6.0f * u, cy - 4.0f * u, cx + 4.4f * u, cy + 6.4f * u);
+                        canvas.drawRoundRect(oval, 1.6f * u, 1.6f * u, paint);
+                        canvas.drawCircle(cx - 0.8f * u, cy - 5.2f * u, 2.2f * u, paint);
+                        canvas.drawCircle(cx + 5.6f * u, cy + 1.2f * u, 2.2f * u, paint);
+                        // Subtractive bottom notch for authentic puzzle piece shape
+                        paint.setColor(cutoutBg);
+                        canvas.drawCircle(cx - 0.8f * u, cy + 6.4f * u, 2.0f * u, paint);
+                        break;
+                    case 10: // Amoled (crisp crescent moon)
+                        paint.setStyle(Paint.Style.STROKE);
                         path.reset();
                         path.moveTo(cx + 1.4f * u, cy - 6.8f * u);
                         path.cubicTo(
@@ -4494,14 +4934,14 @@ public final class GboardPatchesSettingsActivity extends Activity
                         path.close();
                         canvas.drawPath(path, paint);
                         break;
-                    case 9: // Advanced Settings (sliders)
+                    case 11: // Advanced Settings (sliders)
                         canvas.drawLine(cx - 6.5f * u, cy - 3.5f * u, cx + 6.5f * u, cy - 3.5f * u, paint);
                         canvas.drawLine(cx - 6.5f * u, cy + 3.5f * u, cx + 6.5f * u, cy + 3.5f * u, paint);
                         paint.setStyle(Paint.Style.FILL);
                         canvas.drawCircle(cx - 2.2f * u, cy - 3.5f * u, 2.4f * u, paint);
                         canvas.drawCircle(cx + 2.4f * u, cy + 3.5f * u, 2.4f * u, paint);
                         break;
-                    case 10: // Notification (bell)
+                    case 12: // Notification (bell)
                         path.reset();
                         path.moveTo(cx - 5.2f * u, cy + 3.0f * u);
                         path.lineTo(cx - 4.4f * u, cy - 2.2f * u);
@@ -4514,7 +4954,7 @@ public final class GboardPatchesSettingsActivity extends Activity
                         canvas.drawPath(path, paint);
                         canvas.drawLine(cx - 1.5f * u, cy + 6.8f * u, cx + 1.5f * u, cy + 6.8f * u, paint);
                         break;
-                    case 11: // Permissions (shield check)
+                    case 13: // Permissions (shield check)
                         path.reset();
                         path.moveTo(cx, cy - 7.4f * u);
                         path.lineTo(cx + 6.2f * u, cy - 4.8f * u);
@@ -4530,7 +4970,7 @@ public final class GboardPatchesSettingsActivity extends Activity
                         path.lineTo(cx + 3.2f * u, cy - 2.0f * u);
                         canvas.drawPath(path, paint);
                         break;
-                    case 12: // Beta Program / Testing Mode (flask + star)
+                    case 14: // Beta Program / Testing Mode (flask)
                         path.reset();
                         path.moveTo(cx - 2.4f * u, cy - 7.0f * u);
                         path.lineTo(cx + 2.4f * u, cy - 7.0f * u);
@@ -4544,7 +4984,16 @@ public final class GboardPatchesSettingsActivity extends Activity
                         path.lineTo(cx + 1.6f * u, cy - 7.0f * u);
                         canvas.drawPath(path, paint);
                         break;
-                    default: // Sparkle / Highlights
+                    case 15: // Reset (circular arrow)
+                        oval.set(cx - 6.2f * u, cy - 6.2f * u, cx + 6.2f * u, cy + 6.2f * u);
+                        canvas.drawArc(oval, -50f, 285f, false, paint);
+                        path.reset();
+                        path.moveTo(cx + 2.0f * u, cy - 6.6f * u);
+                        path.lineTo(cx + 5.6f * u, cy - 6.4f * u);
+                        path.lineTo(cx + 5.0f * u, cy - 2.4f * u);
+                        canvas.drawPath(path, paint);
+                        break;
+                    default: // Sparkle / Fallback
                         path.reset();
                         path.moveTo(cx, cy - 7.2f * u);
                         path.lineTo(cx + 2.0f * u, cy - 2.0f * u);
@@ -4561,7 +5010,7 @@ public final class GboardPatchesSettingsActivity extends Activity
             }
         };
         orb.setBackground(GboardM3Helper.createLiquidGlassOrbDrawable(this, m3Pal));
-        orb.setElevation(dp(2));
+        orb.setElevation(0f);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(44), dp(44));
         lp.gravity = Gravity.CENTER_VERTICAL;
         lp.rightMargin = dp(14);
@@ -4580,19 +5029,22 @@ public final class GboardPatchesSettingsActivity extends Activity
         String lower = title.toLowerCase(Locale.US);
         if ("developer".equals(lower)) return 1;
         if ("community".equals(lower)) return 2;
-        if ("source code".equals(lower)) return 3;
+        if ("source code".equals(lower) || "all releases".equals(lower)) return 3;
         if ("release version".equals(lower)) return 4;
         if ("base gboard".equals(lower)) return 5;
         if (lower.contains("check for update") || lower.contains("download")
-                || lower.contains("install update") || "reset".equals(lower)) return 6;
-        if ("all releases".equals(lower)) return 7;
-        if ("amoled".equals(lower) || lower.contains("amoled")) return 8;
-        if ("advanced settings".equals(lower)) return 9;
-        if ("notification".equals(lower)) return 10;
-        if ("permissions".equals(lower)) return 11;
-        if ("beta program".equals(lower) || lower.contains("testing mode")) return 12;
-        if (lower.contains("liquid glass") || lower.contains("feedback")
-                || lower.contains("additional")) return 13;
+                || lower.contains("install update")) return 6;
+        if (lower.contains("native liquid glass") || lower.contains("3d liquid glass")
+                || lower.contains("choose ui") || lower.contains("classic ui")) return 7;
+        if (lower.contains("multi-density") || lower.contains("density")) return 8;
+        if (lower.contains("package icon") || lower.contains("in-app feedback") || lower.contains("feedback")) return 9;
+        if ("amoled".equals(lower) || lower.contains("amoled")) return 10;
+        if ("advanced settings".equals(lower)) return 11;
+        if ("notification".equals(lower)) return 12;
+        if ("permissions".equals(lower)) return 13;
+        if ("beta program".equals(lower) || lower.contains("testing mode")) return 14;
+        if ("reset".equals(lower)) return 15;
+        if (lower.contains("additional")) return 16;
         return 0;
     }
 
@@ -4614,12 +5066,18 @@ public final class GboardPatchesSettingsActivity extends Activity
     }
 
     private void applySwitchTint(Switch switchView) {
-        GboardM3Helper.Palette m3Pal = m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this);
         switchView.setThumbTintList(null);
         switchView.setTrackTintList(null);
-        switchView.setTrackDrawable(GboardM3Helper.createLiquidGlassSwitchTrackDrawable(this, m3Pal));
-        switchView.setThumbDrawable(GboardM3Helper.createLiquidGlassSwitchThumbDrawable(this, m3Pal, true));
-        switchView.setSwitchMinWidth(dp(54));
+        if (GboardM3Helper.isLiquidGlassUiEnabled(this)) {
+            GboardM3Helper.Palette m3Pal = m3Palette != null ? m3Palette : GboardM3Helper.Palette.forContext(this);
+            switchView.setTrackDrawable(GboardM3Helper.createLiquidGlassSwitchTrackDrawable(this, m3Pal));
+            switchView.setThumbDrawable(GboardM3Helper.createLiquidGlassSwitchThumbDrawable(this, m3Pal, true));
+            switchView.setSwitchMinWidth(dp(54));
+        } else {
+            switchView.setTrackDrawable(new Material3SwitchTrackDrawable());
+            switchView.setThumbDrawable(new Material3SwitchThumbDrawable());
+            switchView.setSwitchMinWidth(dp(52));
+        }
         switchView.setThumbTextPadding(0);
         switchView.setShowText(false);
     }
@@ -5548,6 +6006,50 @@ public final class GboardPatchesSettingsActivity extends Activity
                             0xFFF6F8FE, 0xFFEEF2FC, 0xFFE0E7FA, 0x263949AB,
                             0xFFE8EAF6, Color.parseColor("#FEF3C7"), 0xFFE0E7FA,
                             0xFF12182E, 0xFF3F4A6A, 0x773F4A6A, 0xFF3949AB, 0x263949AB);
+                }
+            }
+
+            // Default: Auto-adapt to phone system dynamic colors (Material You / Monet on Android 12+)
+            // and system Dark/Light mode while preserving 3D Liquid Glass pearlescent shading.
+            if (Build.VERSION.SDK_INT >= 31 && context != null) {
+                try {
+                    int acc600 = context.getColor(android.R.color.system_accent1_600);
+                    int acc200 = context.getColor(android.R.color.system_accent1_200);
+                    int acc100 = context.getColor(android.R.color.system_accent1_100);
+                    int acc800 = context.getColor(android.R.color.system_accent1_800);
+                    int neu10 = context.getColor(android.R.color.system_neutral1_10);
+                    int neu50 = context.getColor(android.R.color.system_neutral1_50);
+                    int neu800 = context.getColor(android.R.color.system_neutral1_800);
+                    int neu900 = context.getColor(android.R.color.system_neutral1_900);
+                    if (nightMode) {
+                        return new Palette(
+                                GboardM3Helper.blendColor(0xFF121520, neu900, 0.50f),
+                                GboardM3Helper.blendColor(0xFF1A1E2B, neu800, 0.50f),
+                                GboardM3Helper.blendColor(0xFF212636, acc800, 0.36f),
+                                GboardM3Helper.blendAlpha(acc200, 0.28f),
+                                acc800,
+                                0xFF3F2D16,
+                                GboardM3Helper.blendColor(0xFF212636, acc800, 0.36f),
+                                GboardM3Helper.blendColor(0xFFF5F7FF, neu50, 0.40f),
+                                GboardM3Helper.blendColor(0xFFB8C0D6, acc100, 0.32f),
+                                0x66B8C0D6,
+                                acc200,
+                                GboardM3Helper.blendAlpha(acc200, 0.22f));
+                    }
+                    return new Palette(
+                            GboardM3Helper.blendColor(0xFFEFEFF6, neu50, 0.45f),
+                            GboardM3Helper.blendColor(0xFFF9FAFE, neu10, 0.45f),
+                            GboardM3Helper.blendColor(0xFFF9FAFE, acc100, 0.32f),
+                            0xFFDCE1F0,
+                            GboardM3Helper.blendColor(0xFFEAEFFF, acc100, 0.55f),
+                            0xFFFEF3C7,
+                            GboardM3Helper.blendColor(0xFFF9FAFE, acc100, 0.32f),
+                            GboardM3Helper.blendColor(0xFF181F36, neu900, 0.45f),
+                            GboardM3Helper.blendColor(0xFF525A70, neu800, 0.25f),
+                            0x88525A70,
+                            acc600,
+                            GboardM3Helper.blendAlpha(acc600, 0.16f));
+                } catch (Throwable ignored) {
                 }
             }
 

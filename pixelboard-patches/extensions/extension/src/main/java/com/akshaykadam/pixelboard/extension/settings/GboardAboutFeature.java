@@ -48,8 +48,10 @@ public final class GboardAboutFeature implements GboardPatchesSettingsContract.F
         devRows.add(new GboardPatchesSettingsContract.NavigationRow(
                 "Developer",
                 "Arafath Rahman",
+                null,
                 true,
-                () -> openUrl(ctx, "https://github.com/smartworldarafath")
+                () -> openUrl(ctx, "https://github.com/smartworldarafath"),
+                false
         ));
         devRows.add(new GboardPatchesSettingsContract.NavigationRow(
                 "Community",
