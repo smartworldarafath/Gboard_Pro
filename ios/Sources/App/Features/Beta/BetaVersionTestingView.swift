@@ -120,3 +120,45 @@ struct BetaVersionTestingView: View {
                                                         .foregroundColor(.white)
                                                         .background(Circle().fill(Color.black.opacity(0.65)))
                                                 }
+                                                .offset(x: 4, y: -4)
+                                            }
+                                        }
+                                    }
+                                    .padding(.vertical, 4)
+                                }
+                            }
+
+                            PhotosPicker(
+                                selection: $pickerItems,
+                                maxSelectionCount: max(0, 5 - selectedImages.count),
+                                matching: .images
+                            ) {
+                                HStack {
+                                    Image(systemName: "photo.on.rectangle.angled")
+                                    Text(selectedImages.count >= 5
+                                         ? "Maximum 5 screenshots attached"
+                                         : "Attach Screenshots (\(selectedImages.count)/5)")
+                                }
+                                .font(.system(size: 14.5, weight: .bold))
+                                .foregroundColor(palette.accent)
+                                .frame(maxWidth: .infinity, minHeight: 44)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(palette.surfaceAlt)
+                                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(palette.surfaceStroke, lineWidth: 1))
+                                )
+                            }
+                            .disabled(!betaInstalled || selectedImages.count >= 5)
+                            .opacity(betaInstalled && selectedImages.count < 5 ? 1 : 0.45)
+
+                            GboardPillButton(
+                                title: "Submit Bug Report",
+                                systemImage: nil,
+                                palette: palette,
+                                isEnabled: betaInstalled
+                            ) {
+                                submitBetaReport()
+                            }
+                        }
+                        .padding(18)
+                    }
