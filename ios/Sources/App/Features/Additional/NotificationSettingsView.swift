@@ -24,3 +24,27 @@ struct NotificationSettingsView: View {
                                     store.notifyAppUpdatesAlert = newValue
                                     if newValue { requestNotificationAuth() }
                                 }
+                            )
+                        )
+                        CardDivider(palette: palette)
+                        SettingsToggleRow(
+                            title: "Beta Testing APK Notifications",
+                            summary: store.notifyBetaApkAlert
+                                ? "ON: Standard alert notification when a new beta testing build releases"
+                                : "OFF: Silent notification arrives quietly for new beta builds",
+                            icon: "bell",
+                            palette: palette,
+                            isOn: Binding(
+                                get: { store.notifyBetaApkAlert },
+                                set: { newValue in
+                                    store.notifyBetaApkAlert = newValue
+                                    if newValue { requestNotificationAuth() }
+                                }
+                            )
+                        )
+                        CardDivider(palette: palette)
+                        SettingsToggleRow(
+                            title: "Beta Features Notifications",
+                            summary: store.notifyBetaFeatures
+                                ? "ON: Notify when new features are added to New features (Beta)"
+                                : "OFF: Do not notify about new experimental beta features",
