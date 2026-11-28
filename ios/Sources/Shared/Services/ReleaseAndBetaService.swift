@@ -158,3 +158,38 @@ public final class ReleaseAndBetaService: ObservableObject {
                 || v == 0x20E3
             return !isEmoji
         }
+        return String(String.UnicodeScalarView(filtered))
+            .replacingOccurrences(of: "  +", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    public static func extractBulletFeaturesWithoutEmojis(from body: String) -> [String] {
+        var result: [String] = []
+        let lines = body.replacingOccurrences(of: "\r", with: "").components(separatedBy: "\n")
+        for raw in lines {
+            let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty || trimmed == "[BETA-TEST-APK]" || trimmed == "[BETA-TEST-IPA]" { continue }
+            if trimmed.hasPrefix("- ") || trimmed.hasPrefix("* ") || trimmed.hasPrefix("• ") {
+                let dropped = String(trimmed.dropFirst(2))
+                let clean = stripEmojis(dropped)
+                if !clean.isEmpty {
+                    result.append(clean)
+                }
+            }
+        }
+        return result
+    }
+
+    public func isRemoteVersionNewer(remote: String, current: String) -> Bool {
+        let rParts = remote.components(separatedBy: "-")[0].components(separatedBy: ".").map { Int($0.filter(\.isNumber)) ?? 0 }
+        let cParts = current.components(separatedBy: "-")[0].components(separatedBy: ".").map { Int($0.filter(\.isNumber)) ?? 0 }
+        let count = max(rParts.count, cParts.count)
+        for i in 0..<count {
+            let r = i < rParts.count ? rParts[i] : 0
+            let c = i < cParts.count ? cParts[i] : 0
+            if r > c { return true }
+            if r < c { return false }
+        }
+        return false
+    }
+}
