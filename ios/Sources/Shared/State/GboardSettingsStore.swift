@@ -135,3 +135,34 @@ public final class GboardSettingsStore: ObservableObject {
             "Hello from Gboard Pro!"
         ]
 
+        self.notifyAppUpdatesAlert = defaults.object(forKey: PreferenceKeys.notifyAppUpdates) as? Bool ?? true
+        self.notifyBetaApkAlert = defaults.object(forKey: PreferenceKeys.notifyBetaBuilds) as? Bool ?? true
+        self.notifyBetaFeatures = defaults.object(forKey: PreferenceKeys.notifyBetaFeatures) as? Bool ?? true
+        self.betaNewFeaturesSliderEnabled = defaults.object(forKey: PreferenceKeys.betaNewFeaturesSlider) as? Bool ?? false
+    }
+
+    public func reloadFromSharedDefaults() {
+        let styleRaw = defaults.string(forKey: PreferenceKeys.uiStyleMode) ?? UIStyleMode.classic.rawValue
+        let nextStyle = UIStyleMode(rawValue: styleRaw) ?? .classic
+        if nextStyle != uiStyleMode { uiStyleMode = nextStyle }
+
+        let themeRaw = defaults.string(forKey: PreferenceKeys.selectedThemeKey) ?? KeyboardThemeOption.systemDefault.rawValue
+        let nextTheme = KeyboardThemeOption(rawValue: themeRaw) ?? .systemDefault
+        if nextTheme != selectedTheme { selectedTheme = nextTheme }
+
+        let nextAmoled = defaults.object(forKey: PreferenceKeys.amoledBlack) as? Bool ?? false
+        if nextAmoled != amoledBlackEnabled { amoledBlackEnabled = nextAmoled }
+
+        let nextLangs = defaults.stringArray(forKey: PreferenceKeys.enabledLanguages) ?? ["en-US"]
+        if nextLangs != enabledLanguageCodes && !nextLangs.isEmpty { enabledLanguageCodes = nextLangs }
+
+        let nextActive = defaults.string(forKey: PreferenceKeys.activeLanguageCode) ?? nextLangs.first ?? "en-US"
+        if nextActive != activeLanguageCode { activeLanguageCode = nextActive }
+    }
+
+    public func addLanguage(_ code: String) {
+        if !enabledLanguageCodes.contains(code) {
+            enabledLanguageCodes.append(code)
+        }
+    }
+
