@@ -100,3 +100,32 @@ public struct GboardPalette: Equatable {
                     isAmoled: true,
                     isLiquidGlass: false,
                     orbBodyTopHex: 0x273046,
+                    orbBodyMidHex: 0x06080E,
+                    orbBodyBotHex: 0x1B2336,
+                    keyBackgroundHex: 0x1C1E24,
+                    keyFunctionHex: 0x121418,
+                    keyboardBackgroundHex: 0x000000
+                )
+            }
+            return GboardPalette(
+                windowBackground: Color(hex: 0x000000),
+                surface: Color(hex: 0x0A0C12),
+                surfaceAlt: Color(hex: 0x10131C),
+                surfaceStroke: Color(hex: 0xA8C7FA, alpha: 0.25),
+                textPrimary: Color(hex: 0xF5F7FF),
+                textSecondary: Color(hex: 0xB0B8D0),
+                accent: accentColor,
+                accentContainer: accentContainerColor,
+                onAccentContainer: Color(hex: 0xD8E8FF),
+                ctaForeground: Color(hex: 0xF5F7FF),
+                isDark: true,
+                isAmoled: true,
+                isLiquidGlass: true,
+                orbBodyTopHex: 0x273046,
+                orbBodyMidHex: 0x06080E,
+                orbBodyBotHex: 0x1B2336,
+                keyBackgroundHex: 0x131722,
+                keyFunctionHex: 0x0C0F18,
+                keyboardBackgroundHex: 0x000000
+            )
+        }
