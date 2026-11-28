@@ -6,3 +6,22 @@ Native Swift + SwiftUI + UIKit universal iOS & iPadOS edition of **Gboard Pro v2
 
 ---
 
+## Multi-Approach Build Options
+
+### 1. Automated Virtual iPhone + iPad Build & Test via GitHub Actions (No Mac Required)
+Push this directory to GitHub and trigger **Actions -> Build & Test Gboard Pro iOS (iPhone & iPad)**.
+- Runs on official Apple Silicon `macos-latest` with Xcode & iOS Simulator (`xcrun simctl`)
+- Tests both **Virtual iPhone** & **Virtual iPad** (`GboardProUnitTests` & `GboardProUITests`)
+- Exports `Gboard_Pro_iOS_Unsigned.ipa` (installable via AltStore, SideStore, Sideloadly, or TrollStore)
+
+### 2. Local Build on macOS with Xcode
+```bash
+cd ios
+brew install xcodegen
+xcodegen generate
+open GboardProiOS.xcodeproj
+```
+Select an iPhone or iPad simulator and press **Cmd + R** (Run) or **Cmd + U** (Tests).
+
+### 3. Linux / WSL2 SwiftPM + `xtool` Setup
+`Package.swift` and `xtool.yml` are included for SwiftPM / `xtool` workflows when pairing a physical iPhone with an official `Xcode.xip` SDK inside WSL2.
