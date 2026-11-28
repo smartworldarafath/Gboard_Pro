@@ -96,3 +96,42 @@ public final class GboardSettingsStore: ObservableObject {
         didSet { defaults.set(betaNewFeaturesSliderEnabled, forKey: PreferenceKeys.betaNewFeaturesSlider) }
     }
 
+    public init(defaults: UserDefaults = AppGroupConfig.sharedDefaults) {
+        self.defaults = defaults
+
+        let styleRaw = defaults.string(forKey: PreferenceKeys.uiStyleMode) ?? UIStyleMode.classic.rawValue
+        self.uiStyleMode = UIStyleMode(rawValue: styleRaw) ?? .classic
+
+        let themeRaw = defaults.string(forKey: PreferenceKeys.selectedThemeKey) ?? KeyboardThemeOption.systemDefault.rawValue
+        self.selectedTheme = KeyboardThemeOption(rawValue: themeRaw) ?? .systemDefault
+
+        self.amoledBlackEnabled = defaults.object(forKey: PreferenceKeys.amoledBlack) as? Bool ?? false
+
+        let savedLangs = defaults.stringArray(forKey: PreferenceKeys.enabledLanguages) ?? ["en-US", "bn-BD", "ko-KR"]
+        self.enabledLanguageCodes = savedLangs.isEmpty ? ["en-US"] : savedLangs
+
+        let savedActive = defaults.string(forKey: PreferenceKeys.activeLanguageCode) ?? savedLangs.first ?? "en-US"
+        self.activeLanguageCode = savedLangs.contains(savedActive) ? savedActive : (savedLangs.first ?? "en-US")
+
+        self.numberRowEnabled = defaults.object(forKey: PreferenceKeys.numberRow) as? Bool ?? true
+        self.keyPressPopupEnabled = defaults.object(forKey: PreferenceKeys.keyPressPopup) as? Bool ?? true
+        self.hapticFeedbackEnabled = defaults.object(forKey: PreferenceKeys.hapticFeedback) as? Bool ?? true
+        self.hapticStrength = defaults.object(forKey: PreferenceKeys.hapticStrength) as? Double ?? 0.65
+        self.keySoundEnabled = defaults.object(forKey: PreferenceKeys.keySound) as? Bool ?? false
+        self.oneHandedMode = defaults.object(forKey: PreferenceKeys.oneHandedMode) as? Bool ?? false
+        self.keyboardHeightScale = defaults.object(forKey: PreferenceKeys.keyboardHeightScale) as? Double ?? 1.0
+
+        self.showSuggestionStrip = defaults.object(forKey: PreferenceKeys.showSuggestionStrip) as? Bool ?? true
+        self.autoCorrectionEnabled = defaults.object(forKey: PreferenceKeys.autoCorrection) as? Bool ?? true
+        self.autoCapitalizationEnabled = defaults.object(forKey: PreferenceKeys.autoCapitalization) as? Bool ?? true
+        self.doubleSpacePeriodEnabled = defaults.object(forKey: PreferenceKeys.doubleSpacePeriod) as? Bool ?? true
+
+        self.glideTypingEnabled = defaults.object(forKey: PreferenceKeys.glideTyping) as? Bool ?? true
+        self.showGestureTrail = defaults.object(forKey: PreferenceKeys.showGestureTrail) as? Bool ?? true
+
+        self.clipboardHistoryEnabled = defaults.object(forKey: PreferenceKeys.clipboardHistoryEnabled) as? Bool ?? true
+        self.clipboardItems = defaults.stringArray(forKey: PreferenceKeys.clipboardItems) ?? [
+            "Gboard Pro iOS v2.2.0 (Beta 3)",
+            "Hello from Gboard Pro!"
+        ]
+
