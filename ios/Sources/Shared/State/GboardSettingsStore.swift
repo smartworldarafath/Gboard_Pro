@@ -63,3 +63,36 @@ public final class GboardSettingsStore: ObservableObject {
     @Published public var doubleSpacePeriodEnabled: Bool {
         didSet { defaults.set(doubleSpacePeriodEnabled, forKey: PreferenceKeys.doubleSpacePeriod) }
     }
+
+    // Glide Typing
+    @Published public var glideTypingEnabled: Bool {
+        didSet { defaults.set(glideTypingEnabled, forKey: PreferenceKeys.glideTyping) }
+    }
+    @Published public var showGestureTrail: Bool {
+        didSet { defaults.set(showGestureTrail, forKey: PreferenceKeys.showGestureTrail) }
+    }
+
+    // Clipboard
+    @Published public var clipboardHistoryEnabled: Bool {
+        didSet { defaults.set(clipboardHistoryEnabled, forKey: PreferenceKeys.clipboardHistoryEnabled) }
+    }
+    @Published public var clipboardItems: [String] {
+        didSet { defaults.set(clipboardItems, forKey: PreferenceKeys.clipboardItems) }
+    }
+
+    // Notifications (Android Beta 3 parity)
+    @Published public var notifyAppUpdatesAlert: Bool {
+        didSet { defaults.set(notifyAppUpdatesAlert, forKey: PreferenceKeys.notifyAppUpdates) }
+    }
+    @Published public var notifyBetaApkAlert: Bool {
+        didSet { defaults.set(notifyBetaApkAlert, forKey: PreferenceKeys.notifyBetaBuilds) }
+    }
+    @Published public var notifyBetaFeatures: Bool {
+        didSet { defaults.set(notifyBetaFeatures, forKey: PreferenceKeys.notifyBetaFeatures) }
+    }
+
+    // Beta Program
+    @Published public var betaNewFeaturesSliderEnabled: Bool {
+        didSet { defaults.set(betaNewFeaturesSliderEnabled, forKey: PreferenceKeys.betaNewFeaturesSlider) }
+    }
+
