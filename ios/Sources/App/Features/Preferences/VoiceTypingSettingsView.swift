@@ -16,3 +16,14 @@ struct VoiceTypingSettingsView: View {
                                 .font(.system(size: 13.5))
                                 .foregroundColor(palette.textSecondary)
                         }
+                        .padding(16)
+                    }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Voice typing")
+    }
+}
