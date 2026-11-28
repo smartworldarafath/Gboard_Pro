@@ -203,3 +203,58 @@ struct RootSettingsView: View {
             .navigationDestination(for: SettingsRoute.self) { route in
                 destinationView(for: route)
             }
+        }
+        .animation(.spring(response: 0.34, dampingFraction: 0.86), value: store.uiStyleMode)
+        .animation(.easeInOut(duration: 0.25), value: store.amoledBlackEnabled)
+    }
+
+    @ViewBuilder
+    private func destinationView(for route: SettingsRoute) -> some View {
+        switch route {
+        case .languages:
+            LanguagesSettingsView(palette: palette)
+        case .preferences:
+            PreferencesSettingsView(palette: palette)
+        case .theme:
+            ThemeSettingsView(palette: palette, openSandbox: { path.append(.liveSandbox) })
+        case .corrections:
+            CorrectionsSettingsView(palette: palette)
+        case .glideTyping:
+            GlideTypingSettingsView(palette: palette)
+        case .voiceTyping:
+            VoiceTypingSettingsView(palette: palette)
+        case .emojiAndClipboard:
+            EmojiAndClipboardSettingsView(palette: palette)
+        case .pro:
+            ProSettingsView(palette: palette, navigate: { path.append($0) })
+        case .amoled:
+            AmoledSettingsView(palette: palette)
+        case .advanced:
+            AdvancedSettingsView(palette: palette)
+        case .additional:
+            AdditionalHubView(palette: palette, navigate: { path.append($0) })
+        case .chooseUI:
+            ChooseUiSettingsView(palette: palette)
+        case .notifications:
+            NotificationSettingsView(palette: palette)
+        case .permissions:
+            PermissionsSettingsView(palette: palette)
+        case .reset:
+            ResetSettingsView(palette: palette)
+        case .betaProgram:
+            BetaProgramHubView(palette: palette, navigate: { path.append($0) })
+        case .betaTesting:
+            BetaVersionTestingView(palette: palette)
+        case .newBetaFeatures:
+            NewBetaFeaturesView(palette: palette)
+        case .updates:
+            AboutOrUpdatesView(palette: palette, isUpdatesScreen: true)
+        case .about:
+            AboutOrUpdatesView(palette: palette, isUpdatesScreen: false)
+        case .helpFeedback:
+            HelpFeedbackView(palette: palette)
+        case .liveSandbox:
+            LiveKeyboardSandboxView(palette: palette)
+        }
+    }
+}
