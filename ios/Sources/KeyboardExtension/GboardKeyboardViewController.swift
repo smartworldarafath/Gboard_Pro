@@ -489,3 +489,85 @@ final class GboardKeyboardViewController: UIInputViewController {
             list.widthAnchor.constraint(equalTo: scroll.widthAnchor, constant: -20)
         ])
 
+        for item in store.clipboardItems {
+            let btn = UIButton(type: .system)
+            btn.setTitle(item, for: .normal)
+            btn.setTitleColor(UIColor(palette.textPrimary), for: .normal)
+            btn.contentHorizontalAlignment = .leading
+            btn.backgroundColor = UIColor(palette.surface)
+            btn.layer.cornerRadius = 12
+            btn.contentEdgeInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+            btn.addAction(UIAction { [weak self] _ in
+                self?.textDocumentProxy.insertText(item)
+                self?.drawerMode = .letters
+                self?.applyDrawerVisibility()
+            }, for: .touchUpInside)
+            list.addArrangedSubview(btn)
+        }
+    }
+
+    private func applyDrawerVisibility() {
+        keysContainer.isHidden = (drawerMode == .emoji || drawerMode == .clipboard)
+        emojiCollectionContainer.isHidden = (drawerMode != .emoji)
+        clipboardContainer.isHidden = (drawerMode != .clipboard)
+        glideOverlay.isHidden = keysContainer.isHidden
+    }
+
+    private func triggerHaptic() {
+        guard store.hapticFeedbackEnabled else { return }
+        if hapticGenerator == nil {
+            hapticGenerator = UIImpactFeedbackGenerator(style: .light)
+        }
+        hapticGenerator?.impactOccurred(intensity: CGFloat(store.hapticStrength))
+    }
+
+    @objc private func handleKeyTouchDown(_ sender: LiquidGlassKeyButton) {
+        triggerHaptic()
+        guard store.keyPressPopupEnabled,
+              traitCollection.userInterfaceIdiom != .pad,
+              let title = sender.title(for: .normal) else { return }
+        let frameInView = sender.convert(sender.bounds, to: view)
+        let palette = currentPalette
+        popupBubble.text = title
+        popupBubble.textColor = UIColor(palette.textPrimary)
+        popupBubble.backgroundColor = UIColor(palette.surface)
+        popupBubble.frame = CGRect(x: frameInView.midX - 24, y: frameInView.minY - 52, width: 48, height: 48)
+        popupBubble.isHidden = false
+    }
+
+    @objc private func handleKeyTouchCancel(_ sender: UIButton) {
+        popupBubble.isHidden = true
+    }
+
+    @objc private func handleCharacterKeyTap(_ sender: UIButton) {
+        popupBubble.isHidden = true
+        guard !isGliding, let title = sender.title(for: .normal) else { return }
+        commitCharacter(title)
+    }
+
+    private func commitCharacter(_ str: String) {
+        textDocumentProxy.insertText(str)
+        if str == " " || str == "\n" || str == "." {
+            activeWordBuffer = ""
+        } else {
+            activeWordBuffer.append(str)
+        }
+        if drawerMode == .letters && shiftState == .shifted {
+            shiftState = .lowercase
+            updateLetterButtonCases()
+        }
+        syncAutoCapitalization()
+        refreshSuggestions()
+    }
+
+    @objc private func handleSpaceTap() {
+        triggerHaptic()
+        let now = Date.timeIntervalSinceReferenceDate
+        if store.doubleSpacePeriodEnabled && (now - lastSpaceTapTime) < 0.35 {
+            textDocumentProxy.deleteBackward()
+            textDocumentProxy.insertText(". ")
+            lastSpaceTapTime = 0
+        } else {
+            commitCharacter(" ")
+            lastSpaceTapTime = now
+        }
