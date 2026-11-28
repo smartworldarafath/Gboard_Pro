@@ -162,3 +162,52 @@ struct BetaVersionTestingView: View {
                         }
                         .padding(18)
                     }
+
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Beta version testing")
+        .task {
+            await service.checkActiveBetaBuild(showCheckingIndicator: false)
+        }
+        .onChange(of: pickerItems) { newItems in
+            Task {
+                for item in newItems {
+                    guard selectedImages.count < 5 else { break }
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let img = UIImage(data: data) {
+                        selectedImages.append((name: "screenshot_\(selectedImages.count + 1).png", image: img))
+                    }
+                }
+                pickerItems = []
+            }
+        }
+        .alert("Beta Feedback", isPresented: Binding(get: { alertMessage != nil }, set: { if !$0 { alertMessage = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(alertMessage ?? "")
+        }
+    }
+
+    @ViewBuilder
+    private func betaReleaseContent() -> some View {
+        switch service.betaState {
+        case .checking:
+            Text("Checking for active beta testing build...")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(palette.textPrimary)
+            ProgressView().tint(palette.accent)
+        case .noActiveBeta:
+            Text("No beta version testing is active")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundColor(palette.textPrimary)
+            Text("Currently there is no beta testing build published. When a new beta release is uploaded for testing, it will appear here.")
+                .font(.system(size: 13.5))
+                .foregroundColor(palette.textSecondary)
+            GboardPillButton(title: "Check for Beta Builds", systemImage: "arrow.clockwise", palette: palette) {
+                Task { await service.checkActiveBetaBuild(showCheckingIndicator: true) }
+            }
