@@ -53,3 +53,29 @@ public enum PreferenceKeys {
     public static let notifyBetaBuilds = "notify_beta_apk_enabled"
     public static let notifyBetaFeatures = "notify_beta_features_enabled"
 
+    // Beta Program
+    public static let betaNewFeaturesSlider = "beta_new_features_slider_enabled"
+    public static let lastNotifiedVersion = "last_notified_release_version"
+    public static let lastNotifiedBetaTag = "last_notified_beta_tag"
+}
+
+public enum UIStyleMode: String, CaseIterable, Identifiable, Codable {
+    case classic = "classic"
+    case liquidGlass = "liquid_glass"
+
+    public var id: String { rawValue }
+
+    public var displayTitle: String {
+        switch self {
+        case .classic: return "Classic Material UI (Default)"
+        case .liquidGlass: return "3D Liquid Glass UI"
+        }
+    }
+
+    public var displaySubtitle: String {
+        switch self {
+        case .classic: return "Clean Material 3 / Pixel styling across app settings & keyboard"
+        case .liquidGlass: return "3D water-drop Liquid Glass cards, orbs, pills, switches & keyboard"
+        }
+    }
+}
