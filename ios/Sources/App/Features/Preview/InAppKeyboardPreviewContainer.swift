@@ -130,3 +130,43 @@ struct InAppKeyboardPreviewContainer: View {
                 .buttonStyle(.plain)
             }
         }
+    }
+
+    @ViewBuilder
+    private func specialKey(title: String? = nil, icon: String? = nil, width: CGFloat, isAccent: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Group {
+                if let icon {
+                    Image(systemName: icon).font(.system(size: 16, weight: .medium))
+                } else if let title {
+                    Text(title).font(.system(size: 14, weight: .semibold))
+                }
+            }
+            .foregroundColor(isAccent ? palette.ctaForeground : palette.textPrimary)
+            .frame(width: width, height: 42)
+            .background(
+                Group {
+                    if isAccent {
+                        Capsule().fill(palette.accent)
+                    } else {
+                        keyShape(isFunction: true)
+                    }
+                }
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private func keyShape(isFunction: Bool) -> some View {
+        let base = Color(hex: isFunction ? palette.keyFunctionHex : palette.keyBackgroundHex)
+        let radius: CGFloat = palette.isLiquidGlass ? 13 : 8
+        RoundedRectangle(cornerRadius: radius, style: .continuous)
+            .fill(base)
+            .overlay(
+                RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .stroke(palette.isLiquidGlass ? palette.surfaceStroke : Color.black.opacity(palette.isDark ? 0.25 : 0.08), lineWidth: 0.8)
+            )
+            .shadow(color: palette.isAmoled ? .clear : Color.black.opacity(palette.isDark ? 0.22 : 0.09), radius: 1, x: 0, y: 1)
+    }
+}
