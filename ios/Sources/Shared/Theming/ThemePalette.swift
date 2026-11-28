@@ -63,3 +63,40 @@ public struct GboardPalette: Equatable {
     ) -> GboardPalette {
         let glass = (style == .liquidGlass)
 
+        if isAmoled {
+            let accentColor: Color
+            let accentContainerColor: Color
+            switch theme {
+            case .blushLilac:
+                accentColor = Color(hex: 0xD0BCFF)
+                accentContainerColor = Color(hex: 0x2B1E4A)
+            case .cottonCandy:
+                accentColor = Color(hex: 0xFF80AB)
+                accentContainerColor = Color(hex: 0x4A1228)
+            case .sunsetPeach:
+                accentColor = Color(hex: 0xFF8A65)
+                accentContainerColor = Color(hex: 0x461E14)
+            case .freshMint:
+                accentColor = Color(hex: 0x80CBC4)
+                accentContainerColor = Color(hex: 0x0E352F)
+            case .ocean, .systemDefault:
+                accentColor = Color(hex: 0xA8C7FA)
+                accentContainerColor = Color(hex: 0x142238)
+            }
+
+            if !glass {
+                return GboardPalette(
+                    windowBackground: Color(hex: 0x000000),
+                    surface: Color(hex: 0x141518),
+                    surfaceAlt: Color(hex: 0x1F2126),
+                    surfaceStroke: Color.white.opacity(0.14),
+                    textPrimary: Color(hex: 0xE6E1E5),
+                    textSecondary: Color(hex: 0xCAC4D0),
+                    accent: accentColor,
+                    accentContainer: accentContainerColor,
+                    onAccentContainer: Color(hex: 0xD3E3FD),
+                    ctaForeground: Color(hex: 0x09162B),
+                    isDark: true,
+                    isAmoled: true,
+                    isLiquidGlass: false,
+                    orbBodyTopHex: 0x273046,
