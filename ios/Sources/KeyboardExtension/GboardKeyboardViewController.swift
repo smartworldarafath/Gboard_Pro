@@ -162,3 +162,78 @@ final class GboardKeyboardViewController: UIInputViewController {
         applyDrawerVisibility()
         refreshSuggestions()
     }
+
+    private func buildTopBar(palette: GboardPalette) {
+        topBarStack.isHidden = !store.showSuggestionStrip
+        topBarStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        suggestionButtons.removeAll()
+
+        let gBtn = makeToolbarOrbButton(systemName: "g.circle.fill", palette: palette) { [weak self] in
+            self?.openHostSettings()
+        }
+        topBarStack.addArrangedSubview(gBtn)
+
+        let suggestionsHolder = UIStackView()
+        suggestionsHolder.axis = .horizontal
+        suggestionsHolder.distribution = .fillEqually
+        suggestionsHolder.spacing = 4
+        for idx in 0..<3 {
+            let b = UIButton(type: .system)
+            b.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
+            b.setTitleColor(UIColor(palette.textPrimary), for: .normal)
+            b.tag = idx
+            b.addTarget(self, action: #selector(handleSuggestionTap(_:)), for: .touchUpInside)
+            suggestionButtons.append(b)
+            suggestionsHolder.addArrangedSubview(b)
+        }
+        topBarStack.addArrangedSubview(suggestionsHolder)
+
+        let clipBtn = makeToolbarOrbButton(systemName: "doc.on.clipboard", palette: palette) { [weak self] in
+            guard let self else { return }
+            self.drawerMode = (self.drawerMode == .clipboard) ? .letters : .clipboard
+            self.applyDrawerVisibility()
+        }
+        let emojiBtn = makeToolbarOrbButton(
+            systemName: drawerMode == .emoji ? "keyboard" : "face.smiling",
+            palette: palette
+        ) { [weak self] in
+            guard let self else { return }
+            self.drawerMode = (self.drawerMode == .emoji) ? .letters : .emoji
+            self.applyDrawerVisibility()
+        }
+        topBarStack.addArrangedSubview(clipBtn)
+        topBarStack.addArrangedSubview(emojiBtn)
+    }
+
+    private func makeToolbarOrbButton(systemName: String, palette: GboardPalette, action: @escaping () -> Void) -> LiquidGlassKeyButton {
+        let btn = LiquidGlassKeyButton(type: .system)
+        btn.palette = palette
+        btn.orbRole = .orbButton
+        btn.isCircularOrb = palette.isLiquidGlass
+        btn.tintColor = UIColor(palette.textPrimary)
+        btn.setImage(UIImage(systemName: systemName), for: .normal)
+        btn.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        btn.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        btn.addAction(UIAction { _ in action() }, for: .touchUpInside)
+        return btn
+    }
+
+    private func buildMainKeyboardGrid(palette: GboardPalette) {
+        keysContainer.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        letterButtons.removeAll()
+
+        let isPad = traitCollection.userInterfaceIdiom == .pad
+        let lang = LanguageCatalog.item(for: store.activeLanguageCode)
+        let showNumbers = store.numberRowEnabled && drawerMode == .letters
+
+        if showNumbers {
+            keysContainer.addArrangedSubview(makeCharacterRow(LanguageCatalog.numberRow, palette: palette))
+        }
+
+        let rows = (drawerMode == .symbols) ? LanguageCatalog.symbolRows : lang.rows
+        for (idx, rowKeys) in rows.enumerated() {
+            let rowStack = UIStackView()
+            rowStack.axis = .horizontal
+            rowStack.spacing = isPad ? 7 : 5
+            rowStack.distribution = .fill
+
