@@ -47,3 +47,36 @@ struct LanguagesSettingsView: View {
                                     .buttonStyle(.plain)
                                 }
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                store.activeLanguageCode = code
+                            }
+                        }
+                    }
+
+                    GboardPillButton(
+                        title: "+ Add keyboard",
+                        systemImage: nil,
+                        palette: palette
+                    ) {
+                        showAddLanguageSheet = true
+                    }
+                    .padding(.horizontal, 28)
+                    .accessibilityIdentifier("btn_add_keyboard")
+
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Languages")
+        .sheet(isPresented: $showAddLanguageSheet) {
+            AddLanguageSheetView(palette: palette)
+                .environmentObject(store)
+        }
+    }
+}
