@@ -185,3 +185,46 @@ public struct GboardPillButton: View {
                     Image(systemName: systemImage)
                         .font(.system(size: 15, weight: .bold))
                 }
+                Text(title)
+                    .font(.system(size: 15.5, weight: .bold))
+            }
+            .foregroundColor(palette.isLiquidGlass ? palette.accent : palette.ctaForeground)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .padding(.horizontal, 20)
+            .background(
+                Capsule()
+                    .fill(
+                        palette.isLiquidGlass
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: palette.isDark
+                                        ? [palette.surfaceAlt, palette.surface]
+                                        : [Color.white, palette.surfaceAlt],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(palette.accent)
+                    )
+            )
+            .overlay(
+                Capsule()
+                    .stroke(
+                        palette.isLiquidGlass ? palette.surfaceStroke : Color.clear,
+                        lineWidth: palette.isLiquidGlass ? 1.2 : 0
+                    )
+            )
+            .shadow(
+                color: palette.isLiquidGlass && !palette.isAmoled
+                    ? Color.black.opacity(palette.isDark ? 0.30 : 0.08)
+                    : .clear,
+                radius: 6,
+                x: 0,
+                y: 2
+            )
+        }
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1.0 : 0.45)
+        .buttonStyle(.plain)
+    }
+}
