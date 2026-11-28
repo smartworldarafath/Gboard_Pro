@@ -571,3 +571,83 @@ final class GboardKeyboardViewController: UIInputViewController {
             commitCharacter(" ")
             lastSpaceTapTime = now
         }
+    }
+
+    @objc private func handleSpaceLongPress(_ gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            store.cycleActiveLanguage()
+            triggerHaptic()
+            rebuildAll()
+        }
+    }
+
+    private var spacePanAnchorX: CGFloat = 0
+    @objc private func handleSpaceCursorPan(_ gesture: UIPanGestureRecognizer) {
+        let locX = gesture.location(in: gesture.view).x
+        switch gesture.state {
+        case .began:
+            spacePanAnchorX = locX
+        case .changed:
+            let dx = locX - spacePanAnchorX
+            if abs(dx) >= 14 {
+                let offset = dx > 0 ? 1 : -1
+                textDocumentProxy.adjustTextPosition(byCharacterOffset: offset)
+                spacePanAnchorX = locX
+            }
+        default:
+            break
+        }
+    }
+
+    @objc private func handleGlidePan(_ gesture: UIPanGestureRecognizer) {
+        guard store.glideTypingEnabled, drawerMode == .letters else { return }
+        let pt = gesture.location(in: keysContainer)
+        switch gesture.state {
+        case .began:
+            glideSwipedKeys.removeAll()
+            isGliding = false
+        case .changed:
+            if let hit = letterButtons.first(where: { $0.button.convert($0.button.bounds, to: keysContainer).contains(pt) }) {
+                if glideSwipedKeys.last != hit.keyValue {
+                    glideSwipedKeys.append(hit.keyValue)
+                }
+            }
+            if glideSwipedKeys.count >= 2 {
+                isGliding = true
+                if store.showGestureTrail {
+                    glideOverlay.appendPoint(pt)
+                }
+            }
+        case .ended, .cancelled:
+            if isGliding, let word = GboardSuggestionEngine.matchGlideWord(swipedKeys: glideSwipedKeys) {
+                let finalWord = (shiftState != .lowercase) ? word.capitalized : word
+                textDocumentProxy.insertText(finalWord + " ")
+                if shiftState == .shifted {
+                    shiftState = .lowercase
+                    updateLetterButtonCases()
+                }
+                refreshSuggestions()
+            }
+            isGliding = false
+            glideSwipedKeys.removeAll()
+            glideOverlay.clearTrail()
+        default:
+            break
+        }
+    }
+
+    private func handleShiftOrSymbolToggle() {
+        triggerHaptic()
+        if drawerMode == .symbols {
+            drawerMode = .letters
+            rebuildAll()
+            return
+        }
+        let now = Date.timeIntervalSinceReferenceDate
+        if shiftState == .shifted && (now - lastShiftTapTime) < 0.35 {
+            shiftState = .capsLock
+        } else if shiftState == .lowercase {
+            shiftState = .shifted
+        } else {
+            shiftState = .lowercase
+        }
