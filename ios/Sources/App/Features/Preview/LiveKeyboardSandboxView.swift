@@ -20,3 +20,27 @@ struct LiveKeyboardSandboxView: View {
                         .background(RoundedRectangle(cornerRadius: 12).fill(palette.surfaceAlt))
                         .foregroundColor(palette.textPrimary)
                 }
+                .padding(16)
+                .gboardCard(palette: palette)
+                .padding(.horizontal, 16)
+
+                Spacer()
+
+                InAppKeyboardPreviewContainer(
+                    palette: palette,
+                    store: store,
+                    onInsertText: { sampleText.append($0) },
+                    onBackspace: {
+                        if !sampleText.isEmpty { sampleText.removeLast() }
+                    }
+                )
+                .frame(height: 310)
+            }
+            .frame(maxWidth: 740)
+            .frame(maxWidth: .infinity)
+            .padding(.top, 10)
+        }
+        .navigationTitle("Live Keyboard")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
