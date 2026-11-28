@@ -64,3 +64,31 @@ public final class ReleaseAndBetaService: ObservableObject {
     ]
     @Published public var activeExperimentalBetaFeatures: [BetaFeatureItem] = []
 
+    private init() {}
+
+    @MainActor
+    public func checkLatestStableRelease() async {
+        isCheckingUpdate = true
+        defer { isCheckingUpdate = false }
+        guard let url = URL(string: AppGroupConfig.githubLatestReleaseAPI) else { return }
+        var req = URLRequest(url: url, timeoutInterval: 8)
+        req.setValue("Gboard-Pro-iOS-App", forHTTPHeaderField: "User-Agent")
+        req.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                updateStatusMessage = "Unable to check GitHub (HTTP status)"
+                return
+            }
+            let decoded = try JSONDecoder().decode(GitHubReleaseDTO.self, from: data)
+            latestRelease = decoded
+            let cleanRemote = decoded.tagName.hasPrefix("v") ? String(decoded.tagName.dropFirst()) : decoded.tagName
+            if isRemoteVersionNewer(remote: cleanRemote, current: AppGroupConfig.patchVersion) {
+                updateStatusMessage = "Update available: v\(cleanRemote)"
+            } else {
+                updateStatusMessage = "You're up to date (v\(AppGroupConfig.patchVersion))"
+            }
+        } catch {
+            updateStatusMessage = "Offline or unable to reach GitHub"
+        }
