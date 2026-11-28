@@ -92,3 +92,39 @@ public final class ReleaseAndBetaService: ObservableObject {
         } catch {
             updateStatusMessage = "Offline or unable to reach GitHub"
         }
+    }
+
+    @MainActor
+    public func checkActiveBetaBuild(showCheckingIndicator: Bool) async {
+        if showCheckingIndicator {
+            betaState = .checking
+        }
+        guard let url = URL(string: AppGroupConfig.githubReleasesListAPI) else {
+            betaState = .noActiveBeta
+            return
+        }
+        var req = URLRequest(url: url, timeoutInterval: 6)
+        req.setValue("Gboard-Pro-iOS-App", forHTTPHeaderField: "User-Agent")
+        req.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                if showCheckingIndicator {
+                    betaState = .noActiveBeta
+                }
+                return
+            }
+            let list = try JSONDecoder().decode([GitHubReleaseDTO].self, from: data)
+            if let found = list.first(where: { rel in
+                !rel.draft && rel.prerelease && (
+                    rel.body.contains("[BETA-TEST-IPA]")
+                    || rel.body.contains("[BETA-TEST-APK]")
+                    || rel.tagName.lowercased().contains("beta-test")
+                    || rel.name.lowercased().contains("beta testing")
+                )
+            }), let asset = found.assets.first(where: {
+                $0.name.hasSuffix(".ipa") || $0.name.hasSuffix(".apk")
+            }) {
+                let ver = found.tagName.hasPrefix("v") ? String(found.tagName.dropFirst()) : found.tagName
+                let bullets = Self.extractBulletFeaturesWithoutEmojis(from: found.body)
