@@ -48,3 +48,28 @@ struct NotificationSettingsView: View {
                             summary: store.notifyBetaFeatures
                                 ? "ON: Notify when new features are added to New features (Beta)"
                                 : "OFF: Do not notify about new experimental beta features",
+                            icon: "sparkles",
+                            palette: palette,
+                            isOn: Binding(
+                                get: { store.notifyBetaFeatures },
+                                set: { newValue in
+                                    store.notifyBetaFeatures = newValue
+                                    if newValue { requestNotificationAuth() }
+                                }
+                            )
+                        )
+                    }
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Notification")
+    }
+
+    private func requestNotificationAuth() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+    }
+}
