@@ -52,3 +52,30 @@ public enum LanguageCatalog {
         KeyboardLanguageItem(
             code: "ar",
             displayName: "العربية",
+            nativeName: "Arabic",
+            layoutLabel: "العربية",
+            isSuggested: false,
+            rows: [
+                ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح"],
+                ["ش", "س", "ي", "ب", "ل", "ا", "ت", "ن", "م"],
+                ["ئ", "ء", "ؤ", "ر", "لا", "ى", "ة"]
+            ]
+        ),
+        KeyboardLanguageItem(
+            code: "hi-IN",
+            displayName: "हिन्दी",
+            nativeName: "Hindi (Devanagari)",
+            layoutLabel: "हिन्दी",
+            isSuggested: false,
+            rows: [
+                ["ॉ", "ो", "े", "अ", "इ", "उ", "फ", "र", "क", "त"],
+                ["ा", "ी", "ू", "ब", "ह", "ग", "द", "ज", "ड"],
+                ["ो", "ए", "म", "न", "व", "ल", "स"]
+            ]
+        ),
+        KeyboardLanguageItem(
+            code: "es-ES",
+            displayName: "Español",
+            nativeName: "QWERTY",
+            layoutLabel: "Español",
+            isSuggested: false,
