@@ -66,3 +66,48 @@ final class LiquidGlassKeyButton: UIButton {
                     color: UIColor.black.withAlphaComponent(palette.isDark ? 0.30 : 0.18).cgColor
                 )
             }
+            effective.setFill()
+            path.fill()
+            ctx.restore()
+            return
+        }
+
+        // 3D Water-Drop / Frosted Keycap Lens
+        ctx.saveGState()
+        path.addClip()
+
+        let colors: [CGColor]
+        switch orbRole {
+        case .accentAction:
+            colors = [
+                UIColor(palette.accent).withAlphaComponent(0.95).cgColor,
+                UIColor(palette.accent).cgColor
+            ]
+        case .functionKey, .orbButton:
+            if palette.isAmoled {
+                colors = [UIColor(hex: 0x263046).cgColor, UIColor(hex: 0x06080E).cgColor, UIColor(hex: 0x1B2336).cgColor]
+            } else if palette.isDark {
+                colors = [UIColor(hex: 0x454E69).cgColor, UIColor(hex: 0x1F2538).cgColor, UIColor(hex: 0x333B54).cgColor]
+            } else {
+                colors = [UIColor(hex: 0xD2D6E6).cgColor, UIColor(hex: 0xC2C7DC).cgColor, UIColor(hex: 0xE6E9F5).cgColor]
+            }
+        case .normal:
+            if palette.isAmoled {
+                colors = [UIColor(hex: 0x1D2333).cgColor, UIColor(hex: 0x0D1018).cgColor, UIColor(hex: 0x171D2B).cgColor]
+            } else if palette.isDark {
+                colors = [UIColor(hex: 0x394466).cgColor, UIColor(hex: 0x141928).cgColor, UIColor(hex: 0x2D3754).cgColor]
+            } else {
+                colors = [UIColor.white.cgColor, UIColor(hex: 0xE5E8F6).cgColor, UIColor(hex: 0xF7F8FE).cgColor]
+            }
+        }
+
+        let space = CGColorSpaceCreateDeviceRGB()
+        let locations: [CGFloat] = colors.count == 3 ? [0.0, 0.55, 1.0] : [0.0, 1.0]
+        if let grad = CGGradient(colorsSpace: space, colors: colors as CFArray, locations: locations) {
+            ctx.drawLinearGradient(
+                grad,
+                start: CGPoint(x: insetRect.minX, y: insetRect.minY),
+                end: CGPoint(x: insetRect.maxX, y: insetRect.maxY),
+                options: []
+            )
+        }
