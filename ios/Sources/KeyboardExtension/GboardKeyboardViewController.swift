@@ -328,3 +328,78 @@ final class GboardKeyboardViewController: UIInputViewController {
             ) { [weak self] in
                 self?.advanceToNextInputMode()
             }
+            row.addArrangedSubview(globeBtn)
+        }
+
+        let spaceBtn = LiquidGlassKeyButton(type: .system)
+        spaceBtn.palette = palette
+        spaceBtn.orbRole = .normal
+        spaceBtn.setTitle(lang.layoutLabel, for: .normal)
+        spaceBtn.setTitleColor(UIColor(palette.textSecondary), for: .normal)
+        spaceBtn.titleLabel?.font = .systemFont(ofSize: 13.5, weight: .medium)
+        spaceBtn.addTarget(self, action: #selector(handleSpaceTap), for: .touchUpInside)
+        let spaceLongPress = UILongPressGestureRecognizer(target: self, action: #selector(handleSpaceLongPress(_:)))
+        spaceBtn.addGestureRecognizer(spaceLongPress)
+        let cursorPan = UIPanGestureRecognizer(target: self, action: #selector(handleSpaceCursorPan(_:)))
+        spaceBtn.addGestureRecognizer(cursorPan)
+        row.addArrangedSubview(spaceBtn)
+
+        let periodBtn = makeSpecialButton(
+            title: ".",
+            systemName: nil,
+            palette: palette,
+            role: .functionKey,
+            fixedWidth: isPad ? 50 : 38
+        ) { [weak self] in
+            self?.commitCharacter(".")
+        }
+        row.addArrangedSubview(periodBtn)
+
+        let returnBtn = makeSpecialButton(
+            title: nil,
+            systemName: "return",
+            palette: palette,
+            role: .accentAction,
+            fixedWidth: isPad ? 76 : 58
+        ) { [weak self] in
+            self?.commitCharacter("\n")
+        }
+        row.addArrangedSubview(returnBtn)
+
+        if isPad && !needsInputModeSwitchKey {
+            let dismissBtn = makeSpecialButton(
+                title: nil,
+                systemName: "keyboard.chevron.compact.down",
+                palette: palette,
+                role: .functionKey,
+                fixedWidth: 52
+            ) { [weak self] in
+                self?.dismissKeyboard()
+            }
+            row.addArrangedSubview(dismissBtn)
+        }
+
+        return row
+    }
+
+    private func makeSpecialButton(
+        title: String?,
+        systemName: String?,
+        palette: GboardPalette,
+        role: KeyboardOrbRole,
+        fixedWidth: CGFloat? = nil,
+        widthMultiplier: CGFloat? = nil,
+        action: @escaping () -> Void
+    ) -> LiquidGlassKeyButton {
+        let btn = LiquidGlassKeyButton(type: .system)
+        btn.palette = palette
+        btn.orbRole = role
+        btn.tintColor = UIColor(role == .accentAction ? palette.ctaForeground : palette.textPrimary)
+        if let systemName {
+            btn.setImage(UIImage(systemName: systemName), for: .normal)
+        }
+        if let title {
+            btn.setTitle(title, for: .normal)
+            btn.setTitleColor(UIColor(role == .accentAction ? palette.ctaForeground : palette.textPrimary), for: .normal)
+            btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
+        }
