@@ -75,3 +75,38 @@ public struct WaterDropOrbIcon: View {
                             startRadius: 0,
                             endRadius: size * 0.34
                         )
+                    } else {
+                        RadialGradient(
+                            colors: [Color.white.opacity(0.55), Color.clear],
+                            center: UnitPoint(x: 0.60, y: 0.77),
+                            startRadius: 0,
+                            endRadius: size * 0.32
+                        )
+                    }
+                }
+                .clipShape(Circle())
+
+                // 3D Fresnel Rim
+                Circle()
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: palette.isDark || palette.isAmoled
+                                ? [Color.white.opacity(palette.isAmoled ? 0.76 : 0.82), Color.white.opacity(0.14), palette.accent.opacity(0.65)]
+                                : [Color.white, Color(hex: 0x8690B8, alpha: 0.22), Color.white.opacity(0.95)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1.25
+                    )
+
+                Image(systemName: systemName)
+                    .font(.system(size: size * 0.42, weight: .semibold))
+                    .foregroundColor(palette.isDark ? Color(hex: 0xF2F5FF) : Color(hex: 0x1A2033))
+            }
+            .frame(width: size, height: size)
+        } else {
+            Image(systemName: systemName)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundColor(palette.textSecondary)
+                .frame(width: 28, height: 28)
+        }
