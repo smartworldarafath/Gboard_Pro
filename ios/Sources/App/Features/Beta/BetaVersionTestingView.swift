@@ -252,3 +252,46 @@ struct BetaVersionTestingView: View {
             alertMessage = "Please fill in both Issue Title and Issue Description."
             return
         }
+        var body = "### Beta Bug Report (iOS)\n\n"
+        body += "- **App Beta Version:** `v\(AppGroupConfig.patchVersion)`\n"
+        body += "- **Device Model:** `\(deviceModel)`\n"
+        body += "- **Attached Screenshots:** \(selectedImages.count)/5\n\n"
+        body += "### Description\n\(desc)\n"
+        UIPasteboard.general.string = body
+
+        var components = URLComponents(string: AppGroupConfig.githubIssuesNewURL)
+        components?.queryItems = [
+            URLQueryItem(name: "title", value: "[Beta Bug iOS] \(title)"),
+            URLQueryItem(name: "labels", value: "beta-bug"),
+            URLQueryItem(name: "body", value: body)
+        ]
+        if let url = components?.url {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    private func cardLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 11.5, weight: .bold))
+            .tracking(0.8)
+            .foregroundColor(palette.accent)
+    }
+
+    private func fieldTitle(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 13.5, weight: .medium))
+            .foregroundColor(palette.textSecondary)
+    }
+
+    private func styledField(_ placeholder: String, text: Binding<String>) -> some View {
+        TextField(placeholder, text: text)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(palette.surfaceAlt)
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(palette.surfaceStroke, lineWidth: 1))
+            )
+            .foregroundColor(palette.textPrimary)
+    }
+}
