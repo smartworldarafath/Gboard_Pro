@@ -55,3 +55,60 @@ def check_swift_syntax_heuristics(path: Path):
                 stack.append(ch)
             elif ch in closing:
                 if not stack or stack[-1] != closing[ch]:
+                    ERRORS.append(f"Unmatched '{ch}' in {path}")
+                    return
+                stack.pop()
+        i += 1
+    if in_string or in_block_comment or stack:
+        ERRORS.append(f"Unclosed delimiter/string in {path}: remaining={stack}")
+
+    for pattern in [r"AIzaSy", r"ghp_", r"gho_", r"github_pat_", r"AKIA", r"BEGIN .* PRIVATE KEY"]:
+        if re.search(pattern, text):
+            ERRORS.append(f"Potential secret pattern '{pattern}' found in {path}")
+
+
+def main():
+    required = [
+        ROOT / "project.yml",
+        ROOT / "Package.swift",
+        ROOT / "xtool.yml",
+        ROOT / "Config" / "App-Info.plist",
+        ROOT / "Config" / "App.entitlements",
+        ROOT / "Config" / "Keyboard-Info.plist",
+        ROOT / "Config" / "Keyboard.entitlements",
+        ROOT.parent / ".github" / "workflows" / "ios-build-and-test.yml",
+    ]
+    for p in required:
+        if not p.exists():
+            ERRORS.append(f"Missing required file: {p}")
+
+    for plist in (ROOT / "Config").glob("*"):
+        if plist.suffix in (".plist", ".entitlements"):
+            check_xml(plist)
+
+    swift_files = list(ROOT.rglob("*.swift"))
+    if len(swift_files) < 8:
+        ERRORS.append(f"Expected >= 8 Swift files, found {len(swift_files)}")
+
+    for sf in swift_files:
+        check_swift_syntax_heuristics(sf)
+
+    app_cfg = (ROOT / "Sources" / "Shared" / "Config" / "AppGroupConfig.swift").read_text(encoding="utf-8")
+    app_ent = (ROOT / "Config" / "App.entitlements").read_text(encoding="utf-8")
+    kb_ent = (ROOT / "Config" / "Keyboard.entitlements").read_text(encoding="utf-8")
+    group_id = "group.com.smartworldarafath.gboardpro"
+    for label, content in [("AppGroupConfig.swift", app_cfg), ("App.entitlements", app_ent), ("Keyboard.entitlements", kb_ent)]:
+        if group_id not in content:
+            ERRORS.append(f"App Group '{group_id}' missing in {label}")
+
+    if ERRORS:
+        print("FAILED iOS structural validation:")
+        for e in ERRORS:
+            print(" -", e)
+        raise SystemExit(1)
+
+    print(f"[PASS] Validated {len(swift_files)} Swift files, XML plists, entitlements, App Groups, and CI workflow.")
+
+
+if __name__ == "__main__":
+    main()
