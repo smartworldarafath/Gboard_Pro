@@ -66,3 +66,44 @@ struct HelpFeedbackView: View {
                                 .padding(12)
                                 .background(RoundedRectangle(cornerRadius: 12).fill(palette.surfaceAlt))
                         }
+                        .padding(18)
+                    }
+
+                    GboardPillButton(title: "Submit", systemImage: nil, palette: palette) {
+                        submit()
+                    }
+                    .padding(.horizontal, 16)
+
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Help & feedback")
+        .alert("Missing Message", isPresented: $showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Please enter your message before submitting.")
+        }
+    }
+
+    private func submit() {
+        let msg = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !msg.isEmpty else {
+            showError = true
+            return
+        }
+        let body = "**Category:** \(categories[selectedCategory])\n**Name:** \(name.isEmpty ? "Anonymous" : name)\n**Device:** \(device)\n**Version:** v\(AppGroupConfig.patchVersion)\n\n\(msg)"
+        UIPasteboard.general.string = body
+        var comps = URLComponents(string: AppGroupConfig.githubIssuesNewURL)
+        comps?.queryItems = [
+            URLQueryItem(name: "title", value: "[\(categories[selectedCategory]) iOS] Feedback"),
+            URLQueryItem(name: "body", value: body)
+        ]
+        if let url = comps?.url {
+            UIApplication.shared.open(url)
+        }
+    }
+}
