@@ -36,3 +36,25 @@ final class GboardProUnitTests: XCTestCase {
         let bullets = ReleaseAndBetaService.extractBulletFeaturesWithoutEmojis(from: raw)
         XCTAssertEqual(bullets, ["Improved speed for Dark Mode"])
     }
+
+    func testMultiLanguageAddRemoveAndCycle() {
+        let suiteName = "test.langs.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        let store = GboardSettingsStore(defaults: defaults)
+        XCTAssertTrue(store.enabledLanguageCodes.contains("en-US"))
+        store.addLanguage("ar")
+        XCTAssertTrue(store.enabledLanguageCodes.contains("ar"))
+        store.cycleActiveLanguage()
+        XCTAssertNotEqual(store.activeLanguageCode, "")
+        store.removeLanguage("ar")
+        XCTAssertFalse(store.enabledLanguageCodes.contains("ar"))
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    func testSuggestionAndGlideWordEngine() {
+        let suggestions = GboardSuggestionEngine.suggestions(for: "hel")
+        XCTAssertTrue(suggestions.contains("hello"))
+        let swiped = GboardSuggestionEngine.matchGlideWord(swipedKeys: ["k", "e", "y", "b", "o", "a", "r", "d"])
+        XCTAssertEqual(swiped, "keyboard")
+    }
+}
