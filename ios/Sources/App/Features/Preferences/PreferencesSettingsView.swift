@@ -34,3 +34,37 @@ struct PreferencesSettingsView: View {
                             isOn: $store.oneHandedMode
                         )
                     }
+
+                    SettingsCardGroup(palette: palette, title: "KEY PRESS") {
+                        SettingsToggleRow(
+                            title: "Haptic feedback on keypress",
+                            summary: "Subtle Taptic Engine pulse on every tap",
+                            icon: "iphone.radiowaves.left.and.right",
+                            palette: palette,
+                            isOn: $store.hapticFeedbackEnabled
+                        )
+                        CardDivider(palette: palette)
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                Text("Keyboard height scale")
+                                    .font(.system(size: 15.5, weight: .medium))
+                                    .foregroundColor(palette.textPrimary)
+                                Spacer()
+                                Text("\(Int(store.keyboardHeightScale * 100))%")
+                                    .font(.system(size: 13.5, weight: .bold))
+                                    .foregroundColor(palette.accent)
+                            }
+                            Slider(value: $store.keyboardHeightScale, in: 0.85...1.20, step: 0.05)
+                                .tint(palette.accent)
+                        }
+                        .padding(16)
+                    }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Preferences")
+    }
+}
