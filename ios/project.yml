@@ -65,3 +65,25 @@ targets:
     dependencies:
       - target: GboardProApp
 
+  GboardProUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: GboardProApp
+
+schemes:
+  GboardProApp:
+    build:
+      targets:
+        GboardProApp: all
+        GboardProUnitTests: [test]
+        GboardProUITests: [test]
+    test:
+      targets:
+        - GboardProUnitTests
+        - GboardProUITests
