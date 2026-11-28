@@ -17,3 +17,22 @@ struct ProSettingsView: View {
                             palette: palette
                         ) { navigate(.amoled) }
 
+                        CardDivider(palette: palette)
+
+                        SettingsNavRow(
+                            title: "Advanced Settings",
+                            summary: "Gemini voice tools, writing tools & modular patches",
+                            icon: "slider.horizontal.2.square",
+                            palette: palette
+                        ) { navigate(.advanced) }
+                    }
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Pro")
+    }
+}
