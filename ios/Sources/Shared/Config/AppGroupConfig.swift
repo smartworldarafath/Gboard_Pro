@@ -34,3 +34,22 @@ public enum PreferenceKeys {
     public static let oneHandedMode = "pref_one_handed_mode"
     public static let keyboardHeightScale = "pref_keyboard_height_scale"
 
+    // Corrections & Suggestions
+    public static let showSuggestionStrip = "pref_show_suggestion_strip"
+    public static let autoCorrection = "pref_auto_correction"
+    public static let autoCapitalization = "pref_auto_capitalization"
+    public static let doubleSpacePeriod = "pref_double_space_period"
+
+    // Glide Typing
+    public static let glideTyping = "pref_glide_typing"
+    public static let showGestureTrail = "pref_show_gesture_trail"
+
+    // Clipboard
+    public static let clipboardHistoryEnabled = "pref_clipboard_history_enabled"
+    public static let clipboardItems = "pref_clipboard_items_v1"
+
+    // Notifications (Android Beta 3 parity)
+    public static let notifyAppUpdates = "notify_app_updates_enabled"
+    public static let notifyBetaBuilds = "notify_beta_apk_enabled"
+    public static let notifyBetaFeatures = "notify_beta_features_enabled"
+
