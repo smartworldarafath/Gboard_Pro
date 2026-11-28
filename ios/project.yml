@@ -36,3 +36,32 @@ targets:
     dependencies:
       - target: GboardProKeyboard
 
+  GboardProKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Sources/Shared
+      - path: Sources/KeyboardExtension
+    info:
+      path: Config/Keyboard-Info.plist
+    entitlements:
+      path: Config/Keyboard.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.smartworldarafath.gboardpro.keyboard
+        PRODUCT_NAME: "GboardProKeyboard"
+        PRODUCT_MODULE_NAME: GboardProKeyboard
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+
+  GboardProUnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: GboardProApp
+
