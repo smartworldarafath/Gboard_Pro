@@ -25,3 +25,21 @@ struct PermissionsSettingsView: View {
                                 if let url = URL(string: UIApplication.openSettingsURLString) {
                                     UIApplication.shared.open(url)
                                 }
+                            }
+                            .padding(.top, 4)
+                        }
+                        .padding(16)
+                    }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Permissions")
+        .task {
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            notifStatusText = settings.authorizationStatus == .authorized ? "Authorized" : "Not Authorized"
+        }
+    }
+}
