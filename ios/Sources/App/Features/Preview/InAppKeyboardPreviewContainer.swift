@@ -31,3 +31,36 @@ struct InAppKeyboardPreviewContainer: View {
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
                         }
+                        .buttonStyle(.plain)
+                    }
+                    Spacer()
+                    Button {
+                        emojiMode.toggle()
+                    } label: {
+                        WaterDropOrbIcon(systemName: emojiMode ? "keyboard" : "face.smiling", palette: palette, size: 32)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 10)
+                .padding(.top, 6)
+            }
+
+            if emojiMode {
+                ScrollView {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 38))], spacing: 8) {
+                        ForEach(LanguageCatalog.emojiGrid, id: \.self) { emoji in
+                            Button {
+                                onInsertText(emoji)
+                            } label: {
+                                Text(emoji).font(.system(size: 26))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(10)
+                }
+            } else {
+                let rows = symbolsMode ? LanguageCatalog.symbolRows : activeLang.rows
+                if store.numberRowEnabled && !symbolsMode {
+                    keyRow(LanguageCatalog.numberRow, isFunctionRow: false)
+                }
