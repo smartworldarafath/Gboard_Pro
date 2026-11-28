@@ -64,3 +64,35 @@ struct InAppKeyboardPreviewContainer: View {
                 if store.numberRowEnabled && !symbolsMode {
                     keyRow(LanguageCatalog.numberRow, isFunctionRow: false)
                 }
+                ForEach(Array(rows.enumerated()), id: \.offset) { idx, row in
+                    HStack(spacing: 5) {
+                        if idx == rows.count - 1 {
+                            specialKey(icon: symbolsMode ? "textformat.abc" : (shifted ? "shift.fill" : "shift"), width: 42) {
+                                if !symbolsMode { shifted.toggle() }
+                            }
+                        }
+                        keyRow(row, isFunctionRow: false)
+                        if idx == rows.count - 1 {
+                            specialKey(icon: "delete.left", width: 42) {
+                                onBackspace()
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 6)
+                }
+                HStack(spacing: 6) {
+                    specialKey(title: symbolsMode ? "ABC" : "?123", width: 52) {
+                        symbolsMode.toggle()
+                    }
+                    specialKey(icon: "globe", width: 38) {
+                        store.cycleActiveLanguage()
+                    }
+                    Button {
+                        onInsertText(" ")
+                    } label: {
+                        Text(activeLang.layoutLabel)
+                            .font(.system(size: 13.5, weight: .medium))
+                            .foregroundColor(palette.textSecondary)
+                            .frame(maxWidth: .infinity, minHeight: 42)
+                            .background(keyShape(isFunction: false))
+                    }
