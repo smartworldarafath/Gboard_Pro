@@ -22,3 +22,20 @@ struct ResetSettingsView: View {
                                 store.resetAllPreferences()
                                 showResetDone = true
                             }
+                        }
+                        .padding(16)
+                    }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Reset")
+        .alert("Preferences Reset", isPresented: $showResetDone) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("All Gboard Pro preferences have been restored to Classic Material UI defaults.")
+        }
+    }
+}
