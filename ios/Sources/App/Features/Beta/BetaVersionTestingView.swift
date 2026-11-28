@@ -77,3 +77,46 @@ struct BetaVersionTestingView: View {
                                         .fill((betaInstalled ? palette.accent : Color.orange).opacity(0.14))
                                 )
 
+                            fieldTitle("Device model")
+                            styledField("Device model", text: $deviceModel)
+                                .disabled(!betaInstalled)
+
+                            fieldTitle("App beta version (Auto)")
+                            styledField("Beta version", text: .constant("v\(AppGroupConfig.patchVersion)"))
+                                .disabled(true)
+                                .opacity(0.7)
+
+                            fieldTitle("Issue title")
+                            styledField("Enter issue title", text: $issueTitle)
+                                .disabled(!betaInstalled)
+
+                            fieldTitle("Issue description")
+                            TextField("Describe the bug, steps to reproduce, and what happened...", text: $issueDescription, axis: .vertical)
+                                .lineLimit(4...8)
+                                .padding(12)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .fill(palette.surfaceAlt)
+                                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(palette.surfaceStroke, lineWidth: 1))
+                                )
+                                .foregroundColor(palette.textPrimary)
+                                .disabled(!betaInstalled)
+
+                            fieldTitle("Screenshots (up to 5)")
+                            if !selectedImages.isEmpty {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 10) {
+                                        ForEach(Array(selectedImages.enumerated()), id: \.offset) { idx, item in
+                                            ZStack(alignment: .topTrailing) {
+                                                Image(uiImage: item.image)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 74, height: 74)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                                Button {
+                                                    selectedImages.remove(at: idx)
+                                                } label: {
+                                                    Image(systemName: "xmark.circle.fill")
+                                                        .foregroundColor(.white)
+                                                        .background(Circle().fill(Color.black.opacity(0.65)))
+                                                }
