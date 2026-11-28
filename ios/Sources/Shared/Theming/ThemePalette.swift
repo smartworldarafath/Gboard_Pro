@@ -169,3 +169,36 @@ public struct GboardPalette: Equatable {
                 onAccentContainer: Color(hex: isDark ? 0xFCE4EC : 0x2D121B),
                 ctaForeground: glass ? Color(hex: isDark ? 0xF5F7FF : 0x1A2236) : Color(hex: isDark ? 0x2D121B : 0xFFFFFF),
                 isDark: isDark,
+                isAmoled: false,
+                isLiquidGlass: glass,
+                orbBodyTopHex: isDark ? 0x4E293A : 0xFFFFFF,
+                orbBodyMidHex: isDark ? 0x201119 : 0xFCE0EA,
+                orbBodyBotHex: isDark ? 0x3E202E : 0xFFF5F8,
+                keyBackgroundHex: isDark ? 0x341D28 : 0xFFFFFF,
+                keyFunctionHex: isDark ? 0x4E2638 : 0xF5C2D4,
+                keyboardBackgroundHex: isDark ? 0x1F1117 : 0xFBE1E5
+            )
+
+        case .sunsetPeach:
+            return GboardPalette(
+                windowBackground: Color(hex: isDark ? 0x1C1310 : 0xFDE8E7),
+                surface: Color(hex: isDark ? 0x281C17 : 0xFFFFFF),
+                surfaceAlt: Color(hex: isDark ? 0x372720 : 0xFD987C),
+                surfaceStroke: glass ? Color(hex: isDark ? 0xFF8A65 : 0xD35A2D, alpha: isDark ? 0.28 : 0.20) : m3Stroke,
+                textPrimary: Color(hex: isDark ? 0xFBE9E7 : 0x2D1610),
+                textSecondary: Color(hex: isDark ? 0xFFCCBC : 0x6E443A),
+                accent: Color(hex: isDark ? 0xFF7043 : 0xD35A2D),
+                accentContainer: Color(hex: isDark ? 0x5D2416 : 0xFFD9CC),
+                onAccentContainer: Color(hex: isDark ? 0xFFDBCF : 0x2D1610),
+                ctaForeground: glass ? Color(hex: isDark ? 0xF5F7FF : 0x1A2236) : Color(hex: isDark ? 0x2D1610 : 0xFFFFFF),
+                isDark: isDark,
+                isAmoled: false,
+                isLiquidGlass: glass,
+                orbBodyTopHex: isDark ? 0x483128 : 0xFFFFFF,
+                orbBodyMidHex: isDark ? 0x1E1410 : 0xFDE4DC,
+                orbBodyBotHex: isDark ? 0x3A2720 : 0xFFF7F4,
+                keyBackgroundHex: isDark ? 0x2F211C : 0xFFFFFF,
+                keyFunctionHex: isDark ? 0x462E24 : 0xFBD2C6,
+                keyboardBackgroundHex: isDark ? 0x1C1310 : 0xFAE2DD
+            )
+
