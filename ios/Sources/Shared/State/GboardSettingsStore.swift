@@ -166,3 +166,43 @@ public final class GboardSettingsStore: ObservableObject {
         }
     }
 
+    public func removeLanguage(_ code: String) {
+        guard enabledLanguageCodes.count > 1 else { return }
+        enabledLanguageCodes.removeAll { $0 == code }
+        if activeLanguageCode == code {
+            activeLanguageCode = enabledLanguageCodes.first ?? "en-US"
+        }
+    }
+
+    public func cycleActiveLanguage() {
+        guard enabledLanguageCodes.count > 1,
+              let idx = enabledLanguageCodes.firstIndex(of: activeLanguageCode) else {
+            return
+        }
+        let nextIdx = (idx + 1) % enabledLanguageCodes.count
+        activeLanguageCode = enabledLanguageCodes[nextIdx]
+    }
+
+    public func saveClipboardEntry(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard clipboardHistoryEnabled, !trimmed.isEmpty else { return }
+        var updated = clipboardItems.filter { $0 != trimmed }
+        updated.insert(trimmed, at: 0)
+        if updated.count > 20 {
+            updated = Array(updated.prefix(20))
+        }
+        clipboardItems = updated
+    }
+
+    public func resetAllPreferences() {
+        uiStyleMode = .classic
+        selectedTheme = .systemDefault
+        amoledBlackEnabled = false
+        enabledLanguageCodes = ["en-US", "bn-BD", "ko-KR"]
+        activeLanguageCode = "en-US"
+        numberRowEnabled = true
+        keyPressPopupEnabled = true
+        hapticFeedbackEnabled = true
+        hapticStrength = 0.65
+        keySoundEnabled = false
+        oneHandedMode = false
