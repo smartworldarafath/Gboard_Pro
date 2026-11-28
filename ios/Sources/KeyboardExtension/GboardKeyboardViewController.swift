@@ -651,3 +651,85 @@ final class GboardKeyboardViewController: UIInputViewController {
         } else {
             shiftState = .lowercase
         }
+        lastShiftTapTime = now
+        updateLetterButtonCases()
+    }
+
+    private func shiftIconName() -> String {
+        switch shiftState {
+        case .lowercase: return "shift"
+        case .shifted: return "shift.fill"
+        case .capsLock: return "capslock.fill"
+        }
+    }
+
+    private func updateLetterButtonCases() {
+        for pair in letterButtons {
+            let display = (shiftState == .lowercase) ? pair.keyValue : pair.keyValue.uppercased()
+            pair.button.setTitle(display, for: .normal)
+        }
+    }
+
+    private func syncAutoCapitalization() {
+        guard store.autoCapitalizationEnabled, drawerMode == .letters, shiftState != .capsLock else { return }
+        let before = textDocumentProxy.documentContextBeforeInput ?? ""
+        let trimmed = before.trimmingCharacters(in: .whitespaces)
+        if before.isEmpty || trimmed.hasSuffix(".") || trimmed.hasSuffix("!") || trimmed.hasSuffix("?") || before.hasSuffix("\n") {
+            shiftState = .shifted
+        }
+        updateLetterButtonCases()
+    }
+
+    private func performBackspace() {
+        triggerHaptic()
+        textDocumentProxy.deleteBackward()
+        if !activeWordBuffer.isEmpty {
+            activeWordBuffer.removeLast()
+        }
+        refreshSuggestions()
+    }
+
+    @objc private func handleBackspaceLongPress(_ gesture: UILongPressGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            backspaceTimer = Timer.scheduledTimer(withTimeInterval: 0.08, repeats: true) { [weak self] _ in
+                self?.textDocumentProxy.deleteBackward()
+            }
+        case .ended, .cancelled, .failed:
+            backspaceTimer?.invalidate()
+            backspaceTimer = nil
+        default:
+            break
+        }
+    }
+
+    @objc private func handleSuggestionTap(_ sender: UIButton) {
+        guard let word = sender.title(for: .normal), !word.isEmpty else { return }
+        triggerHaptic()
+        for _ in activeWordBuffer {
+            textDocumentProxy.deleteBackward()
+        }
+        activeWordBuffer = ""
+        textDocumentProxy.insertText(word + " ")
+        refreshSuggestions()
+    }
+
+    private func refreshSuggestions() {
+        let list = GboardSuggestionEngine.suggestions(for: activeWordBuffer)
+        for (idx, btn) in suggestionButtons.enumerated() {
+            btn.setTitle(idx < list.count ? list[idx] : "", for: .normal)
+        }
+    }
+
+    private func openHostSettings() {
+        var responder: UIResponder? = self
+        while let current = responder {
+            if let app = current as? UIApplication,
+               let url = URL(string: "gboardpro://settings") {
+                app.open(url, options: [:], completionHandler: nil)
+                return
+            }
+            responder = current.next
+        }
+    }
+}
