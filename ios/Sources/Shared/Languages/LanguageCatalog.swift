@@ -25,3 +25,30 @@ public enum LanguageCatalog {
                 ["z", "x", "c", "v", "b", "n", "m"]
             ]
         ),
+        KeyboardLanguageItem(
+            code: "bn-BD",
+            displayName: "বাংলা (বাংলাদেশ)",
+            nativeName: "বাংলা (Avro / Phonetic)",
+            layoutLabel: "বাংলা",
+            isSuggested: true,
+            rows: [
+                ["া", "ি", "ু", "ে", "ো", "ক", "খ", "গ", "ঘ", "প"],
+                ["অ", "আ", "ই", "উ", "এ", "চ", "জ", "ত", "দ"],
+                ["ন", "ম", "ব", "য", "র", "ল", "স"]
+            ]
+        ),
+        KeyboardLanguageItem(
+            code: "ko-KR",
+            displayName: "한국어",
+            nativeName: "두벌식",
+            layoutLabel: "한국어",
+            isSuggested: true,
+            rows: [
+                ["ㅂ", "ㅈ", "ㄷ", "ㄱ", "ㅅ", "ㅛ", "ㅕ", "ㅑ", "ㅐ", "ㅔ"],
+                ["ㅁ", "ㄴ", "ㅇ", "ㄹ", "ㅎ", "ㅗ", "ㅓ", "ㅏ", "ㅣ"],
+                ["ㅋ", "ㅌ", "ㅊ", "ㅍ", "ㅠ", "ㅜ", "ㅡ"]
+            ]
+        ),
+        KeyboardLanguageItem(
+            code: "ar",
+            displayName: "العربية",
