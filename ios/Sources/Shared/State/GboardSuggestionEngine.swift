@@ -14,3 +14,22 @@ public enum GboardSuggestionEngine {
         "please", "perfect", "okay", "sure", "nice", "cool", "bro", "love", "need", "make"
     ]
 
+    public static func suggestions(for prefix: String) -> [String] {
+        let clean = prefix.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !clean.isEmpty else {
+            return ["I", "The", "Hello"]
+        }
+        let matches = lexicon.filter { $0.hasPrefix(clean) }
+        var result: [String] = []
+        if let first = matches.first, first != clean {
+            result.append(prefix)
+            result.append(contentsOf: matches.prefix(2))
+        } else {
+            result.append(prefix)
+            result.append(contentsOf: matches.filter { $0 != clean }.prefix(2))
+        }
+        if result.count < 3 {
+            let defaults = ["is", "and", "to"]
+            for d in defaults where !result.contains(d) && result.count < 3 {
+                result.append(d)
+            }
