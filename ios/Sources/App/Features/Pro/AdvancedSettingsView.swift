@@ -18,3 +18,22 @@ struct AdvancedSettingsView: View {
                             icon: "wand.and.stars",
                             palette: palette,
                             isOn: $smartWritingEnabled
+                        )
+                        CardDivider(palette: palette)
+                        SettingsToggleRow(
+                            title: "Extended Clipboard History",
+                            summary: "Keep up to 20 snippets inside App Group shared container",
+                            icon: "tray.full",
+                            palette: palette,
+                            isOn: $clipboardRetention
+                        )
+                    }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Advanced Settings")
+    }
+}
