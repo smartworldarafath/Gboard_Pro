@@ -38,3 +38,42 @@ struct BetaVersionTestingView: View {
                             cardLabel("BETA BUILD RELEASE")
                             betaReleaseContent()
                         }
+                        .padding(18)
+                    }
+
+                    // 3. New Testing Features (Strictly Emoji-Free Bullet List)
+                    SettingsCardGroup(palette: palette) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            cardLabel("NEW TESTING FEATURES")
+                            ForEach(Array(service.testingFeatureBullets.enumerated()), id: \.offset) { _, rawLine in
+                                HStack(alignment: .top, spacing: 8) {
+                                    Text("\u{2022}")
+                                        .font(.system(size: 15, weight: .bold))
+                                        .foregroundColor(palette.accent)
+                                    Text(ReleaseAndBetaService.stripEmojis(rawLine))
+                                        .font(.system(size: 14))
+                                        .foregroundColor(palette.textSecondary)
+                                }
+                            }
+                        }
+                        .padding(18)
+                    }
+
+                    // 4. Beta Bug Report & Feedback Form (Gated strictly on betaInstalled)
+                    SettingsCardGroup(palette: palette) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            cardLabel("BETA BUG REPORT & FEEDBACK")
+
+                            Text(betaInstalled
+                                 ? "Beta installed (v\(AppGroupConfig.patchVersion)) - Feedback active"
+                                 : "Unavailable on stable build - Install a beta version to report beta bugs")
+                                .font(.system(size: 12.5, weight: .bold))
+                                .foregroundColor(betaInstalled ? palette.accent : Color.orange)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill((betaInstalled ? palette.accent : Color.orange).opacity(0.14))
+                                )
+
