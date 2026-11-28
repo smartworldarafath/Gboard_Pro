@@ -32,3 +32,28 @@ struct AboutOrUpdatesView: View {
                             ) {
                                 Task { await service.checkLatestStableRelease() }
                             }
+                            .padding(.top, 6)
+                        }
+                        .padding(22)
+                    }
+
+                    if isUpdatesScreen {
+                        SettingsCardGroup(palette: palette, title: "ACTIONS") {
+                            SettingsNavRow(
+                                title: "Check for Updates",
+                                summary: service.updateStatusMessage,
+                                icon: "arrow.down.circle",
+                                palette: palette
+                            ) {
+                                Task { await service.checkLatestStableRelease() }
+                            }
+                            CardDivider(palette: palette)
+                            SettingsNavRow(
+                                title: "All Releases",
+                                summary: "Browse changelogs & builds on GitHub",
+                                icon: "chevron.left.forwardslash.chevron.right",
+                                palette: palette
+                            ) {
+                                if let url = URL(string: "\(AppGroupConfig.githubRepoWebURL)/releases") {
+                                    UIApplication.shared.open(url)
+                                }
