@@ -101,3 +101,57 @@ struct RootSettingsView: View {
                                 palette: palette
                             ) { path.append(.preferences) }
 
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "Theme",
+                                summary: "\(store.selectedTheme.title) • \(store.uiStyleMode.displayTitle)",
+                                icon: "paintpalette",
+                                palette: palette
+                            ) { path.append(.theme) }
+                        }
+
+                        SettingsCardGroup(palette: palette) {
+                            SettingsNavRow(
+                                title: "Corrections & suggestions",
+                                summary: "Auto-correction, strip & smart punctuation",
+                                icon: "textformat.abc.dottedunderline",
+                                palette: palette
+                            ) { path.append(.corrections) }
+
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "Glide typing",
+                                summary: store.glideTypingEnabled ? "Enabled with gesture trail" : "Disabled",
+                                icon: "scribble.variable",
+                                palette: palette
+                            ) { path.append(.glideTyping) }
+
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "Voice typing",
+                                summary: "System & iOS Dictation tools",
+                                icon: "mic",
+                                palette: palette
+                            ) { path.append(.voiceTyping) }
+
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "Emojis, stickers & clipboard",
+                                summary: "Emoji grid, flags & local clipboard manager",
+                                icon: "face.smiling",
+                                palette: palette
+                            ) { path.append(.emojiAndClipboard) }
+                        }
+
+                        SettingsCardGroup(palette: palette) {
+                            SettingsNavRow(
+                                title: "Pro",
+                                summary: "Amoled Pure Black & Advanced customizations",
+                                icon: "sparkles",
+                                palette: palette
+                            ) { path.append(.pro) }
+
