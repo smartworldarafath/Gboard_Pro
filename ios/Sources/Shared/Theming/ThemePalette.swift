@@ -202,3 +202,38 @@ public struct GboardPalette: Equatable {
                 keyboardBackgroundHex: isDark ? 0x1C1310 : 0xFAE2DD
             )
 
+        case .freshMint:
+            return GboardPalette(
+                windowBackground: Color(hex: isDark ? 0x0E1815 : 0xEFF5F5),
+                surface: Color(hex: isDark ? 0x162520 : 0xFFFFFF),
+                surfaceAlt: Color(hex: isDark ? 0x20342E : 0xD4FAEF),
+                surfaceStroke: glass ? Color(hex: isDark ? 0x80CBC4 : 0x046665, alpha: isDark ? 0.28 : 0.20) : m3Stroke,
+                textPrimary: Color(hex: isDark ? 0xE0F2F1 : 0x0E1F1E),
+                textSecondary: Color(hex: isDark ? 0xB2DFDB : 0x3F5C5A),
+                accent: Color(hex: isDark ? 0x4DB6AC : 0x046665),
+                accentContainer: Color(hex: isDark ? 0x0E3E37 : 0xD4FAEF),
+                onAccentContainer: Color(hex: isDark ? 0xB2DFDB : 0x0E1F1E),
+                ctaForeground: glass ? Color(hex: isDark ? 0xF5F7FF : 0x1A2236) : Color(hex: isDark ? 0x0E1F1E : 0xFFFFFF),
+                isDark: isDark,
+                isAmoled: false,
+                isLiquidGlass: glass,
+                orbBodyTopHex: isDark ? 0x264138 : 0xFFFFFF,
+                orbBodyMidHex: isDark ? 0x0F1C18 : 0xDFF6EE,
+                orbBodyBotHex: isDark ? 0x1D352E : 0xF3FCFA,
+                keyBackgroundHex: isDark ? 0x1B2E28 : 0xFFFFFF,
+                keyFunctionHex: isDark ? 0x234239 : 0xCCEFE5,
+                keyboardBackgroundHex: isDark ? 0x0E1815 : 0xE8F3F1
+            )
+
+        case .ocean:
+            return GboardPalette(
+                windowBackground: Color(hex: isDark ? 0x101322 : 0xF6F8FE),
+                surface: Color(hex: isDark ? 0x191D32 : 0xFFFFFF),
+                surfaceAlt: Color(hex: isDark ? 0x232845 : 0xE0E7FA),
+                surfaceStroke: glass ? Color(hex: isDark ? 0x9FA8DA : 0x3949AB, alpha: isDark ? 0.28 : 0.16) : m3Stroke,
+                textPrimary: Color(hex: isDark ? 0xE8EAF6 : 0x12182E),
+                textSecondary: Color(hex: isDark ? 0xC5CAE9 : 0x3F4A6A),
+                accent: Color(hex: isDark ? 0x7986CB : 0x3949AB),
+                accentContainer: Color(hex: isDark ? 0x1E265C : 0xD1D9FA),
+                onAccentContainer: Color(hex: isDark ? 0xE8EAF6 : 0x101642),
+                ctaForeground: glass ? Color(hex: isDark ? 0xF5F7FF : 0x1A2236) : Color(hex: isDark ? 0x101642 : 0xFFFFFF),
