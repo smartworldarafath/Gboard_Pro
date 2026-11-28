@@ -36,3 +36,54 @@ struct SettingsNavRow: View {
     let palette: GboardPalette
     let action: () -> Void
 
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                WaterDropOrbIcon(systemName: icon, palette: palette, size: 42)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(palette.textPrimary)
+                        .multilineTextAlignment(.leading)
+                    if !summary.isEmpty {
+                        Text(summary)
+                            .font(.system(size: 13.5))
+                            .foregroundColor(palette.textSecondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(palette.textSecondary.opacity(0.6))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 13)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("row_\(title.lowercased().replacingOccurrences(of: " ", with: "_"))")
+    }
+}
+
+struct SettingsToggleRow: View {
+    let title: String
+    let summary: String
+    let icon: String
+    let palette: GboardPalette
+    @Binding var isOn: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            WaterDropOrbIcon(systemName: icon, palette: palette, size: 42)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(palette.textPrimary)
+                if !summary.isEmpty {
+                    Text(summary)
+                        .font(.system(size: 13))
+                        .foregroundColor(palette.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
