@@ -155,3 +155,51 @@ struct RootSettingsView: View {
                                 palette: palette
                             ) { path.append(.pro) }
 
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "Additional",
+                                summary: "Choose UI, Notification, Permissions, Reset & Beta Program",
+                                icon: "square.grid.2x2",
+                                palette: palette
+                            ) { path.append(.additional) }
+                        }
+
+                        SettingsCardGroup(palette: palette) {
+                            SettingsNavRow(
+                                title: "Gboard Pro Updates",
+                                summary: "Check GitHub releases & changelogs",
+                                icon: "arrow.down.circle",
+                                palette: palette
+                            ) { path.append(.updates) }
+
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "About",
+                                summary: "Gboard Pro v\(AppGroupConfig.patchVersion)",
+                                icon: "info.circle",
+                                palette: palette
+                            ) { path.append(.about) }
+
+                            CardDivider(palette: palette)
+
+                            SettingsNavRow(
+                                title: "Help & feedback",
+                                summary: "Send bug reports or feature requests",
+                                icon: "questionmark.bubble",
+                                palette: palette
+                            ) { path.append(.helpFeedback) }
+                        }
+
+                        FooterWatermarkView(palette: palette)
+                    }
+                    .frame(maxWidth: 680)
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 24)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: SettingsRoute.self) { route in
+                destinationView(for: route)
+            }
