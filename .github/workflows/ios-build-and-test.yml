@@ -59,13 +59,16 @@ jobs:
             -scheme GboardProApp \
             -configuration Release \
             -sdk iphoneos \
+            -destination "generic/platform=iOS" \
             -derivedDataPath ../build_ios \
+            ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO
           mkdir -p ../output/Payload
-          cp -R "../build_ios/Build/Products/Release-iphoneos/Gboard Pro.app" ../output/Payload/
+          cp -R "../build_ios/Build/Products/Release-iphoneos/GboardProApp.app" ../output/Payload/
           cd ../output && zip -r Gboard_Pro_iOS_Unsigned.ipa Payload && rm -rf Payload
 
       - name: Upload Unsigned IPA & Virtual Device Test Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gboard-pro-ios-build-and-tests

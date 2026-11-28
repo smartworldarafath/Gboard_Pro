@@ -29,6 +29,16 @@ final class GboardProUnitTests: XCTestCase {
         let amoledGlass = GboardPalette.resolve(style: .liquidGlass, theme: .systemDefault, isDark: true, isAmoled: true)
         XCTAssertTrue(amoledGlass.isAmoled)
         XCTAssertEqual(amoledGlass.keyboardBackgroundHex, 0x000000)
+
+        // Verify every custom theme produces distinct Liquid Glass surfaces & orb bodies in Light and Dark mode
+        let glassLightBgs = Set(KeyboardThemeOption.allCases.map {
+            GboardPalette.resolve(style: .liquidGlass, theme: $0, isDark: false, isAmoled: false).keyboardBackgroundHex
+        })
+        let glassLightOrbs = Set(KeyboardThemeOption.allCases.map {
+            GboardPalette.resolve(style: .liquidGlass, theme: $0, isDark: false, isAmoled: false).orbBodyMidHex
+        })
+        XCTAssertEqual(glassLightBgs.count, KeyboardThemeOption.allCases.count)
+        XCTAssertEqual(glassLightOrbs.count, KeyboardThemeOption.allCases.count)
     }
 
     func testStripEmojisRemovesAllEmojiCharactersFromBetaBullets() {

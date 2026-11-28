@@ -722,14 +722,21 @@ final class GboardKeyboardViewController: UIInputViewController {
     }
 
     private func openHostSettings() {
-        var responder: UIResponder? = self
-        while let current = responder {
-            if let app = current as? UIApplication,
-               let url = URL(string: "gboardpro://settings") {
-                app.open(url, options: [:], completionHandler: nil)
-                return
+        guard let url = URL(string: "gboardpro://settings") else { return }
+        extensionContext?.open(url) { [weak self] success in
+            if !success {
+                DispatchQueue.main.async {
+                    var responder: UIResponder? = self
+                    let selector = NSSelectorFromString("openURL:")
+                    while let current = responder {
+                        if current.responds(to: selector) {
+                            _ = current.perform(selector, with: url)
+                            return
+                        }
+                        responder = current.next
+                    }
+                }
             }
-            responder = current.next
         }
     }
 }

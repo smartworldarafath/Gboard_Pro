@@ -61,6 +61,7 @@ struct ThemeSettingsView: View {
                                     )
                                 }
                                 .buttonStyle(.plain)
+                                .accessibilityIdentifier("theme_option_\(option.rawValue)")
                             }
                         }
                         .padding(14)

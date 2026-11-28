@@ -77,10 +77,10 @@ public struct WaterDropOrbIcon: View {
                         )
                     } else {
                         RadialGradient(
-                            colors: [Color.white.opacity(0.55), Color.clear],
+                            colors: [Color.white.opacity(0.65), palette.accent.opacity(0.18), Color.clear],
                             center: UnitPoint(x: 0.60, y: 0.77),
                             startRadius: 0,
-                            endRadius: size * 0.32
+                            endRadius: size * 0.34
                         )
                     }
                 }
@@ -91,8 +91,8 @@ public struct WaterDropOrbIcon: View {
                     .strokeBorder(
                         LinearGradient(
                             colors: palette.isDark || palette.isAmoled
-                                ? [Color.white.opacity(palette.isAmoled ? 0.76 : 0.82), Color.white.opacity(0.14), palette.accent.opacity(0.65)]
-                                : [Color.white, Color(hex: 0x8690B8, alpha: 0.22), Color.white.opacity(0.95)],
+                                ? [Color.white.opacity(palette.isAmoled ? 0.76 : 0.82), Color.white.opacity(0.14), palette.accent.opacity(0.68)]
+                                : [Color.white, palette.surfaceStroke, Color.white.opacity(0.95)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
@@ -101,7 +101,7 @@ public struct WaterDropOrbIcon: View {
 
                 Image(systemName: systemName)
                     .font(.system(size: size * 0.42, weight: .semibold))
-                    .foregroundColor(palette.isDark ? Color(hex: 0xF2F5FF) : Color(hex: 0x1A2033))
+                    .foregroundColor(palette.isDark ? Color(hex: 0xF2F5FF) : palette.textPrimary)
             }
             .frame(width: size, height: size)
         } else {
@@ -128,7 +128,7 @@ public struct GboardCardModifier: ViewModifier {
                                 LinearGradient(
                                     colors: palette.isDark
                                         ? [palette.surface.opacity(0.96), palette.surfaceAlt.opacity(0.92)]
-                                        : [Color.white.opacity(0.94), palette.surface.opacity(0.95)],
+                                        : [palette.surface.opacity(0.96), palette.surfaceAlt.opacity(0.58)],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )

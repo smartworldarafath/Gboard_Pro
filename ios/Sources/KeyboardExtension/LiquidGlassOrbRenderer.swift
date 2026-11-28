@@ -84,20 +84,29 @@ final class LiquidGlassKeyButton: UIButton {
                 UIColor(palette.accent).cgColor
             ]
         case .functionKey, .orbButton:
-            if palette.isAmoled {
+            if orbRole == .orbButton {
+                colors = [
+                    UIColor(hex: palette.orbBodyTopHex).cgColor,
+                    UIColor(hex: palette.orbBodyMidHex).cgColor,
+                    UIColor(hex: palette.orbBodyBotHex).cgColor
+                ]
+            } else if palette.isAmoled {
                 colors = [UIColor(hex: 0x263046).cgColor, UIColor(hex: 0x06080E).cgColor, UIColor(hex: 0x1B2336).cgColor]
-            } else if palette.isDark {
-                colors = [UIColor(hex: 0x454E69).cgColor, UIColor(hex: 0x1F2538).cgColor, UIColor(hex: 0x333B54).cgColor]
             } else {
-                colors = [UIColor(hex: 0xD2D6E6).cgColor, UIColor(hex: 0xC2C7DC).cgColor, UIColor(hex: 0xE6E9F5).cgColor]
+                let topFn = UIColor(hex: palette.keyFunctionHex)
+                let midFn = UIColor(hex: palette.orbBodyMidHex)
+                let botFn = UIColor(hex: palette.keyFunctionHex)
+                colors = [topFn.cgColor, midFn.cgColor, botFn.cgColor]
             }
         case .normal:
             if palette.isAmoled {
                 colors = [UIColor(hex: 0x1D2333).cgColor, UIColor(hex: 0x0D1018).cgColor, UIColor(hex: 0x171D2B).cgColor]
-            } else if palette.isDark {
-                colors = [UIColor(hex: 0x394466).cgColor, UIColor(hex: 0x141928).cgColor, UIColor(hex: 0x2D3754).cgColor]
             } else {
-                colors = [UIColor.white.cgColor, UIColor(hex: 0xE5E8F6).cgColor, UIColor(hex: 0xF7F8FE).cgColor]
+                colors = [
+                    UIColor(hex: palette.keyBackgroundHex).cgColor,
+                    UIColor(hex: palette.orbBodyMidHex).cgColor,
+                    UIColor(hex: palette.keyBackgroundHex).cgColor
+                ]
             }
         }
 

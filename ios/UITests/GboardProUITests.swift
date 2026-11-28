@@ -14,7 +14,10 @@ final class GboardProUITests: XCTestCase {
 
         // Navigate into Additional -> Choose UI -> Switch to 3D Liquid Glass & back to Classic
         let additionalRow = app.buttons["row_additional"]
-        XCTAssertTrue(additionalRow.exists)
+        if !additionalRow.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(additionalRow.waitForExistence(timeout: 3))
         additionalRow.tap()
 
         XCTAssertTrue(app.buttons["row_choose_ui"].waitForExistence(timeout: 3))
@@ -48,5 +51,27 @@ final class GboardProUITests: XCTestCase {
 
         app.buttons["btn_preview_keyboard"].tap()
         XCTAssertTrue(app.staticTexts["LIVE IPHONE / IPAD KEYBOARD SANDBOX"].waitForExistence(timeout: 4))
+    }
+
+    func testAllLiquidGlassThemesApplyCleanly() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        let themeRow = app.buttons["row_theme"]
+        XCTAssertTrue(themeRow.waitForExistence(timeout: 4))
+        themeRow.tap()
+
+        let styleRow = app.buttons["row_style"]
+        XCTAssertTrue(styleRow.waitForExistence(timeout: 3))
+        styleRow.tap()
+
+        for id in ["blush_lilac", "cotton_candy", "sunset_peach", "fresh_mint", "ocean", "default"] {
+            let btn = app.buttons["theme_option_\(id)"]
+            if !btn.isHittable {
+                app.swipeUp()
+            }
+            XCTAssertTrue(btn.waitForExistence(timeout: 3))
+            btn.tap()
+        }
     }
 }
