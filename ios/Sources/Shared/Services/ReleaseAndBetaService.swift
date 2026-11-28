@@ -128,3 +128,33 @@ public final class ReleaseAndBetaService: ObservableObject {
             }) {
                 let ver = found.tagName.hasPrefix("v") ? String(found.tagName.dropFirst()) : found.tagName
                 let bullets = Self.extractBulletFeaturesWithoutEmojis(from: found.body)
+                testingFeatureBullets = bullets.isEmpty
+                    ? ["No active beta testing build features are listed right now."]
+                    : bullets
+                betaState = .available(
+                    version: ver,
+                    fileName: asset.name,
+                    sizeBytes: asset.size,
+                    downloadUrl: asset.browserDownloadUrl,
+                    htmlUrl: found.htmlUrl,
+                    bullets: testingFeatureBullets
+                )
+            } else {
+                testingFeatureBullets = ["No active beta testing build features are listed right now."]
+                betaState = .noActiveBeta
+            }
+        } catch {
+            betaState = .noActiveBeta
+        }
+    }
+
+    public static func stripEmojis(_ input: String) -> String {
+        let filtered = input.unicodeScalars.filter { scalar in
+            let v = scalar.value
+            let isEmoji = (v >= 0x1F000 && v <= 0x1FAFF)
+                || (v >= 0x2600 && v <= 0x27BF)
+                || (v >= 0xFE00 && v <= 0xFE0F)
+                || v == 0x200D
+                || v == 0x20E3
+            return !isEmoji
+        }
