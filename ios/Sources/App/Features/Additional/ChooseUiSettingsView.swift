@@ -32,3 +32,25 @@ struct ChooseUiSettingsView: View {
                                             .font(.system(size: 13))
                                             .foregroundColor(palette.textSecondary)
                                     }
+                                    Spacer()
+                                    Image(systemName: selected ? "largecircle.fill.circle" : "circle")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(selected ? palette.accent : palette.textSecondary)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 13)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityIdentifier("choose_ui_\(mode.rawValue)")
+                        }
+                    }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Choose UI")
+    }
+}
