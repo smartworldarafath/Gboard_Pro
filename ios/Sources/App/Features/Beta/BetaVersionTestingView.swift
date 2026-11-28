@@ -211,3 +211,44 @@ struct BetaVersionTestingView: View {
             GboardPillButton(title: "Check for Beta Builds", systemImage: "arrow.clockwise", palette: palette) {
                 Task { await service.checkActiveBetaBuild(showCheckingIndicator: true) }
             }
+            .padding(.top, 4)
+        case let .available(version, fileName, sizeBytes, _, htmlUrl, _):
+            Text("Gboard Pro Beta \(version)")
+                .font(.system(size: 17, weight: .bold))
+                .foregroundColor(palette.textPrimary)
+            Text("\(fileName) (\(String(format: "%.1f MB", Double(sizeBytes) / 1_048_576.0)))")
+                .font(.system(size: 13.5))
+                .foregroundColor(palette.textSecondary)
+            GboardPillButton(title: "Open Release & Download", systemImage: "arrow.down.circle", palette: palette) {
+                if let url = URL(string: htmlUrl) {
+                    UIApplication.shared.open(url)
+                }
+            }
+        case let .downloading(version, _, progress, mbDown, mbTotal):
+            Text("Downloading Beta \(version)")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(palette.textPrimary)
+            ProgressView(value: progress)
+                .tint(palette.accent)
+            Text(String(format: "%.1f MB / %.1f MB (%d%%)", mbDown, mbTotal, Int(progress * 100)))
+                .font(.system(size: 12.5, weight: .semibold))
+                .foregroundColor(palette.accent)
+        case let .completed(version, _):
+            Text("Beta \(version) Ready")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(palette.accent)
+        case let .error(msg):
+            Text(msg)
+                .font(.system(size: 13.5))
+                .foregroundColor(.orange)
+        }
+    }
+
+    private func submitBetaReport() {
+        guard betaInstalled else { return }
+        let title = issueTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+        let desc = issueDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !title.isEmpty, !desc.isEmpty else {
+            alertMessage = "Please fill in both Issue Title and Issue Description."
+            return
+        }
