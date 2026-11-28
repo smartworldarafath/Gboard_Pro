@@ -49,3 +49,33 @@ struct ThemeSettingsView: View {
                                             .font(.system(size: 13.5, weight: selected ? .bold : .medium))
                                             .foregroundColor(palette.textPrimary)
                                     }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 14)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                            .fill(selected ? palette.accent.opacity(0.14) : palette.surfaceAlt)
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                            .stroke(selected ? palette.accent : palette.surfaceStroke, lineWidth: selected ? 1.8 : 0.8)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(14)
+                    }
+
+                    GboardPillButton(title: "Open Live Keyboard Preview", systemImage: "keyboard", palette: palette) {
+                        openSandbox()
+                    }
+                    .padding(.horizontal, 16)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Theme")
+    }
+}
