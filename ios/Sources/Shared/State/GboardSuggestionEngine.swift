@@ -33,3 +33,28 @@ public enum GboardSuggestionEngine {
             for d in defaults where !result.contains(d) && result.count < 3 {
                 result.append(d)
             }
+        }
+        return Array(result.prefix(3))
+    }
+
+    public static func matchGlideWord(swipedKeys: [String]) -> String? {
+        guard let first = swipedKeys.first?.lowercased(),
+              let last = swipedKeys.last?.lowercased(),
+              swipedKeys.count >= 2 else {
+            return swipedKeys.first
+        }
+        let keySet = Set(swipedKeys.map { $0.lowercased() })
+        let candidates = lexicon.filter { word in
+            guard let wf = word.first, let wl = word.last else { return false }
+            return String(wf) == first && String(wl) == last
+        }
+        if let best = candidates.max(by: { a, b in
+            let overlapA = Set(a.map { String($0) }).intersection(keySet).count
+            let overlapB = Set(b.map { String($0) }).intersection(keySet).count
+            return overlapA < overlapB
+        }) {
+            return best
+        }
+        return first
+    }
+}
