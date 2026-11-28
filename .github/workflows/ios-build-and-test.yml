@@ -31,3 +31,23 @@ jobs:
           xcrun simctl boot "$IPHONE_ID" || true
           xcrun simctl boot "$IPAD_ID" || true
 
+      - name: Run Unit & UI Tests on Virtual iPhone
+        working-directory: ios
+        run: |
+          xcodebuild test \
+            -project GboardProiOS.xcodeproj \
+            -scheme GboardProApp \
+            -destination "platform=iOS Simulator,id=${{ steps.sims.outputs.iphone_id }}" \
+            -resultBundlePath ../output/GboardPro_iPhone_Tests.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Build & UI Test on Virtual iPad
+        working-directory: ios
+        run: |
+          xcodebuild test \
+            -project GboardProiOS.xcodeproj \
+            -scheme GboardProApp \
+            -destination "platform=iOS Simulator,id=${{ steps.sims.outputs.ipad_id }}" \
+            -resultBundlePath ../output/GboardPro_iPad_Tests.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
