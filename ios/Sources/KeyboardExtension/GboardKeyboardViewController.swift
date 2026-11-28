@@ -403,3 +403,89 @@ final class GboardKeyboardViewController: UIInputViewController {
             btn.setTitleColor(UIColor(role == .accentAction ? palette.ctaForeground : palette.textPrimary), for: .normal)
             btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
         }
+        if let fixedWidth {
+            btn.widthAnchor.constraint(equalToConstant: fixedWidth).isActive = true
+        } else if let widthMultiplier {
+            btn.widthAnchor.constraint(equalToConstant: 36 * widthMultiplier).isActive = true
+        }
+        btn.addAction(UIAction { _ in action() }, for: .touchUpInside)
+        return btn
+    }
+
+    private func buildEmojiDrawer(palette: GboardPalette) {
+        emojiCollectionContainer.subviews.forEach { $0.removeFromSuperview() }
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        emojiCollectionContainer.addSubview(scroll)
+        NSLayoutConstraint.activate([
+            scroll.topAnchor.constraint(equalTo: emojiCollectionContainer.topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: emojiCollectionContainer.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: emojiCollectionContainer.trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: emojiCollectionContainer.bottomAnchor),
+            scroll.heightAnchor.constraint(equalToConstant: 210)
+        ])
+
+        let outer = UIStackView()
+        outer.axis = .vertical
+        outer.spacing = 6
+        outer.translatesAutoresizingMaskIntoConstraints = false
+        scroll.addSubview(outer)
+        NSLayoutConstraint.activate([
+            outer.topAnchor.constraint(equalTo: scroll.topAnchor, constant: 6),
+            outer.leadingAnchor.constraint(equalTo: scroll.leadingAnchor, constant: 6),
+            outer.trailingAnchor.constraint(equalTo: scroll.trailingAnchor, constant: -6),
+            outer.bottomAnchor.constraint(equalTo: scroll.bottomAnchor, constant: -6),
+            outer.widthAnchor.constraint(equalTo: scroll.widthAnchor, constant: -12)
+        ])
+
+        let columns = traitCollection.userInterfaceIdiom == .pad ? 12 : 8
+        let emojis = LanguageCatalog.emojiGrid
+        for start in stride(from: 0, to: emojis.count, by: columns) {
+            let row = UIStackView()
+            row.axis = .horizontal
+            row.distribution = .fillEqually
+            let end = min(start + columns, emojis.count)
+            for idx in start..<end {
+                let emoji = emojis[idx]
+                let b = UIButton(type: .system)
+                b.setTitle(emoji, for: .normal)
+                b.titleLabel?.font = .systemFont(ofSize: 26)
+                b.addAction(UIAction { [weak self] _ in
+                    self?.commitCharacter(emoji)
+                }, for: .touchUpInside)
+                row.addArrangedSubview(b)
+            }
+            outer.addArrangedSubview(row)
+        }
+    }
+
+    private func buildClipboardDrawer(palette: GboardPalette) {
+        clipboardContainer.subviews.forEach { $0.removeFromSuperview() }
+        if hasFullAccess, let sysClip = UIPasteboard.general.string, !sysClip.isEmpty {
+            store.saveClipboardEntry(sysClip)
+        }
+
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        clipboardContainer.addSubview(scroll)
+        NSLayoutConstraint.activate([
+            scroll.topAnchor.constraint(equalTo: clipboardContainer.topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: clipboardContainer.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: clipboardContainer.trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: clipboardContainer.bottomAnchor),
+            scroll.heightAnchor.constraint(equalToConstant: 210)
+        ])
+
+        let list = UIStackView()
+        list.axis = .vertical
+        list.spacing = 8
+        list.translatesAutoresizingMaskIntoConstraints = false
+        scroll.addSubview(list)
+        NSLayoutConstraint.activate([
+            list.topAnchor.constraint(equalTo: scroll.topAnchor, constant: 8),
+            list.leadingAnchor.constraint(equalTo: scroll.leadingAnchor, constant: 10),
+            list.trailingAnchor.constraint(equalTo: scroll.trailingAnchor, constant: -10),
+            list.bottomAnchor.constraint(equalTo: scroll.bottomAnchor, constant: -8),
+            list.widthAnchor.constraint(equalTo: scroll.widthAnchor, constant: -20)
+        ])
+
