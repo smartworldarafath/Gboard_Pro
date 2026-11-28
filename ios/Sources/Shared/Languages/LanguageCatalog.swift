@@ -79,3 +79,35 @@ public enum LanguageCatalog {
             nativeName: "QWERTY",
             layoutLabel: "Español",
             isSuggested: false,
+            rows: [
+                ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+                ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ñ"],
+                ["z", "x", "c", "v", "b", "n", "m"]
+            ]
+        ),
+        KeyboardLanguageItem(
+            code: "fr-FR",
+            displayName: "Français",
+            nativeName: "AZERTY",
+            layoutLabel: "Français",
+            isSuggested: false,
+            rows: [
+                ["a", "z", "e", "r", "t", "y", "u", "i", "o", "p"],
+                ["q", "s", "d", "f", "g", "h", "j", "k", "l", "m"],
+                ["w", "x", "c", "v", "b", "n", "é"]
+            ]
+        ),
+        KeyboardLanguageItem(
+            code: "de-DE",
+            displayName: "Deutsch",
+            nativeName: "QWERTZ",
+            layoutLabel: "Deutsch",
+            isSuggested: false,
+            rows: [
+                ["q", "w", "e", "r", "t", "z", "u", "i", "o", "p"],
+                ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ü"],
+                ["y", "x", "c", "v", "b", "n", "m"]
+            ]
+        )
+    ]
+
