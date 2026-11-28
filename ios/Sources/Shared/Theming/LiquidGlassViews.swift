@@ -149,3 +149,39 @@ public struct GboardCardModifier: ViewModifier {
                 y: palette.isLiquidGlass ? 3 : 0
             )
     }
+}
+
+public extension View {
+    func gboardCard(palette: GboardPalette, cornerRadius: CGFloat = 18) -> some View {
+        modifier(GboardCardModifier(palette: palette, cornerRadius: cornerRadius))
+    }
+}
+
+public struct GboardPillButton: View {
+    public let title: String
+    public let systemImage: String?
+    public let palette: GboardPalette
+    public var isEnabled: Bool = true
+    public let action: () -> Void
+
+    public init(
+        title: String,
+        systemImage: String? = nil,
+        palette: GboardPalette,
+        isEnabled: Bool = true,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.palette = palette
+        self.isEnabled = isEnabled
+        self.action = action
+    }
+
+    public var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                if let systemImage {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 15, weight: .bold))
+                }
