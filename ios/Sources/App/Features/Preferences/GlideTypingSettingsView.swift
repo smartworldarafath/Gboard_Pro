@@ -13,3 +13,12 @@ struct GlideTypingSettingsView: View {
                         CardDivider(palette: palette)
                         SettingsToggleRow(title: "Show gesture trail", summary: "Render glowing fingertip path while swiping", icon: "waveform.path", palette: palette, isOn: $store.showGestureTrail)
                     }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Glide typing")
+    }
+}
