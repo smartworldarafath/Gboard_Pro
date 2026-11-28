@@ -16,3 +16,23 @@ settings:
     CURRENT_PROJECT_VERSION: "176071777"
     ENABLE_TESTABILITY: YES
 
+targets:
+  GboardProApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/Shared
+      - path: Sources/App
+    info:
+      path: Config/App-Info.plist
+    entitlements:
+      path: Config/App.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.smartworldarafath.gboardpro
+        PRODUCT_NAME: "Gboard Pro"
+        PRODUCT_MODULE_NAME: GboardProApp
+        GENERATE_INFOPLIST_FILE: NO
+    dependencies:
+      - target: GboardProKeyboard
+
