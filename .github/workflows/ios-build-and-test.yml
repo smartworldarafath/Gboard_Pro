@@ -1,0 +1,16 @@
+name: Build & Test Gboard Pro iOS (iPhone & iPad)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios-build-and-test.yml"
+
+jobs:
+  build-and-test-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
