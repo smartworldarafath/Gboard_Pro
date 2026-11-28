@@ -60,3 +60,43 @@ struct AddLanguageSheetView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
                 }
+            }
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.26)) {
+                    listAppeared = true
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func languagePickRow(_ lang: KeyboardLanguageItem) -> some View {
+        let added = store.enabledLanguageCodes.contains(lang.code)
+        Button {
+            if added {
+                store.removeLanguage(lang.code)
+            } else {
+                store.addLanguage(lang.code)
+            }
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(lang.displayName)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(palette.textPrimary)
+                    Text(lang.nativeName)
+                        .font(.system(size: 13))
+                        .foregroundColor(palette.textSecondary)
+                }
+                Spacer()
+                Image(systemName: added ? "checkmark.circle.fill" : "plus.circle")
+                    .font(.system(size: 20))
+                    .foregroundColor(added ? palette.accent : palette.textSecondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
