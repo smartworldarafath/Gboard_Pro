@@ -30,3 +30,36 @@ public enum KeyboardThemeOption: String, CaseIterable, Identifiable {
         case .freshMint: return Color(hex: 0x00897B)
         case .ocean: return Color(hex: 0x3949AB)
         }
+    }
+}
+
+public struct GboardPalette: Equatable {
+    public let windowBackground: Color
+    public let surface: Color
+    public let surfaceAlt: Color
+    public let surfaceStroke: Color
+    public let textPrimary: Color
+    public let textSecondary: Color
+    public let accent: Color
+    public let accentContainer: Color
+    public let onAccentContainer: Color
+    public let ctaForeground: Color
+    public let isDark: Bool
+    public let isAmoled: Bool
+    public let isLiquidGlass: Bool
+
+    public let orbBodyTopHex: UInt32
+    public let orbBodyMidHex: UInt32
+    public let orbBodyBotHex: UInt32
+    public let keyBackgroundHex: UInt32
+    public let keyFunctionHex: UInt32
+    public let keyboardBackgroundHex: UInt32
+
+    public static func resolve(
+        style: UIStyleMode,
+        theme: KeyboardThemeOption,
+        isDark: Bool,
+        isAmoled: Bool
+    ) -> GboardPalette {
+        let glass = (style == .liquidGlass)
+
