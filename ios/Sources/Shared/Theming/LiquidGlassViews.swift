@@ -110,3 +110,42 @@ public struct WaterDropOrbIcon: View {
                 .foregroundColor(palette.textSecondary)
                 .frame(width: 28, height: 28)
         }
+    }
+}
+
+public struct GboardCardModifier: ViewModifier {
+    public let palette: GboardPalette
+    public var cornerRadius: CGFloat = 18
+
+    public func body(content: Content) -> some View {
+        let r = palette.isLiquidGlass ? max(cornerRadius, 22) : min(cornerRadius, 16)
+        content
+            .background(
+                RoundedRectangle(cornerRadius: r, style: .continuous)
+                    .fill(
+                        palette.isLiquidGlass
+                            ? AnyShapeStyle(
+                                LinearGradient(
+                                    colors: palette.isDark
+                                        ? [palette.surface.opacity(0.96), palette.surfaceAlt.opacity(0.92)]
+                                        : [Color.white.opacity(0.94), palette.surface.opacity(0.95)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            : AnyShapeStyle(palette.surface)
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: r, style: .continuous)
+                    .stroke(palette.surfaceStroke, lineWidth: palette.isLiquidGlass ? 1.15 : 0.75)
+            )
+            .shadow(
+                color: palette.isLiquidGlass && !palette.isAmoled
+                    ? Color.black.opacity(palette.isDark ? 0.26 : 0.05)
+                    : .clear,
+                radius: palette.isLiquidGlass ? 8 : 0,
+                x: 0,
+                y: palette.isLiquidGlass ? 3 : 0
+            )
+    }
