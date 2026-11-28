@@ -111,3 +111,36 @@ final class LiquidGlassKeyButton: UIButton {
                 options: []
             )
         }
+
+        // Upper-left water-drop specular dome
+        let domeAlpha: CGFloat = palette.isDark || palette.isAmoled ? 0.36 : 0.72
+        let domeColors = [UIColor.white.withAlphaComponent(domeAlpha).cgColor, UIColor.clear.cgColor] as CFArray
+        if let dome = CGGradient(colorsSpace: space, colors: domeColors, locations: [0.0, 1.0]) {
+            let center = CGPoint(x: insetRect.minX + insetRect.width * 0.28, y: insetRect.minY + insetRect.height * 0.25)
+            ctx.drawRadialGradient(
+                dome,
+                startCenter: center,
+                startRadius: 0,
+                endCenter: center,
+                endRadius: max(insetRect.width, insetRect.height) * 0.62,
+                options: []
+            )
+        }
+
+        if isHighlighted {
+            UIColor(palette.accent).withAlphaComponent(0.28).setFill()
+            ctx.fill(insetRect)
+        }
+        ctx.restore()
+
+        // Fresnel Outer Specular Rim
+        ctx.saveGState()
+        let rimColor: UIColor = palette.isDark || palette.isAmoled
+            ? UIColor.white.withAlphaComponent(0.48)
+            : UIColor.white.withAlphaComponent(0.92)
+        rimColor.setStroke()
+        path.lineWidth = 1.15
+        path.stroke()
+        ctx.restore()
+    }
+}
