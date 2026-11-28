@@ -237,3 +237,94 @@ final class GboardKeyboardViewController: UIInputViewController {
             rowStack.spacing = isPad ? 7 : 5
             rowStack.distribution = .fill
 
+            if idx == rows.count - 1 {
+                let leftShift = makeSpecialButton(
+                    title: drawerMode == .symbols ? "ABC" : nil,
+                    systemName: drawerMode == .symbols ? nil : shiftIconName(),
+                    palette: palette,
+                    role: .functionKey,
+                    widthMultiplier: isPad ? 1.5 : 1.35
+                ) { [weak self] in
+                    self?.handleShiftOrSymbolToggle()
+                }
+                rowStack.addArrangedSubview(leftShift)
+            }
+
+            let innerStack = makeCharacterRow(rowKeys, palette: palette)
+            rowStack.addArrangedSubview(innerStack)
+
+            if idx == rows.count - 1 {
+                let deleteBtn = makeSpecialButton(
+                    title: nil,
+                    systemName: "delete.left",
+                    palette: palette,
+                    role: .functionKey,
+                    widthMultiplier: isPad ? 1.5 : 1.35
+                ) { [weak self] in
+                    self?.performBackspace()
+                }
+                let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleBackspaceLongPress(_:)))
+                longPress.minimumPressDuration = 0.25
+                deleteBtn.addGestureRecognizer(longPress)
+                rowStack.addArrangedSubview(deleteBtn)
+            }
+
+            keysContainer.addArrangedSubview(rowStack)
+        }
+
+        keysContainer.addArrangedSubview(makeBottomControlRow(lang: lang, palette: palette, isPad: isPad))
+    }
+
+    private func makeCharacterRow(_ chars: [String], palette: GboardPalette) -> UIStackView {
+        let isPad = traitCollection.userInterfaceIdiom == .pad
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.distribution = .fillEqually
+        stack.spacing = isPad ? 7 : 5
+
+        for ch in chars {
+            let btn = LiquidGlassKeyButton(type: .system)
+            btn.palette = palette
+            btn.orbRole = .normal
+            let displayed = (drawerMode == .letters && shiftState != .lowercase) ? ch.uppercased() : ch
+            btn.setTitle(displayed, for: .normal)
+            btn.setTitleColor(UIColor(palette.textPrimary), for: .normal)
+            btn.titleLabel?.font = .systemFont(ofSize: isPad ? 22 : 20, weight: .regular)
+            btn.addTarget(self, action: #selector(handleKeyTouchDown(_:)), for: .touchDown)
+            btn.addTarget(self, action: #selector(handleCharacterKeyTap(_:)), for: .touchUpInside)
+            btn.addTarget(self, action: #selector(handleKeyTouchCancel(_:)), for: [.touchUpOutside, .touchCancel])
+            letterButtons.append((btn, ch))
+            stack.addArrangedSubview(btn)
+        }
+        return stack
+    }
+
+    private func makeBottomControlRow(lang: KeyboardLanguageItem, palette: GboardPalette, isPad: Bool) -> UIStackView {
+        let row = UIStackView()
+        row.axis = .horizontal
+        row.spacing = isPad ? 7 : 5
+        row.distribution = .fill
+
+        let symBtn = makeSpecialButton(
+            title: drawerMode == .symbols ? "ABC" : "?123",
+            systemName: nil,
+            palette: palette,
+            role: .functionKey,
+            fixedWidth: isPad ? 68 : 54
+        ) { [weak self] in
+            guard let self else { return }
+            self.drawerMode = (self.drawerMode == .symbols) ? .letters : .symbols
+            self.rebuildAll()
+        }
+        row.addArrangedSubview(symBtn)
+
+        if needsInputModeSwitchKey {
+            let globeBtn = makeSpecialButton(
+                title: nil,
+                systemName: "globe",
+                palette: palette,
+                role: .functionKey,
+                fixedWidth: isPad ? 52 : 40
+            ) { [weak self] in
+                self?.advanceToNextInputMode()
+            }
