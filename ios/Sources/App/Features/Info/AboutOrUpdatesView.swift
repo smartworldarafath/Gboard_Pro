@@ -57,3 +57,36 @@ struct AboutOrUpdatesView: View {
                                 if let url = URL(string: "\(AppGroupConfig.githubRepoWebURL)/releases") {
                                     UIApplication.shared.open(url)
                                 }
+                            }
+                        }
+                    } else {
+                        SettingsCardGroup(palette: palette, title: "DEVELOPER & COMMUNITY") {
+                            SettingsNavRow(title: "Developer", summary: "Arafath Rahman", icon: "person.fill", palette: palette) {}
+                            CardDivider(palette: palette)
+                            SettingsNavRow(title: "Community", summary: "Telegram Community & Support", icon: "paperplane.fill", palette: palette) {
+                                if let url = URL(string: AppGroupConfig.telegramCommunityURL) {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                            CardDivider(palette: palette)
+                            SettingsNavRow(title: "Source Code", summary: "GitHub Repository", icon: "chevron.left.forwardslash.chevron.right", palette: palette) {
+                                if let url = URL(string: AppGroupConfig.githubRepoWebURL) {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        }
+                        SettingsCardGroup(palette: palette, title: "APPLICATION & SYSTEM") {
+                            SettingsNavRow(title: "Release Version", summary: AppGroupConfig.fullVersionName, icon: "shippingbox", palette: palette) {}
+                        }
+                    }
+
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle(isUpdatesScreen ? "Gboard Pro Updates" : "About")
+    }
+}
