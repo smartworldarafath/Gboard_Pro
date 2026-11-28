@@ -272,3 +272,36 @@ public struct GboardPalette: Equatable {
                     keyboardBackgroundHex: isDark ? 0x141519 : 0xECEFF6
                 )
             }
+            return GboardPalette(
+                windowBackground: Color(hex: isDark ? 0x121318 : 0xEFEFF6),
+                surface: Color(hex: isDark ? 0x1A1D2A : 0xF7F8FD),
+                surfaceAlt: Color(hex: isDark ? 0x232738 : 0xE8EBF8),
+                surfaceStroke: isDark ? Color(hex: 0xA8C7FA, alpha: 0.24) : Color.white.opacity(0.85),
+                textPrimary: Color(hex: isDark ? 0xF5F7FF : 0x0E1224),
+                textSecondary: Color(hex: isDark ? 0xB0B8D0 : 0x525A70),
+                accent: Color(hex: isDark ? 0xA8C7FA : 0x283CF5),
+                accentContainer: Color(hex: isDark ? 0x1B2B4B : 0xE3E7FC),
+                onAccentContainer: Color(hex: isDark ? 0xD8E8FF : 0x16227A),
+                ctaForeground: Color(hex: isDark ? 0xF5F7FF : 0x1A2236),
+                isDark: isDark,
+                isAmoled: false,
+                isLiquidGlass: true,
+                orbBodyTopHex: isDark ? 0x394466 : 0xFFFFFF,
+                orbBodyMidHex: isDark ? 0x111522 : 0xE5E8F6,
+                orbBodyBotHex: isDark ? 0x2D3754 : 0xF7F8FE,
+                keyBackgroundHex: isDark ? 0x252A3C : 0xFFFFFF,
+                keyFunctionHex: isDark ? 0x1C2236 : 0xE1E5F5,
+                keyboardBackgroundHex: isDark ? 0x121318 : 0xEAEBF4
+            )
+        }
+    }
+}
+
+public extension Color {
+    init(hex: UInt32, alpha: Double = 1.0) {
+        let r = Double((hex >> 16) & 0xFF) / 255.0
+        let g = Double((hex >> 8) & 0xFF) / 255.0
+        let b = Double(hex & 0xFF) / 255.0
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: alpha)
+    }
+}
