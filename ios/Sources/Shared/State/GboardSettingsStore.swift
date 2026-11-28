@@ -206,3 +206,38 @@ public final class GboardSettingsStore: ObservableObject {
         hapticStrength = 0.65
         keySoundEnabled = false
         oneHandedMode = false
+        keyboardHeightScale = 1.0
+        showSuggestionStrip = true
+        autoCorrectionEnabled = true
+        autoCapitalizationEnabled = true
+        doubleSpacePeriodEnabled = true
+        glideTypingEnabled = true
+        showGestureTrail = true
+        clipboardHistoryEnabled = true
+        notifyAppUpdatesAlert = true
+        notifyBetaApkAlert = true
+        notifyBetaFeatures = true
+        betaNewFeaturesSliderEnabled = false
+    }
+
+    public static var isBetaVersionInstalled: Bool {
+        AppGroupConfig.patchVersion.lowercased().contains("beta")
+    }
+
+    public static var deviceModelSummary: String {
+        #if canImport(UIKit)
+        var systemInfo = utsname()
+        uname(&systemInfo)
+        let machine = withUnsafePointer(to: &systemInfo.machine) {
+            $0.withMemoryRebound(to: CChar.self, capacity: 1) {
+                String(cString: $0)
+            }
+        }
+        let device = UIDevice.current
+        let model = machine == "x86_64" || machine == "arm64" ? device.model : "\(device.model) (\(machine))"
+        return "\(model) (iOS \(device.systemVersion))"
+        #else
+        return "iOS Simulator / Device"
+        #endif
+    }
+}
