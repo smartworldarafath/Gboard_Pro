@@ -237,3 +237,38 @@ public struct GboardPalette: Equatable {
                 accentContainer: Color(hex: isDark ? 0x1E265C : 0xD1D9FA),
                 onAccentContainer: Color(hex: isDark ? 0xE8EAF6 : 0x101642),
                 ctaForeground: glass ? Color(hex: isDark ? 0xF5F7FF : 0x1A2236) : Color(hex: isDark ? 0x101642 : 0xFFFFFF),
+                isDark: isDark,
+                isAmoled: false,
+                isLiquidGlass: glass,
+                orbBodyTopHex: isDark ? 0x2D3559 : 0xFFFFFF,
+                orbBodyMidHex: isDark ? 0x12172A : 0xE5EAF9,
+                orbBodyBotHex: isDark ? 0x252D4D : 0xF7F8FD,
+                keyBackgroundHex: isDark ? 0x212742 : 0xFFFFFF,
+                keyFunctionHex: isDark ? 0x2B3359 : 0xDCE3F7,
+                keyboardBackgroundHex: isDark ? 0x101322 : 0xEDF0FA
+            )
+
+        case .systemDefault:
+            if !glass {
+                return GboardPalette(
+                    windowBackground: Color(hex: isDark ? 0x141519 : 0xF3F5F9),
+                    surface: Color(hex: isDark ? 0x1E2026 : 0xFFFFFF),
+                    surfaceAlt: Color(hex: isDark ? 0x282B33 : 0xE9EDF6),
+                    surfaceStroke: m3Stroke,
+                    textPrimary: Color(hex: isDark ? 0xE4E2E6 : 0x1B1C1F),
+                    textSecondary: Color(hex: isDark ? 0xC5C6D0 : 0x5E626C),
+                    accent: Color(hex: isDark ? 0xA8C7FA : 0x1A73E8),
+                    accentContainer: Color(hex: isDark ? 0x0842A0 : 0xD3E3FD),
+                    onAccentContainer: Color(hex: isDark ? 0xD3E3FD : 0x041E49),
+                    ctaForeground: Color(hex: isDark ? 0x041E49 : 0xFFFFFF),
+                    isDark: isDark,
+                    isAmoled: false,
+                    isLiquidGlass: false,
+                    orbBodyTopHex: isDark ? 0x394466 : 0xFFFFFF,
+                    orbBodyMidHex: isDark ? 0x111522 : 0xE5E8F6,
+                    orbBodyBotHex: isDark ? 0x2D3754 : 0xF7F8FE,
+                    keyBackgroundHex: isDark ? 0x2B2D33 : 0xFFFFFF,
+                    keyFunctionHex: isDark ? 0x202227 : 0xDFE4EF,
+                    keyboardBackgroundHex: isDark ? 0x141519 : 0xECEFF6
+                )
+            }
