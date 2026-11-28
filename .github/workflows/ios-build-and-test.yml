@@ -51,3 +51,25 @@ jobs:
             -resultBundlePath ../output/GboardPro_iPad_Tests.xcresult \
             CODE_SIGNING_ALLOWED=NO
 
+      - name: Package Unsigned Universal IPA (iPhone + iPad)
+        working-directory: ios
+        run: |
+          xcodebuild build \
+            -project GboardProiOS.xcodeproj \
+            -scheme GboardProApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath ../build_ios \
+            CODE_SIGNING_ALLOWED=NO
+          mkdir -p ../output/Payload
+          cp -R "../build_ios/Build/Products/Release-iphoneos/Gboard Pro.app" ../output/Payload/
+          cd ../output && zip -r Gboard_Pro_iOS_Unsigned.ipa Payload && rm -rf Payload
+
+      - name: Upload Unsigned IPA & Virtual Device Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gboard-pro-ios-build-and-tests
+          path: |
+            output/Gboard_Pro_iOS_Unsigned.ipa
+            output/GboardPro_iPhone_Tests.xcresult
+            output/GboardPro_iPad_Tests.xcresult
