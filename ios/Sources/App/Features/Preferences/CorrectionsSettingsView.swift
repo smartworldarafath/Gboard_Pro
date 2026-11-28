@@ -17,3 +17,12 @@ struct CorrectionsSettingsView: View {
                         CardDivider(palette: palette)
                         SettingsToggleRow(title: "Double-space period", summary: "Double tap spacebar inserts a period followed by space", icon: "space", palette: palette, isOn: $store.doubleSpacePeriodEnabled)
                     }
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Corrections")
+    }
+}
