@@ -96,3 +96,37 @@ struct InAppKeyboardPreviewContainer: View {
                             .frame(maxWidth: .infinity, minHeight: 42)
                             .background(keyShape(isFunction: false))
                     }
+                    .buttonStyle(.plain)
+                    specialKey(title: ".", width: 34) {
+                        onInsertText(".")
+                    }
+                    specialKey(icon: "return", width: 52, isAccent: true) {
+                        onInsertText("\n")
+                    }
+                }
+                .padding(.horizontal, 6)
+                .padding(.bottom, 8)
+            }
+        }
+        .background(Color(hex: palette.keyboardBackgroundHex))
+        .cornerRadius(palette.isLiquidGlass ? 22 : 14)
+    }
+
+    @ViewBuilder
+    private func keyRow(_ keys: [String], isFunctionRow: Bool) -> some View {
+        HStack(spacing: 5) {
+            ForEach(keys, id: \.self) { key in
+                let display = shifted ? key.uppercased() : key
+                Button {
+                    onInsertText(display)
+                    if shifted { shifted = false }
+                } label: {
+                    Text(display)
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(palette.textPrimary)
+                        .frame(maxWidth: .infinity, minHeight: 42)
+                        .background(keyShape(isFunction: isFunctionRow))
+                }
+                .buttonStyle(.plain)
+            }
+        }
