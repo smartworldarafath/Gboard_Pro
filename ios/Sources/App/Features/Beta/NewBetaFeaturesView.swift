@@ -31,3 +31,33 @@ struct NewBetaFeaturesView: View {
                                         .font(.system(size: 13.5))
                                         .foregroundColor(palette.textSecondary)
                                 }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(16)
+                            } else {
+                                ForEach(Array(service.activeExperimentalBetaFeatures.enumerated()), id: \.element.id) { idx, item in
+                                    if idx > 0 { CardDivider(palette: palette) }
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(item.title)
+                                            .font(.system(size: 15.5, weight: .semibold))
+                                            .foregroundColor(palette.textPrimary)
+                                        Text(item.summary)
+                                            .font(.system(size: 13.5))
+                                            .foregroundColor(palette.textSecondary)
+                                    }
+                                    .padding(16)
+                                }
+                            }
+                        }
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
+
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("New features (Beta)")
+    }
+}
