@@ -18,3 +18,24 @@ struct BetaProgramHubView: View {
                             palette: palette
                         ) { navigate(.betaTesting) }
 
+                        CardDivider(palette: palette)
+
+                        SettingsNavRow(
+                            title: "New features (Beta)",
+                            summary: store.betaNewFeaturesSliderEnabled
+                                ? "Experimental features slider is ON"
+                                : "Turn on to preview upcoming beta features",
+                            icon: "sparkles",
+                            palette: palette
+                        ) { navigate(.newBetaFeatures) }
+                    }
+                    FooterWatermarkView(palette: palette)
+                }
+                .frame(maxWidth: 680)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+            }
+        }
+        .navigationTitle("Beta Program")
+    }
+}
