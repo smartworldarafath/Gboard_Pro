@@ -87,3 +87,40 @@ struct SettingsToggleRow: View {
                         .foregroundColor(palette.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+            }
+            Spacer(minLength: 8)
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(palette.accent)
+                .accessibilityIdentifier("toggle_\(title.lowercased().replacingOccurrences(of: " ", with: "_"))")
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 13)
+    }
+}
+
+struct CardDivider: View {
+    let palette: GboardPalette
+    var body: some View {
+        Rectangle()
+            .fill(palette.textSecondary.opacity(0.14))
+            .frame(height: 0.7)
+            .padding(.horizontal, 16)
+    }
+}
+
+struct FooterWatermarkView: View {
+    let palette: GboardPalette
+    var body: some View {
+        HStack(spacing: 12) {
+            Rectangle().fill(palette.textSecondary.opacity(0.25)).frame(height: 1)
+            Text("Gboard_Pro \(AppGroupConfig.patchVersion)")
+                .font(.system(size: 12.5, weight: .medium))
+                .foregroundColor(palette.textSecondary)
+                .fixedSize()
+            Rectangle().fill(palette.textSecondary.opacity(0.25)).frame(height: 1)
+        }
+        .padding(.horizontal, 28)
+        .padding(.top, 12)
+    }
+}
